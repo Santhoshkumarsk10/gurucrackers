@@ -1,0 +1,10 @@
+.git
+.github
+vendor
+node_modules
+whatsapp-service/node_modules
+.env
+.env.*
+storage/*.key
+storage/app/db_backups/*
+storage/logs/*
