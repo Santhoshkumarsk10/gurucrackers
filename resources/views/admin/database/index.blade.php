@@ -34,19 +34,7 @@
         </div>
     </div>
 
-    {{-- ═══════════════════ FLASH MESSAGES ═══════════════════ --}}
-    @if (session('success'))
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-900 px-5 py-3.5 rounded-2xl flex items-start gap-3 shadow-sm">
-            <i class="fa-solid fa-circle-check text-emerald-600 mt-0.5 shrink-0"></i>
-            <span class="text-sm font-medium">{{ session('success') }}</span>
-        </div>
-    @endif
-    @if (session('error'))
-        <div class="bg-rose-50 border border-rose-200 text-rose-900 px-5 py-3.5 rounded-2xl flex items-start gap-3 shadow-sm">
-            <i class="fa-solid fa-circle-exclamation text-rose-600 mt-0.5 shrink-0"></i>
-            <span class="text-sm font-medium">{{ session('error') }}</span>
-        </div>
-    @endif
+
 
     {{-- ═══════════════════ MAIN GRID ═══════════════════ --}}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">

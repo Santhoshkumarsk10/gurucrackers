@@ -75,7 +75,7 @@ class DatabaseManagerController extends Controller
             ]);
         }
 
-        return back()->with('success', '✅ Backup created: <strong>' . $filename . '</strong>');
+        return back()->with('success', '✅ Backup created successfully: ' . $filename);
     }
 
     /**
@@ -168,7 +168,7 @@ class DatabaseManagerController extends Controller
             });
 
             $this->logDatabaseAction('email_backup', 'DB backup emailed to: ' . $email . ' | File: ' . $filename);
-            return back()->with('success', '📧 Backup sent to <strong>' . $email . '</strong> successfully!');
+            return back()->with('success', '📧 Backup sent to ' . $email . ' successfully!');
         } catch (\Exception $e) {
             return back()->with('error', '❌ Email failed: ' . $e->getMessage());
         }
@@ -231,9 +231,9 @@ class DatabaseManagerController extends Controller
             'Tables cleared: [' . implode(', ', $cleared) . '] | Backup: ' . $backupFilename
         );
 
-        $msg = '✅ Cleared ' . count($cleared) . ' table(s): <strong>' . implode(', ', $cleared) . '</strong><br>🔒 Backup saved: <strong>' . $backupFilename . '</strong>';
+        $msg = '✅ Cleared ' . count($cleared) . ' table(s): ' . implode(', ', $cleared) . ' | 🔒 Backup saved: ' . $backupFilename;
         if (!empty($errors)) {
-            $msg .= '<br>⚠️ Some errors: ' . implode(', ', $errors);
+            $msg .= ' | ⚠️ Errors: ' . implode(', ', $errors);
         }
 
         return back()->with('success', $msg);
@@ -282,7 +282,7 @@ class DatabaseManagerController extends Controller
         );
 
         return back()->with('success',
-            '🧹 <strong>' . count($cleared) . ' tables cleared!</strong><br>🔒 Full backup saved: <strong>' . $backupFilename . '</strong>'
+            '🧹 ' . count($cleared) . ' tables cleared! | 🔒 Full backup saved: ' . $backupFilename
         );
     }
 
