@@ -42,7 +42,7 @@ app.use((req, res, next) => {
     next();
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.WHATSAPP_PORT || 3001;
 const authDir = path.join(__dirname, 'auth_info');
 
 let sock = null;
