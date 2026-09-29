@@ -1,2 +1,6 @@
 *
 !.gitignore
+!banners/
+!banners/**
+!shops/
+!shops/**

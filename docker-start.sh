@@ -6,8 +6,10 @@ WEB_PORT="${PORT:-80}"
 echo "Configuring Apache to listen on port ${WEB_PORT}..."
 sed -i "s/80/${WEB_PORT}/g" /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf
 
-# Ensure storage link exists
+# Remove any existing symlink and cleanly recreate storage link
+rm -rf /var/www/html/public/storage
 php artisan storage:link || true
+chown -R www-data:www-data /var/www/html/storage /var/www/html/public
 
 # Cache Laravel configuration, routes, and views
 php artisan config:cache || true
