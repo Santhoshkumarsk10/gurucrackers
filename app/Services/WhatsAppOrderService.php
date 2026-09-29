@@ -314,7 +314,7 @@ class WhatsAppOrderService
     {
         try {
             $secret = config('services.whatsapp.secret', 'gc-whatsapp-internal-2026');
-            $response = \Illuminate\Support\Facades\Http::timeout(8)
+            $response = \Illuminate\Support\Facades\Http::timeout(25)
                 ->withHeaders(['X-Internal-Secret' => $secret])
                 ->post('http://127.0.0.1:3001/send-message', [
                     'phone' => self::normalizePhone($phone),
@@ -571,7 +571,7 @@ class WhatsAppOrderService
     {
         try {
             $secret = config('services.whatsapp.secret', 'gc-whatsapp-internal-2026');
-            $response = \Illuminate\Support\Facades\Http::timeout(15)
+            $response = \Illuminate\Support\Facades\Http::timeout(30)
                 ->withHeaders(['X-Internal-Secret' => $secret])
                 ->post('http://127.0.0.1:3001/send-document', [
                     'phone' => self::normalizePhone($phone),
@@ -619,7 +619,7 @@ class WhatsAppOrderService
     {
         try {
             $secret = config('services.whatsapp.secret', 'gc-whatsapp-internal-2026');
-            $response = \Illuminate\Support\Facades\Http::timeout(15)
+            $response = \Illuminate\Support\Facades\Http::timeout(30)
                 ->withHeaders(['X-Internal-Secret' => $secret])
                 ->post('http://127.0.0.1:3001/send-image', [
                     'phone' => self::normalizePhone($phone),

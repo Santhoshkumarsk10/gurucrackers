@@ -454,14 +454,18 @@ app.post('/send-message', async (req, res) => {
             console.warn('onWhatsApp check warning:', checkErr.message);
         }
 
-        // Simulate natural human typing presence
-        try {
-            await sock.sendPresenceUpdate('composing', jid);
-            await new Promise(r => setTimeout(r, 600));
-            await sock.sendPresenceUpdate('paused', jid);
-        } catch (_) {}
+        const sendPromise = (async () => {
+            try {
+                await sock.sendPresenceUpdate('composing', jid);
+            } catch (_) {}
+            return await sock.sendMessage(jid, { text: String(message) });
+        })();
 
-        const result = await sock.sendMessage(jid, { text: String(message) });
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('WhatsApp gateway timed out after 15 seconds. Please ensure WhatsApp on your phone has an active internet connection.')), 15000)
+        );
+
+        const result = await Promise.race([sendPromise, timeoutPromise]);
 
         return res.json({
             success: true,
