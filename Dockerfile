@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     ca-certificates \
+    default-mysql-client \
     libpng-dev \
     libjpeg-dev \
     libwebp-dev \

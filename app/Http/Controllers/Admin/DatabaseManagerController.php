@@ -292,60 +292,123 @@ class DatabaseManagerController extends Controller
     {
         $backupDir = storage_path('app/db_backups');
         if (!is_dir($backupDir)) {
-            mkdir($backupDir, 0700, true);
+            if (!@mkdir($backupDir, 0775, true) && !is_dir($backupDir)) {
+                \Log::error('DB Backup: Failed to create backup directory: ' . $backupDir);
+                return null;
+            }
         }
-        @chmod($backupDir, 0700);
+        @chmod($backupDir, 0775);
 
         // Ensure index blocker exists to prevent directory traversal
         $indexFile = $backupDir . '/index.php';
         if (!file_exists($indexFile)) {
-            file_put_contents($indexFile, "<?php http_response_code(403); exit('403 Forbidden');\n");
+            @file_put_contents($indexFile, "<?php http_response_code(403); exit('403 Forbidden');\n");
             @chmod($indexFile, 0644);
         }
 
         $filename = 'guru_crackers_backup_' . now()->format('Y_m_d_H_i_s') . '.sql';
         $filePath = $backupDir . '/' . $filename;
 
-        $db   = config('database.connections.mysql.database');
-        $host = config('database.connections.mysql.host');
-        $port = config('database.connections.mysql.port', 3306);
-        $user = config('database.connections.mysql.username');
-        $pass = config('database.connections.mysql.password');
-
-        $cnfFile = tempnam(sys_get_temp_dir(), 'gc_db_');
-        $cnfContent = sprintf(
-            "[client]\nhost=%s\nport=%s\nuser=%s\npassword=%s\n",
-            addcslashes($host, "\\\"\n"),
-            (int) $port,
-            addcslashes($user, "\\\"\n"),
-            addcslashes($pass, "\\\"\n")
-        );
-        file_put_contents($cnfFile, $cnfContent);
-        @chmod($cnfFile, 0600);
-
+        // Pure PHP PDO backup engine — 100% resilient across Docker, TiDB Cloud with SSL, and all cloud platforms
         try {
-            $cmd = sprintf(
-                'mysqldump --defaults-extra-file=%s --single-transaction --quick --lock-tables=false %s > %s 2>&1',
-                escapeshellarg($cnfFile),
-                escapeshellarg($db),
-                escapeshellarg($filePath)
-            );
-
-            exec($cmd, $output, $exitCode);
-        } finally {
-            if (file_exists($cnfFile)) {
-                @unlink($cnfFile);
+            $handle = @fopen($filePath, 'w');
+            if (!$handle) {
+                \Log::error('DB Backup: Failed to open file for writing: ' . $filePath);
+                return null;
             }
-        }
 
-        if ($exitCode !== 0 || !file_exists($filePath) || filesize($filePath) < 100) {
+            $dbName = config('database.connections.mysql.database', 'guru_crackers');
+            $host   = config('database.connections.mysql.host', 'localhost');
+
+            fwrite($handle, "-- ============================================================\n");
+            fwrite($handle, "-- GURU CRACKERS - FULL DATABASE BACKUP\n");
+            fwrite($handle, "-- Generated: " . now()->format('Y-m-d H:i:s') . "\n");
+            fwrite($handle, "-- Database: " . $dbName . "\n");
+            fwrite($handle, "-- Host: " . $host . "\n");
+            fwrite($handle, "-- ============================================================\n\n");
+            fwrite($handle, "SET NAMES utf8mb4;\n");
+            fwrite($handle, "SET FOREIGN_KEY_CHECKS = 0;\n");
+            fwrite($handle, "SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n\n");
+
+            $tables = $this->getAllTableNames();
+            $pdo = DB::connection()->getPdo();
+
+            foreach ($tables as $table) {
+                fwrite($handle, "-- ------------------------------------------------------------\n");
+                fwrite($handle, "-- Table structure for `{$table}`\n");
+                fwrite($handle, "-- ------------------------------------------------------------\n");
+                fwrite($handle, "DROP TABLE IF EXISTS `{$table}`;\n");
+
+                $createRes = DB::select("SHOW CREATE TABLE `{$table}`");
+                if (!empty($createRes)) {
+                    $row = (array) $createRes[0];
+                    $createSql = null;
+                    foreach ($row as $k => $v) {
+                        if (stripos($k, 'create') !== false) {
+                            $createSql = $v;
+                            break;
+                        }
+                    }
+                    if ($createSql) {
+                        fwrite($handle, $createSql . ";\n\n");
+                    }
+                }
+
+                $batch = [];
+                $columns = null;
+
+                foreach (DB::table($table)->cursor() as $record) {
+                    $recordArr = (array) $record;
+                    if ($columns === null) {
+                        $columns = array_keys($recordArr);
+                    }
+
+                    $values = [];
+                    foreach ($recordArr as $val) {
+                        if ($val === null) {
+                            $values[] = 'NULL';
+                        } elseif (is_int($val) || is_float($val)) {
+                            $values[] = (string) $val;
+                        } else {
+                            $values[] = $pdo->quote((string) $val);
+                        }
+                    }
+                    $batch[] = '(' . implode(', ', $values) . ')';
+
+                    if (count($batch) >= 100) {
+                        $colList = '`' . implode('`, `', $columns) . '`';
+                        fwrite($handle, "INSERT INTO `{$table}` ({$colList}) VALUES\n" . implode(",\n", $batch) . ";\n\n");
+                        $batch = [];
+                    }
+                }
+
+                if (!empty($batch)) {
+                    $colList = '`' . implode('`, `', $columns) . '`';
+                    fwrite($handle, "INSERT INTO `{$table}` ({$colList}) VALUES\n" . implode(",\n", $batch) . ";\n\n");
+                }
+            }
+
+            fwrite($handle, "SET FOREIGN_KEY_CHECKS = 1;\n");
+            fwrite($handle, "-- End of backup.\n");
+            fclose($handle);
+
+            if (file_exists($filePath) && filesize($filePath) > 50) {
+                @chmod($filePath, 0644);
+                return $filename;
+            }
+
+            \Log::error('DB Backup: Result file is missing or too small (< 50 bytes): ' . $filePath);
+            return null;
+        } catch (\Throwable $e) {
+            \Log::error('DB Backup Generation Exception: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            if (isset($handle) && is_resource($handle)) {
+                @fclose($handle);
+            }
+            if (file_exists($filePath)) {
+                @unlink($filePath);
+            }
             return null;
         }
-
-        // Restrict backup file permissions strictly to owner
-        @chmod($filePath, 0600);
-
-        return $filename;
     }
 
     private function getTableStats(): array

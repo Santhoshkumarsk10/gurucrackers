@@ -9,7 +9,10 @@ sed -i "s/80/${WEB_PORT}/g" /etc/apache2/ports.conf /etc/apache2/sites-available
 # Remove any existing symlink and cleanly recreate storage link
 rm -rf /var/www/html/public/storage
 php artisan storage:link || true
+# Ensure storage directories exist and have proper permissions
+mkdir -p /var/www/html/storage/app/db_backups /var/www/html/storage/framework/cache /var/www/html/storage/framework/sessions /var/www/html/storage/framework/views
 chown -R www-data:www-data /var/www/html/storage /var/www/html/public
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Cache Laravel configuration, routes, and views
 php artisan config:cache || true
