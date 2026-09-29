@@ -43,6 +43,7 @@ app.use((req, res, next) => {
 });
 
 const PORT = process.env.WHATSAPP_PORT || 3001;
+const LARAVEL_WEBHOOK_URL = process.env.LARAVEL_WEBHOOK_URL || `http://127.0.0.1:${process.env.WEB_PORT || 8000}/api/whatsapp/webhook`;
 const authDir = path.join(__dirname, 'auth_info');
 
 let sock = null;
@@ -276,7 +277,7 @@ async function startWhatsApp() {
 
                     // Forward to Laravel Webhook
                     try {
-                        const webhookResp = await fetch('http://127.0.0.1:8000/api/whatsapp/webhook', {
+                        const webhookResp = await fetch(LARAVEL_WEBHOOK_URL, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',

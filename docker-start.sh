@@ -16,9 +16,9 @@ php artisan config:cache || true
 php artisan route:cache || true
 php artisan view:cache || true
 
-# Start Node.js WhatsApp background service strictly on internal port 3001
+# Start Node.js WhatsApp background service strictly on internal port 3001 with correct dynamic webhook URL
 echo "Starting WhatsApp background service on internal port 3001..."
-(cd /var/www/html/whatsapp-service && env PORT=3001 WHATSAPP_PORT=3001 node server.js) &
+(cd /var/www/html/whatsapp-service && env PORT=3001 WHATSAPP_PORT=3001 WEB_PORT="${WEB_PORT}" LARAVEL_WEBHOOK_URL="http://127.0.0.1:${WEB_PORT}/api/whatsapp/webhook" node server.js) &
 
 # Start Apache in the foreground
 echo "Starting Apache web server on port ${WEB_PORT}..."
