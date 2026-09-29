@@ -455,3 +455,7 @@ FodyWeavers.xsd
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Mobile App & APKs
+/customer-mobile
+*.apk
