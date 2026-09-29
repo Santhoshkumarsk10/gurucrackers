@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60">
+  <circle cx="30" cy="30" r="29" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <!-- Back / Right: Green Triangle -->
+  <polygon points="35.5,7 23,49 46,27" fill="#0F9D58"/>
+  <!-- Front / Left: Orange Triangle -->
+  <polygon points="28.5,5 16,47 39,25" fill="#F47920"/>
+</svg>
