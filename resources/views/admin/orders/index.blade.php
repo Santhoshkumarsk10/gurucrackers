@@ -46,6 +46,10 @@
                 <span>📦 Confirmed</span>
                 <span class="text-[10px] {{ request('status') === 'confirmed' ? 'bg-blue-700 text-white' : 'bg-blue-200/80 text-blue-900' }} px-1.5 py-0.5 rounded-full">{{ $statusCounts['confirmed'] ?? 0 }}</span>
             </a>
+            <a href="{{ route('admin.orders.index', ['status' => 'packed']) }}" class="px-3 py-1.5 rounded-xl transition-colors shrink-0 flex items-center gap-1.5 {{ request('status') === 'packed' ? 'bg-purple-600 text-white shadow-sm' : 'bg-purple-50 text-purple-800 hover:bg-purple-100' }}">
+                <span>🗃️ Packed</span>
+                <span class="text-[10px] {{ request('status') === 'packed' ? 'bg-purple-700 text-white' : 'bg-purple-200/80 text-purple-900' }} px-1.5 py-0.5 rounded-full">{{ $statusCounts['packed'] ?? 0 }}</span>
+            </a>
             <a href="{{ route('admin.orders.index', ['status' => 'dispatched']) }}" class="px-3 py-1.5 rounded-xl transition-colors shrink-0 flex items-center gap-1.5 {{ request('status') === 'dispatched' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-indigo-50 text-indigo-800 hover:bg-indigo-100' }}">
                 <span>🚚 Dispatched</span>
                 <span class="text-[10px] {{ request('status') === 'dispatched' ? 'bg-indigo-700 text-white' : 'bg-indigo-200/80 text-indigo-900' }} px-1.5 py-0.5 rounded-full">{{ $statusCounts['dispatched'] ?? 0 }}</span>
@@ -82,15 +86,16 @@
             <table class="w-full text-xs">
                 <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px] tracking-wider">
                     <tr>
-                        <th class="py-3 px-4 text-left">Order #</th>
+                        <th class="py-3 px-4 text-left">#</th>
                         <th class="py-3 px-4 text-left">Customer</th>
                         <th class="py-3 px-4 text-left">Phone</th>
                         <th class="py-3 px-4 text-left">City / Destination</th>
                         <th class="py-3 px-4 text-center">Items</th>
                         <th class="py-3 px-4 text-right">Amount</th>
                         <th class="py-3 px-4 text-center">Order Status</th>
+                        <th class="py-3 px-4 text-center">Payment</th>
                         <th class="py-3 px-4 text-left">Date</th>
-                        <th class="py-3 px-4 text-center">Quick WhatsApp & Invoice</th>
+                        <th class="py-3 px-4 text-center">Quick WhatsApp &amp; Invoice</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -121,21 +126,32 @@
                                 ₹{{ number_format($order->total_amount, 2) }}
                             </td>
                             <td class="py-3 px-4 text-center">
-                                @if ($order->isDispatched())
+                                @if ($order->status === 'dispatched')
                                     <span class="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase" title="{{ $order->parcel_service_name ? $order->parcel_service_name . ($order->lr_number ? ' (LR: ' . $order->lr_number . ')' : '') : 'Dispatched' }}">
                                         <i class="fa-solid fa-truck-fast"></i> Dispatched
                                     </span>
-                                @elseif ($order->payment_status === 'confirmed')
-                                    <span class="inline-flex items-center gap-1 bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">
-                                        <i class="fa-solid fa-boxes-packing"></i> Confirmed
+                                @elseif ($order->status === 'packed')
+                                    <span class="inline-flex items-center gap-1 bg-purple-100 text-purple-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">
+                                        <i class="fa-solid fa-boxes-packing"></i> Packed
                                     </span>
-                                @elseif ($order->isPaid())
-                                    <span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">
-                                        <i class="fa-solid fa-circle-check"></i> Paid
+                                @elseif ($order->status === 'confirmed')
+                                    <span class="inline-flex items-center gap-1 bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">
+                                        <i class="fa-solid fa-circle-check"></i> Confirmed
                                     </span>
                                 @else
                                     <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">
                                         <i class="fa-solid fa-clock"></i> Pending
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                @if ($order->payment_status === 'paid')
+                                    <span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">
+                                        <i class="fa-solid fa-indian-rupee-sign"></i> Paid
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 bg-rose-100 text-rose-700 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">
+                                        <i class="fa-solid fa-hourglass-half"></i> Pending
                                     </span>
                                 @endif
                             </td>
@@ -163,7 +179,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="py-10 text-center text-slate-400">
+                            <td colspan="10" class="py-10 text-center text-slate-400">
                                 <div class="text-3xl mb-2">📦</div>
                                 <div class="font-bold text-sm">No orders found.</div>
                                 <div class="text-xs text-slate-400 mt-1">Orders placed via the customer form will appear here.</div>

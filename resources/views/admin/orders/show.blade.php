@@ -16,17 +16,32 @@
                     <h1 class="text-xl sm:text-2xl font-black text-slate-900 font-heading">
                         {{ $order->order_number }}
                     </h1>
-                    @if ($order->isDispatched())
+                    {{-- Order Status Badge --}}
+                    @if ($order->status === 'dispatched')
                         <span class="bg-indigo-100 text-indigo-800 text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase flex items-center gap-1">
-                            <i class="fa-solid fa-truck-fast"></i> Dispatched ({{ $order->parcel_service_name ?? 'Transport' }})
+                            <i class="fa-solid fa-truck-fast"></i> Dispatched
                         </span>
-                    @elseif ($order->isPaid())
-                        <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase flex items-center gap-1">
-                            <i class="fa-solid fa-circle-check"></i> Paid
+                    @elseif ($order->status === 'packed')
+                        <span class="bg-purple-100 text-purple-800 text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase flex items-center gap-1">
+                            <i class="fa-solid fa-boxes-packing"></i> Packed
+                        </span>
+                    @elseif ($order->status === 'confirmed')
+                        <span class="bg-blue-100 text-blue-800 text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase flex items-center gap-1">
+                            <i class="fa-solid fa-circle-check"></i> Confirmed
                         </span>
                     @else
                         <span class="bg-amber-100 text-amber-800 text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase flex items-center gap-1">
-                            <i class="fa-solid fa-clock"></i> Payment Pending
+                            <i class="fa-solid fa-clock"></i> Pending
+                        </span>
+                    @endif
+                    {{-- Payment Status Badge --}}
+                    @if ($order->payment_status === 'paid')
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase flex items-center gap-1">
+                            <i class="fa-solid fa-indian-rupee-sign"></i> Paid
+                        </span>
+                    @else
+                        <span class="bg-rose-100 text-rose-800 text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase flex items-center gap-1">
+                            <i class="fa-solid fa-hourglass-half"></i> Payment Pending
                         </span>
                     @endif
                 </div>
@@ -193,16 +208,18 @@
         </div>
     </div>
 
-    {{-- ===================== 2. PAYMENT STATUS & VERIFICATION (STRICT SEQUENTIAL ADVANCEMENT) ===================== --}}
+    {{-- ===================== 2. ORDER LIFECYCLE & STATUS PROGRESSION ===================== --}}
     @php
-        $currStatus = $order->payment_status ?: 'pending';
-        $statusSteps = [
-            'pending' => ['step' => 1, 'label' => 'Payment Pending', 'icon' => 'fa-clock', 'next' => 'paid', 'nextLabel' => '✅ Paid & Verified', 'btn' => 'Verify & Mark as Paid (Auto-sends PDF)'],
-            'paid' => ['step' => 2, 'label' => 'Paid & Verified', 'icon' => 'fa-circle-check', 'next' => 'confirmed', 'nextLabel' => '🎉 Confirmed (Packing Ready)', 'btn' => 'Advance to: Confirmed (Packing Ready)'],
-            'confirmed' => ['step' => 3, 'label' => 'Confirmed (Packing Ready)', 'icon' => 'fa-boxes-packing', 'next' => 'dispatched', 'nextLabel' => '🚚 Dispatched & In Transit', 'btn' => 'Advance to: Dispatched & In Transit'],
-            'dispatched' => ['step' => 4, 'label' => 'Dispatched & In Transit', 'icon' => 'fa-truck-fast', 'next' => null, 'nextLabel' => null, 'btn' => null],
+        $currStatus = $order->status ?: 'pending';
+        // Status step mapping (based on 'status' column, not payment_status)
+        $statusStepMap = [
+            'pending'    => 1,
+            'confirmed'  => 2,
+            'packed'     => 3,
+            'dispatched' => 4,
+            'cancelled'  => 0,
         ];
-        $currMeta = $statusSteps[$currStatus] ?? $statusSteps['pending'];
+        $currStep = $statusStepMap[$currStatus] ?? 1;
     @endphp
 
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 space-y-5">
@@ -213,15 +230,15 @@
                 </span>
                 <div>
                     <h2 class="font-extrabold text-base text-slate-900 font-heading">
-                        Order Lifecycle & Strict Status Progression
+                        Order Lifecycle &amp; Status Progression
                     </h2>
                     <p class="text-xs text-slate-500">
-                        Status advances strictly forward: Pending &rarr; Paid &rarr; Confirmed &rarr; Dispatched. Cannot revert to previous status.
+                        Pending &rarr; Confirmed (when paid) &rarr; Packed &rarr; Dispatched. Payment: only Pending / Paid.
                     </p>
                 </div>
             </div>
 
-            @if ($order->isPaid() && $currStatus !== 'dispatched')
+            @if ($order->payment_status === 'paid' && $currStatus !== 'dispatched')
                 <form action="{{ route('admin.orders.send_invoice_pdf', $order) }}" method="POST" class="shrink-0">
                     @csrf
                     <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold transition-colors">
@@ -232,114 +249,135 @@
             @endif
         </div>
 
-        <!-- 4-Step Visual Progression Stepper -->
+        <!-- 4-Step Visual Progression Stepper (status-based) -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-            <!-- Step 1: Pending -->
-            @php $isStep1Done = $currMeta['step'] >= 1; @endphp
-            <div class="p-3 rounded-xl border {{ $currStatus === 'pending' ? 'bg-amber-50 border-amber-300 ring-2 ring-amber-400/30' : ($currMeta['step'] > 1 ? 'bg-slate-50 border-slate-200 text-slate-500' : 'bg-slate-50 border-slate-200 opacity-60') }}">
-                <div class="flex items-center gap-1.5 font-bold text-[11px] {{ $currStatus === 'pending' ? 'text-amber-800' : ($currMeta['step'] > 1 ? 'text-emerald-700' : 'text-slate-500') }}">
-                    <i class="fa-solid {{ $currMeta['step'] > 1 ? 'fa-circle-check text-emerald-600' : 'fa-clock' }}"></i>
-                    <span>Step 1: Pending</span>
+            <!-- Step 1: Order Placed (Pending) -->
+            <div class="p-3 rounded-xl border {{ $currStep === 1 ? 'bg-amber-50 border-amber-300 ring-2 ring-amber-400/30' : ($currStep > 1 ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-200 opacity-60') }}">
+                <div class="flex items-center gap-1.5 font-bold text-[11px] {{ $currStep === 1 ? 'text-amber-800' : ($currStep > 1 ? 'text-emerald-700' : 'text-slate-500') }}">
+                    <i class="fa-solid {{ $currStep > 1 ? 'fa-circle-check text-emerald-600' : 'fa-clock' }}"></i>
+                    <span>Step 1: Order Placed</span>
                 </div>
-                <div class="text-[10px] text-slate-500 mt-0.5">Awaiting customer payment</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">Payment Pending</div>
             </div>
 
-            <!-- Step 2: Paid -->
-            @php $isStep2Done = $currMeta['step'] >= 2; @endphp
-            <div class="p-3 rounded-xl border {{ $currStatus === 'paid' ? 'bg-emerald-50 border-emerald-300 ring-2 ring-emerald-400/30' : ($currMeta['step'] > 2 ? 'bg-slate-50 border-slate-200 text-slate-500' : 'bg-slate-50 border-slate-200 opacity-60') }}">
-                <div class="flex items-center gap-1.5 font-bold text-[11px] {{ $currStatus === 'paid' ? 'text-emerald-800' : ($currMeta['step'] > 2 ? 'text-emerald-700' : 'text-slate-500') }}">
-                    <i class="fa-solid {{ $currMeta['step'] > 2 ? 'fa-circle-check text-emerald-600' : 'fa-money-bill-wave' }}"></i>
-                    <span>Step 2: Paid & Verified</span>
+            <!-- Step 2: Paid & Confirmed -->
+            <div class="p-3 rounded-xl border {{ $currStep === 2 ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-400/30' : ($currStep > 2 ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-200 opacity-60') }}">
+                <div class="flex items-center gap-1.5 font-bold text-[11px] {{ $currStep === 2 ? 'text-blue-800' : ($currStep > 2 ? 'text-emerald-700' : 'text-slate-500') }}">
+                    <i class="fa-solid {{ $currStep > 2 ? 'fa-circle-check text-emerald-600' : 'fa-indian-rupee-sign' }}"></i>
+                    <span>Step 2: Paid &amp; Confirmed</span>
                 </div>
-                <div class="text-[10px] text-slate-500 mt-0.5">Invoice PDF auto-sent</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">Payment verified, Invoice sent</div>
             </div>
 
-            <!-- Step 3: Confirmed -->
-            @php $isStep3Done = $currMeta['step'] >= 3; @endphp
-            <div class="p-3 rounded-xl border {{ $currStatus === 'confirmed' ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-400/30' : ($currMeta['step'] > 3 ? 'bg-slate-50 border-slate-200 text-slate-500' : 'bg-slate-50 border-slate-200 opacity-60') }}">
-                <div class="flex items-center gap-1.5 font-bold text-[11px] {{ $currStatus === 'confirmed' ? 'text-blue-800' : ($currMeta['step'] > 3 ? 'text-emerald-700' : 'text-slate-500') }}">
-                    <i class="fa-solid {{ $currMeta['step'] > 3 ? 'fa-circle-check text-emerald-600' : 'fa-boxes-packing' }}"></i>
-                    <span>Step 3: Confirmed</span>
+            <!-- Step 3: Packed -->
+            <div class="p-3 rounded-xl border {{ $currStep === 3 ? 'bg-purple-50 border-purple-300 ring-2 ring-purple-400/30' : ($currStep > 3 ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-200 opacity-60') }}">
+                <div class="flex items-center gap-1.5 font-bold text-[11px] {{ $currStep === 3 ? 'text-purple-800' : ($currStep > 3 ? 'text-emerald-700' : 'text-slate-500') }}">
+                    <i class="fa-solid {{ $currStep > 3 ? 'fa-circle-check text-emerald-600' : 'fa-boxes-packing' }}"></i>
+                    <span>Step 3: Packed</span>
                 </div>
                 <div class="text-[10px] text-slate-500 mt-0.5">Packed in warehouse</div>
             </div>
 
             <!-- Step 4: Dispatched -->
-            @php $isStep4Done = $currStatus === 'dispatched'; @endphp
-            <div class="p-3 rounded-xl border {{ $isStep4Done ? 'bg-teal-50 border-teal-400 ring-2 ring-teal-400/30' : 'bg-slate-50 border-slate-200 opacity-60' }}">
-                <div class="flex items-center gap-1.5 font-bold text-[11px] {{ $isStep4Done ? 'text-teal-800' : 'text-slate-500' }}">
-                    <i class="fa-solid {{ $isStep4Done ? 'fa-circle-check text-teal-600' : 'fa-truck-fast' }}"></i>
+            <div class="p-3 rounded-xl border {{ $currStep === 4 ? 'bg-teal-50 border-teal-400 ring-2 ring-teal-400/30' : 'bg-slate-50 border-slate-200 opacity-60' }}">
+                <div class="flex items-center gap-1.5 font-bold text-[11px] {{ $currStep === 4 ? 'text-teal-800' : 'text-slate-500' }}">
+                    <i class="fa-solid {{ $currStep === 4 ? 'fa-circle-check text-teal-600' : 'fa-truck-fast' }}"></i>
                     <span>Step 4: Dispatched</span>
                 </div>
                 <div class="text-[10px] text-slate-500 mt-0.5">Handed to transport</div>
             </div>
         </div>
 
+        {{-- Action Buttons based on current status --}}
         @if ($currStatus === 'dispatched')
-            <!-- Locked State -->
+            <!-- Locked: fully dispatched -->
             <div class="p-4 rounded-xl bg-slate-50 border border-slate-300 text-slate-800 flex items-center justify-between gap-3 text-xs">
                 <div class="flex items-center gap-2">
                     <span class="w-8 h-8 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-sm shrink-0">
                         <i class="fa-solid fa-lock"></i>
                     </span>
                     <div>
-                        <div class="font-bold text-slate-900">Final Status Locked: Dispatched & In Transit</div>
+                        <div class="font-bold text-slate-900">Final Status Locked: Dispatched &amp; In Transit</div>
                         <div class="text-slate-500 text-[11px] mt-0.5">
-                            This order is completely dispatched via {{ $order->parcel_service_name ?? 'Transport' }} (LR: {{ $order->lr_number }}). Status cannot be reverted.
+                            Dispatched via {{ $order->parcel_service_name ?? 'Transport' }} (LR: {{ $order->lr_number }}).
                         </div>
                     </div>
                 </div>
-                <span class="text-[11px] font-mono bg-teal-100 text-teal-800 font-bold px-2.5 py-1 rounded-lg">
-                    LOCKED
-                </span>
+                <span class="text-[11px] font-mono bg-teal-100 text-teal-800 font-bold px-2.5 py-1 rounded-lg">LOCKED</span>
             </div>
-        @elseif ($currStatus === 'confirmed')
-            <!-- Confirmed Status Notice directing to Parcel Booking Form -->
-            <div class="p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+
+        @elseif ($currStatus === 'packed')
+            <!-- Packed: direct admin to fill parcel form below -->
+            <div class="p-4 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                 <div class="flex items-center gap-3">
-                    <span class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
+                    <span class="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
                         <i class="fa-solid fa-boxes-packing"></i>
                     </span>
                     <div>
-                        <div class="font-extrabold text-blue-950 text-sm">Order Confirmed & Warehouse Packing Ready!</div>
-                        <div class="text-blue-700 text-[11px] mt-0.5">
-                            To advance status to <strong>Dispatched & In Transit</strong>, fill and submit the <strong>Parcel Service Booking & LR Receipt</strong> form below.
+                        <div class="font-extrabold text-purple-950 text-sm">Order Packed! Ready for Dispatch.</div>
+                        <div class="text-purple-700 text-[11px] mt-0.5">
+                            Enter LR &amp; Parcel details in the <strong>Parcel Service Booking</strong> form below to mark as <strong>Dispatched</strong>.
                         </div>
                     </div>
                 </div>
-                <a href="#parcelBookingCard" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs transition-colors shrink-0 shadow-sm font-heading">
+                <a href="#parcelBookingCard" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs transition-colors shrink-0 shadow-sm font-heading">
                     <i class="fa-solid fa-truck-fast"></i>
-                    <span>Fill Parcel Form & Dispatch &darr;</span>
+                    <span>Fill Parcel Form &darr;</span>
                 </a>
             </div>
+
+        @elseif ($currStatus === 'confirmed')
+            <!-- Confirmed: show Mark as Packed button -->
+            <form action="{{ route('admin.orders.status', $order) }}" method="POST" class="space-y-3">
+                @csrf
+                <div class="p-4 rounded-xl bg-blue-50 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </span>
+                        <div>
+                            <div class="font-extrabold text-blue-900 text-sm">Payment Verified &amp; Order Confirmed!</div>
+                            <div class="text-blue-700 text-xs mt-0.5">Pack the items in the warehouse, then click below to mark as Packed.</div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="status" value="packed">
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs transition-colors shrink-0 shadow-sm font-heading whitespace-nowrap">
+                        <i class="fa-solid fa-boxes-packing"></i>
+                        <span>Mark as Packed in Warehouse</span>
+                    </button>
+                </div>
+                <p class="text-[11px] text-slate-500">
+                    <i class="fa-solid fa-shield-halved text-slate-400"></i>
+                    After marking packed, enter parcel/LR details below to dispatch.
+                </p>
+            </form>
+
         @else
-            <!-- Form permitting ONLY the immediate next status (Pending -> Paid, Paid -> Confirmed) -->
+            {{-- Pending: show Verify & Mark as Paid button --}}
             <form action="{{ route('admin.orders.status', $order) }}" method="POST" class="space-y-3">
                 @csrf
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                     <div class="flex-1 w-full">
                         <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
-                            Advance from <strong>{{ strtoupper($currStatus) }}</strong> to Next Step:
+                            Current Status: <strong class="text-amber-700">PENDING PAYMENT</strong> — Verify UPI payment and mark as Paid:
                         </label>
-                        <select
-                            name="payment_status"
-                            class="w-full px-3 py-2.5 text-sm bg-slate-50 border-2 border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 font-bold text-slate-900 cursor-pointer"
-                        >
-                            <option value="{{ $currMeta['next'] }}" selected>
-                                &rarr; {{ $currMeta['nextLabel'] }}
-                            </option>
-                        </select>
+                        <input type="hidden" name="payment_status" value="paid">
+                        <div class="text-xs bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-3 py-2 font-medium">
+                            ⚠️ Once you click below, <strong>payment_status</strong> will be set to <strong>PAID</strong> and <strong>order status</strong> will auto-advance to <strong>CONFIRMED</strong>. Invoice PDF will be sent to customer WhatsApp automatically.
+                        </div>
                     </div>
                     <button
                         type="submit"
-                        class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shrink-0 font-heading sm:mt-5 shadow-sm"
+                        class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold transition-colors shrink-0 font-heading sm:mt-5 shadow-sm whitespace-nowrap"
+                        onclick="return confirm('Are you sure you have verified the UPI payment? This will mark payment as PAID and order as CONFIRMED and send Invoice PDF to customer WhatsApp.')"
                     >
-                        {{ $currMeta['btn'] }}
+                        <i class="fa-solid fa-indian-rupee-sign mr-1"></i>
+                        Verify &amp; Mark as Paid (Auto-Confirms &amp; Sends Invoice PDF)
                     </button>
                 </div>
                 <p class="text-[11px] text-slate-500">
                     <i class="fa-solid fa-shield-halved text-slate-400"></i>
-                    Strict workflow enforced: previous status cannot be selected, and stages cannot be skipped.
+                    Verify UPI screenshot or bank statement before marking paid.
                 </p>
             </form>
         @endif
@@ -389,12 +427,12 @@
                 <div>
                     <h3 class="font-extrabold text-sm text-slate-800">Parcel Service Booking is Locked</h3>
                     <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">
-                        This parcel booking form and LR dispatch will automatically unlock once the order is <strong>Confirmed (Step 3: Packing Ready)</strong>. Please verify payment and mark the order as Confirmed first.
+                        This parcel booking form and LR dispatch will automatically unlock once the order is <strong>Confirmed or Packed</strong>. Please verify payment first (payment status must be Paid to auto-confirm).
                     </p>
                 </div>
                 <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-200 text-slate-600 text-[11px] font-bold">
                     <i class="fa-solid fa-clock"></i>
-                    <span>Current Status: {{ strtoupper($currStatus) }} &middot; Step {{ $currMeta['step'] }} of 4</span>
+                    <span>Current Status: {{ strtoupper($currStatus) }} &middot; Step {{ $currStep }} of 4</span>
                 </div>
             </div>
         @else

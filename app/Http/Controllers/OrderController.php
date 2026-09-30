@@ -142,6 +142,7 @@ class OrderController extends Controller
                 'state' => $request->input('state', 'Tamil Nadu') ?: 'Tamil Nadu',
                 'pincode' => $validated['pincode'],
                 'total_amount' => 0,
+                'status' => 'pending',
                 'payment_status' => 'pending',
             ]);
 

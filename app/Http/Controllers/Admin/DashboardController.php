@@ -23,7 +23,7 @@ class DashboardController extends Controller
 
         // Status counts and amounts
         $statusBreakdown = Order::select(
-            DB::raw("COALESCE(payment_status, 'pending') as status_key"),
+            DB::raw("COALESCE(status, 'pending') as status_key"),
             DB::raw('count(*) as count'),
             DB::raw('SUM(total_amount) as total_amount')
         )
@@ -34,11 +34,11 @@ class DashboardController extends Controller
         $totalOrdersCount = Order::count();
         $totalRevenueAll = (float) Order::sum('total_amount');
         
-        // Revenue strictly from paid, confirmed, or dispatched orders
-        $totalPaidRevenue = (float) Order::whereIn('payment_status', ['paid', 'confirmed', 'dispatched'])->sum('total_amount');
+        // Revenue strictly from paid orders
+        $totalPaidRevenue = (float) Order::where('payment_status', 'paid')->sum('total_amount');
         
         // Pending revenue awaiting confirmation
-        $totalPendingRevenue = (float) ($statusBreakdown->get('pending')?->total_amount ?? 0);
+        $totalPendingRevenue = (float) Order::where('payment_status', 'pending')->sum('total_amount');
 
         // Today's stats
         $todayOrdersCount = Order::whereDate('created_at', $today)->count();

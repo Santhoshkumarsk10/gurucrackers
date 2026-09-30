@@ -94,7 +94,14 @@ class ReportController extends Controller
 
         // 3. Payment / Order Status Filter
         if ($request->filled('status') && $request->status !== 'all') {
-            $query->where('payment_status', $request->status);
+            $sf = $request->status;
+            if ($sf === 'paid') {
+                $query->where('payment_status', 'paid');
+            } elseif ($sf === 'unpaid') {
+                $query->where('payment_status', 'pending');
+            } else {
+                $query->where('status', $sf);
+            }
         }
 
         // 4. City Filter
@@ -132,7 +139,7 @@ class ReportController extends Controller
         $totalRevenue = (float) (clone $query)->sum('total_amount');
         
         $paidRevenue = (float) (clone $query)
-            ->whereIn('payment_status', ['paid', 'confirmed', 'dispatched'])
+            ->where('payment_status', 'paid')
             ->sum('total_amount');
 
         $pendingRevenue = (float) (clone $query)
@@ -147,12 +154,13 @@ class ReportController extends Controller
 
         // Status counts for status pill tabs
         $statusCounts = Order::select(
-            DB::raw("COALESCE(payment_status, 'pending') as status_key"),
+            DB::raw("COALESCE(status, 'pending') as status_key"),
             DB::raw('count(*) as count')
         )
         ->groupBy('status_key')
         ->pluck('count', 'status_key')
         ->toArray();
+        $statusCounts['paid'] = Order::where('payment_status', 'paid')->count();
 
         // Top crackers in filtered orders
         $topProducts = OrderItem::select(
@@ -443,7 +451,7 @@ class ReportController extends Controller
         
         $totalOrders = $orders->count();
         $totalRevenue = (float) $orders->sum('total_amount');
-        $paidRevenue = (float) $orders->whereIn('payment_status', ['paid', 'confirmed', 'dispatched'])->sum('total_amount');
+        $paidRevenue = (float) $orders->where('payment_status', 'paid')->sum('total_amount');
         $pendingRevenue = (float) $orders->where('payment_status', 'pending')->sum('total_amount');
 
         $orderIds = $orders->pluck('id');

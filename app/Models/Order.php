@@ -19,6 +19,7 @@ class Order extends Model
         'state',
         'pincode',
         'total_amount',
+        'status',
         'payment_status',
         'payment_notes',
         'parcel_service_name',
@@ -47,17 +48,27 @@ class Order extends Model
 
     public function isPaid(): bool
     {
-        return in_array($this->payment_status, ['paid', 'confirmed', 'dispatched']);
+        return $this->payment_status === 'paid';
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
     }
 
     public function isConfirmed(): bool
     {
-        return in_array($this->payment_status, ['confirmed', 'dispatched']);
+        return in_array($this->status, ['confirmed', 'packed', 'dispatched']);
+    }
+
+    public function isPacked(): bool
+    {
+        return in_array($this->status, ['packed', 'dispatched']);
     }
 
     public function isDispatched(): bool
     {
-        return !empty($this->lr_number) || $this->payment_status === 'dispatched' || !is_null($this->dispatched_at);
+        return $this->status === 'dispatched' || !empty($this->lr_number) || !is_null($this->dispatched_at);
     }
 
     public function getLrReceiptUrlAttribute(): ?string

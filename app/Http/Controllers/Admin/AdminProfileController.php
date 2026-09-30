@@ -25,7 +25,7 @@ class AdminProfileController extends Controller
 
         $stats = [
             'total_orders' => Order::count(),
-            'pending_orders' => Order::where('payment_status', 'pending')->count(),
+            'pending_orders' => Order::where('status', 'pending')->count(),
             'account_created' => $user->created_at ? $user->created_at->format('d M Y') : 'N/A',
             'last_login' => AuditLog::where(function ($q) use ($user) {
                 $q->where('user_id', $user->id)->orWhere('user_name', $user->name);

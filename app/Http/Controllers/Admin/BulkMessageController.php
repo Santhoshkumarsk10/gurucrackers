@@ -19,7 +19,11 @@ class BulkMessageController extends Controller
         $status = WhatsAppOrderService::checkServerStatus();
 
         // ONLY orders with completed & dispatched status
-        $query = Order::where('payment_status', 'dispatched')
+        $query = Order::where(function ($q) {
+                $q->where('status', 'dispatched')
+                  ->orWhere('payment_status', 'dispatched')
+                  ->orWhereNotNull('lr_number');
+            })
             ->orderByDesc('dispatched_at')
             ->orderByDesc('id');
 
@@ -56,10 +60,15 @@ class BulkMessageController extends Controller
         }
 
         $dispatchedOrders = $query->paginate(10)->withQueryString();
-        $totalDispatchedCount = Order::where('payment_status', 'dispatched')->count();
+        $dispatchedQuery = fn () => Order::where(function ($q) {
+            $q->where('status', 'dispatched')
+              ->orWhere('payment_status', 'dispatched')
+              ->orWhereNotNull('lr_number');
+        });
+        $totalDispatchedCount = $dispatchedQuery()->count();
 
         // Get unique hubs & transport names for quick filters
-        $distinctHubs = Order::where('payment_status', 'dispatched')
+        $distinctHubs = $dispatchedQuery()
             ->whereNotNull('destination_hub')
             ->where('destination_hub', '!=', '')
             ->distinct()
@@ -67,7 +76,7 @@ class BulkMessageController extends Controller
             ->sort()
             ->values();
 
-        $distinctTransports = Order::where('payment_status', 'dispatched')
+        $distinctTransports = $dispatchedQuery()
             ->whereNotNull('parcel_service_name')
             ->where('parcel_service_name', '!=', '')
             ->distinct()
@@ -104,7 +113,11 @@ class BulkMessageController extends Controller
 
         // Fetch selected orders that are STRICTLY dispatched
         $orders = Order::whereIn('id', $validated['order_ids'])
-            ->where('payment_status', 'dispatched')
+            ->where(function ($q) {
+                $q->where('status', 'dispatched')
+                  ->orWhere('payment_status', 'dispatched')
+                  ->orWhereNotNull('lr_number');
+            })
             ->get();
 
         if ($orders->isEmpty()) {
@@ -146,7 +159,7 @@ class BulkMessageController extends Controller
      */
     public function sendIndividual(Request $request, Order $order)
     {
-        if ($order->payment_status !== 'dispatched') {
+        if (!$order->isDispatched()) {
             return back()->withErrors(['message' => "Order #{$order->order_number} is not in Dispatched status."]);
         }
 
