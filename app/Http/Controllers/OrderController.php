@@ -82,7 +82,7 @@ class OrderController extends Controller
             'state' => ['nullable', 'string', 'max:100'],
             'pincode' => ['required', 'string', 'regex:/^[0-9]{6}$/'],
             'products' => 'required|array|min:1',
-            'products.*.qty' => 'nullable|integer|min:0|max:500',
+            'products.*.qty' => 'nullable|integer|min:0|max:20',
         ], [
             'name.required' => 'Customer full name is required.',
             'name.regex' => 'Customer name can only contain letters, spaces, and dots.',
@@ -96,6 +96,7 @@ class OrderController extends Controller
             'pincode.required' => 'Pincode is required.',
             'pincode.regex' => 'Pincode must be exactly 6 digits.',
             'products.required' => 'Please select at least one product with quantity.',
+            'products.*.qty.max' => 'Maximum 20 units allowed per item.',
         ]);
 
         // Filter only products with qty > 0
