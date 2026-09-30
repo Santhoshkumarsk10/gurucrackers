@@ -411,7 +411,7 @@
                                                 <i class="fa-solid fa-minus"></i>
                                             </button>
 
-                                            <input type="number" min="0" max="500"
+                                            <input type="number" min="0" max="20"
                                                 value="{{ old('products.' . $product->id . '.qty', 0) }}"
                                                 data-id="{{ $product->id }}" data-name="{{ $product->name }}"
                                                 data-tamil="{{ $product->tamil_name ?? '' }}"
@@ -1133,7 +1133,14 @@
                 const input = document.getElementById('qty-input-' + productId);
                 if (!input) return;
                 let current = parseInt(input.value) || 0;
-                let next = Math.max(0, Math.min(500, current + delta));
+                if (delta > 0 && current >= 20) {
+                    DiwaliAlert.toast({
+                        type: 'warning',
+                        message: 'Maximum 20 units allowed per item'
+                    });
+                    return;
+                }
+                let next = Math.max(0, Math.min(20, current + delta));
                 input.value = next;
                 recalcCart();
             };
@@ -1852,17 +1859,23 @@
                 });
             }
 
-            // Attach quantity input listeners with 0-500 clamp
+            // Attach quantity input listeners with 0-20 clamp
             qtyInputs.forEach(input => {
-                input.addEventListener('input', function() {
+                const handleQtyInput = function() {
                     let val = parseInt(this.value);
                     if (isNaN(val) || val < 0) {
                         this.value = 0;
-                    } else if (val > 500) {
-                        this.value = 500;
+                    } else if (val > 20) {
+                        this.value = 20;
+                        DiwaliAlert.toast({
+                            type: 'warning',
+                            message: 'Maximum 20 units allowed per item'
+                        });
                     }
                     recalcCart();
-                });
+                };
+                input.addEventListener('input', handleQtyInput);
+                input.addEventListener('change', handleQtyInput);
                 input.addEventListener('focus', function() {
                     if (this.value === '0') this.select();
                 });
@@ -1892,6 +1905,26 @@
                                 'Choose Crackers'
                             );
                             selectCategory('all');
+                            return false;
+                        }
+
+                        // Validate max 20 per item
+                        let hasOverMaxQty = false;
+                        qtyInputs.forEach(input => {
+                            let val = parseInt(input.value) || 0;
+                            if (val > 20) {
+                                input.value = 20;
+                                hasOverMaxQty = true;
+                            }
+                        });
+                        if (hasOverMaxQty) {
+                            recalcCart();
+                            e.preventDefault();
+                            DiwaliAlert.warning(
+                                'Quantity Limit Exceeded ⚠️',
+                                'Maximum 20 units allowed per item. Quantities have been adjusted to 20.',
+                                'Review Order'
+                            );
                             return false;
                         }
 

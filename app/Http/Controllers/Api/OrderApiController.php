@@ -179,10 +179,23 @@ class OrderApiController extends Controller
                     $pid = isset($val['product_id']) ? (int) $val['product_id'] : (int) $key;
                     $qty = (int) $val['qty'];
                     if ($pid > 0 && $qty > 0) {
+                        if ($qty > 20) {
+                            return $this->corsJson([
+                                'success' => false,
+                                'message' => 'Maximum 20 units allowed per item.',
+                            ], 422);
+                        }
                         $normalizedSelected->put($pid, ['qty' => $qty]);
                     }
                 } elseif (is_numeric($val) && (int) $val > 0) {
-                    $normalizedSelected->put((int) $key, ['qty' => (int) $val]);
+                    $qty = (int) $val;
+                    if ($qty > 20) {
+                        return $this->corsJson([
+                            'success' => false,
+                            'message' => 'Maximum 20 units allowed per item.',
+                        ], 422);
+                    }
+                    $normalizedSelected->put((int) $key, ['qty' => $qty]);
                 }
             }
         }
