@@ -22,13 +22,18 @@
                     data-index="0">
 
                     <!-- Ambient festive background glows -->
-                    <div class="absolute -top-12 -right-12 w-48 h-48 bg-amber-500/15 rounded-full blur-2xl pointer-events-none"></div>
-                    <div class="absolute -bottom-12 -left-12 w-48 h-48 bg-rose-600/20 rounded-full blur-2xl pointer-events-none"></div>
+                    <div
+                        class="absolute -top-12 -right-12 w-48 h-48 bg-amber-500/15 rounded-full blur-2xl pointer-events-none">
+                    </div>
+                    <div
+                        class="absolute -bottom-12 -left-12 w-48 h-48 bg-rose-600/20 rounded-full blur-2xl pointer-events-none">
+                    </div>
 
                     <div class="relative z-10 space-y-2 sm:space-y-3.5 max-w-4xl mx-auto w-full px-1">
                         <!-- Header Badge & Alert Notice -->
                         <div class="flex items-center justify-between gap-1.5 border-b border-white/10 pb-1.5 sm:pb-2">
-                            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-[10px] sm:text-xs font-extrabold tracking-wide">
+                            <div
+                                class="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-[10px] sm:text-xs font-extrabold tracking-wide">
                                 <span class="animate-bounce">🪔</span>
                                 <span>DIWALI 2026 FESTIVAL COUNTDOWN</span>
                             </div>
@@ -42,12 +47,15 @@
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3.5 items-stretch">
 
                             <!-- 1. Online Booking Closing Date Card -->
-                            <div class="col-span-1 order-1 sm:order-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl sm:rounded-2xl p-2 sm:p-3 flex items-center gap-2 sm:gap-3 transition-colors">
-                                <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center text-white shrink-0 shadow-md shadow-rose-600/30 text-xs sm:text-base">
+                            <div
+                                class="col-span-1 order-1 sm:order-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl sm:rounded-2xl p-2 sm:p-3 flex items-center gap-2 sm:gap-3 transition-colors">
+                                <div
+                                    class="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center text-white shrink-0 shadow-md shadow-rose-600/30 text-xs sm:text-base">
                                     <i class="fa-solid fa-truck-fast"></i>
                                 </div>
                                 <div class="min-w-0">
-                                    <span class="block text-[8px] sm:text-[11px] uppercase font-bold text-rose-300 tracking-wider">
+                                    <span
+                                        class="block text-[8px] sm:text-[11px] uppercase font-bold text-rose-300 tracking-wider">
                                         Online Booking Closes
                                     </span>
                                     <div class="text-xs sm:text-lg font-black text-amber-300 font-heading leading-tight">
@@ -60,45 +68,62 @@
                             </div>
 
                             <!-- 2. Interactive Digital Live Countdown Clock -->
-                            <div class="col-span-2 sm:col-span-1 order-3 sm:order-2 bg-black/50 border border-amber-400/30 rounded-xl sm:rounded-2xl p-2 sm:p-3 text-center shadow-inner flex flex-col justify-center">
-                                <div class="text-[9px] sm:text-[11px] uppercase tracking-wider font-bold text-amber-200/90 mb-1 sm:mb-1.5 flex items-center justify-center gap-1">
+                            <div
+                                class="col-span-2 sm:col-span-1 order-3 sm:order-2 bg-black/50 border border-amber-400/30 rounded-xl sm:rounded-2xl p-2 sm:p-3 text-center shadow-inner flex flex-col justify-center">
+                                <div
+                                    class="text-[9px] sm:text-[11px] uppercase tracking-wider font-bold text-amber-200/90 mb-1 sm:mb-1.5 flex items-center justify-center gap-1">
                                     <i class="fa-regular fa-clock text-amber-400 text-xs"></i>
                                     <span>Time Left to Order (மீதமுள்ள நேரம்)</span>
                                 </div>
                                 <div class="flex items-center justify-center gap-1 sm:gap-1.5">
                                     <!-- Days -->
-                                    <div class="bg-slate-900/95 border border-amber-400/25 rounded-lg sm:rounded-xl px-1 sm:px-2 py-0.5 sm:py-1 min-w-[40px] sm:min-w-[52px] text-center shadow-sm">
-                                        <span id="cdDays" class="block text-base sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
-                                        <span class="block text-[7px] sm:text-[9px] uppercase font-bold text-slate-400 mt-0.5">Days</span>
+                                    <div
+                                        class="bg-slate-900/95 border border-amber-400/25 rounded-lg sm:rounded-xl px-1 sm:px-2 py-0.5 sm:py-1 min-w-[40px] sm:min-w-[52px] text-center shadow-sm">
+                                        <span id="cdDays"
+                                            class="block text-base sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
+                                        <span
+                                            class="block text-[7px] sm:text-[9px] uppercase font-bold text-slate-400 mt-0.5">Days</span>
                                     </div>
                                     <span class="text-amber-400 font-black text-xs sm:text-base -mt-1 sm:-mt-2">:</span>
                                     <!-- Hours -->
-                                    <div class="bg-slate-900/95 border border-amber-400/25 rounded-lg sm:rounded-xl px-1 sm:px-2 py-0.5 sm:py-1 min-w-[40px] sm:min-w-[52px] text-center shadow-sm">
-                                        <span id="cdHours" class="block text-base sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
-                                        <span class="block text-[7px] sm:text-[9px] uppercase font-bold text-slate-400 mt-0.5">Hours</span>
+                                    <div
+                                        class="bg-slate-900/95 border border-amber-400/25 rounded-lg sm:rounded-xl px-1 sm:px-2 py-0.5 sm:py-1 min-w-[40px] sm:min-w-[52px] text-center shadow-sm">
+                                        <span id="cdHours"
+                                            class="block text-base sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
+                                        <span
+                                            class="block text-[7px] sm:text-[9px] uppercase font-bold text-slate-400 mt-0.5">Hours</span>
                                     </div>
                                     <span class="text-amber-400 font-black text-xs sm:text-base -mt-1 sm:-mt-2">:</span>
                                     <!-- Mins -->
-                                    <div class="bg-slate-900/95 border border-amber-400/25 rounded-lg sm:rounded-xl px-1 sm:px-2 py-0.5 sm:py-1 min-w-[40px] sm:min-w-[52px] text-center shadow-sm">
-                                        <span id="cdMins" class="block text-base sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
-                                        <span class="block text-[7px] sm:text-[9px] uppercase font-bold text-slate-400 mt-0.5">Mins</span>
+                                    <div
+                                        class="bg-slate-900/95 border border-amber-400/25 rounded-lg sm:rounded-xl px-1 sm:px-2 py-0.5 sm:py-1 min-w-[40px] sm:min-w-[52px] text-center shadow-sm">
+                                        <span id="cdMins"
+                                            class="block text-base sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
+                                        <span
+                                            class="block text-[7px] sm:text-[9px] uppercase font-bold text-slate-400 mt-0.5">Mins</span>
                                     </div>
                                     <span class="text-amber-400 font-black text-xs sm:text-base -mt-1 sm:-mt-2">:</span>
                                     <!-- Secs -->
-                                    <div class="bg-slate-900/95 border border-amber-400/25 rounded-lg sm:rounded-xl px-1 sm:px-2 py-0.5 sm:py-1 min-w-[40px] sm:min-w-[52px] text-center shadow-sm">
-                                        <span id="cdSecs" class="block text-base sm:text-2xl font-black text-rose-400 font-heading leading-none">00</span>
-                                        <span class="block text-[7px] sm:text-[9px] uppercase font-bold text-slate-400 mt-0.5">Secs</span>
+                                    <div
+                                        class="bg-slate-900/95 border border-amber-400/25 rounded-lg sm:rounded-xl px-1 sm:px-2 py-0.5 sm:py-1 min-w-[40px] sm:min-w-[52px] text-center shadow-sm">
+                                        <span id="cdSecs"
+                                            class="block text-base sm:text-2xl font-black text-rose-400 font-heading leading-none">00</span>
+                                        <span
+                                            class="block text-[7px] sm:text-[9px] uppercase font-bold text-slate-400 mt-0.5">Secs</span>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- 3. Diwali Festival Date Card -->
-                            <div class="col-span-1 order-2 sm:order-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl sm:rounded-2xl p-2 sm:p-3 flex items-center gap-2 sm:gap-3 transition-colors">
-                                <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-slate-950 shrink-0 shadow-md shadow-amber-500/30 text-xs sm:text-base">
+                            <div
+                                class="col-span-1 order-2 sm:order-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl sm:rounded-2xl p-2 sm:p-3 flex items-center gap-2 sm:gap-3 transition-colors">
+                                <div
+                                    class="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-slate-950 shrink-0 shadow-md shadow-amber-500/30 text-xs sm:text-base">
                                     <span>🪔</span>
                                 </div>
                                 <div class="min-w-0">
-                                    <span class="block text-[8px] sm:text-[11px] uppercase font-bold text-amber-300 tracking-wider">
+                                    <span
+                                        class="block text-[8px] sm:text-[11px] uppercase font-bold text-amber-300 tracking-wider">
                                         Diwali Festival
                                     </span>
                                     <div class="text-xs sm:text-lg font-black text-amber-200 font-heading leading-tight">
@@ -113,9 +138,11 @@
                         </div>
 
                         <!-- Bottom Motivation Banner -->
-                        <div class="flex items-center justify-center gap-1.5 pt-0.5 sm:pt-1 text-center text-[10px] sm:text-xs text-amber-200 font-medium">
+                        <div
+                            class="flex items-center justify-center gap-1.5 pt-0.5 sm:pt-1 text-center text-[10px] sm:text-xs text-amber-200 font-medium">
                             <span class="text-amber-400 animate-pulse">🔥</span>
-                            <span>விரைந்து ஆர்டர் செய்யுங்கள்! சிவகாசி பேக்கிங் மற்றும் போக்குவரத்து நெரிசலை தவிர்க்க முந்துங்கள்!</span>
+                            <span>விரைந்து ஆர்டர் செய்யுங்கள்! சிவகாசி பேக்கிங் மற்றும் போக்குவரத்து நெரிசலை தவிர்க்க
+                                முந்துங்கள்!</span>
                         </div>
                     </div>
                 </div>
@@ -124,35 +151,34 @@
                 @foreach ($activeBanners as $idx => $banner)
                     <div class="carousel-slide absolute inset-0 w-full h-full transition-all duration-700 ease-out opacity-0 scale-105 pointer-events-none z-0 bg-slate-950 overflow-hidden"
                         data-index="{{ $idx + 1 }}">
-                            <a href="{{ $banner->safe_link }}"
-                                class="block w-full h-full cursor-pointer" title="{{ $banner->title ?: 'Diwali Offer' }}">
-                                <picture class="block w-full h-full">
-                                    @if (!empty($banner->mobile_image))
-                                        <source media="(max-width: 640px)" srcset="{{ $banner->mobile_image_url }}">
-                                    @endif
-                                    <img src="{{ $banner->image_url }}"
-                                         alt="{{ $banner->title ?: 'Festival Cracker Banner' }}"
-                                         class="w-full h-full object-cover" loading="lazy">
-                                </picture>
-                            </a>
+                        <a href="{{ $banner->safe_link }}" class="block w-full h-full cursor-pointer"
+                            title="{{ $banner->title ?: 'Diwali Offer' }}">
+                            <picture class="block w-full h-full">
+                                @if (!empty($banner->mobile_image))
+                                    <source media="(max-width: 640px)" srcset="{{ $banner->mobile_image_url }}">
+                                @endif
+                                <img src="{{ $banner->image_url }}" alt="{{ $banner->title ?: 'Festival Cracker Banner' }}"
+                                    class="w-full h-full object-cover" loading="lazy">
+                            </picture>
+                        </a>
 
-                            @if (!empty($banner->title))
-                                <div
-                                    class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent p-4 sm:p-6 text-white pointer-events-none">
-                                    <h2
-                                        class="text-xs sm:text-base md:text-lg font-black font-heading drop-shadow-md text-amber-300">
-                                        {{ $banner->title }}
-                                    </h2>
-                                </div>
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
+                        @if (!empty($banner->title))
+                            <div
+                                class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent p-4 sm:p-6 text-white pointer-events-none">
+                                <h2
+                                    class="text-xs sm:text-base md:text-lg font-black font-heading drop-shadow-md text-amber-300">
+                                    {{ $banner->title }}
+                                </h2>
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
 
-                <!-- Carousel Controls (Show only if total slides > 1) -->
-                @if ($totalHeroSlides > 1)
-                    <!-- Prev / Next Arrows (Desktop & Tablet) -->
-                    <button type="button" onclick="prevBannerSlide()"
+            <!-- Carousel Controls (Show only if total slides > 1) -->
+            @if ($totalHeroSlides > 1)
+                <!-- Prev / Next Arrows (Desktop & Tablet) -->
+                {{-- <button type="button" onclick="prevBannerSlide()"
                         class="hidden sm:flex absolute left-2.5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/50 hover:bg-black/80 text-white items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm shadow-md"
                         aria-label="Previous Slide">
                         <i class="fa-solid fa-chevron-left text-sm"></i>
@@ -161,19 +187,19 @@
                         class="hidden sm:flex absolute right-2.5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/50 hover:bg-black/80 text-white items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm shadow-md"
                         aria-label="Next Slide">
                         <i class="fa-solid fa-chevron-right text-sm"></i>
-                    </button>
+                    </button> --}}
 
-                    <!-- Dots Indicators -->
-                    <div
-                        class="absolute bottom-2.5 sm:bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">
-                        @for ($i = 0; $i < $totalHeroSlides; $i++)
-                            <button type="button" onclick="goToBannerSlide({{ $i }})"
-                                class="banner-dot rounded-full transition-all duration-300 cursor-pointer {{ $i === 0 ? 'bg-amber-400 w-5 h-2' : 'bg-white/60 hover:bg-white w-2 h-2' }}"
-                                aria-label="Go to slide {{ $i + 1 }}"></button>
-                        @endfor
-                    </div>
-                @endif
-            </section>
+                <!-- Dots Indicators -->
+                <div
+                    class="absolute bottom-2.5 sm:bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                    @for ($i = 0; $i < $totalHeroSlides; $i++)
+                        <button type="button" onclick="goToBannerSlide({{ $i }})"
+                            class="banner-dot rounded-full transition-all duration-300 cursor-pointer {{ $i === 0 ? 'bg-amber-400 w-5 h-2' : 'bg-white/60 hover:bg-white w-2 h-2' }}"
+                            aria-label="Go to slide {{ $i + 1 }}"></button>
+                    @endfor
+                </div>
+            @endif
+        </section>
 
 
         {{-- ===================== VALIDATION ERRORS ===================== --}}
@@ -514,8 +540,11 @@
                                 <div
                                     class="flex justify-between items-baseline pt-2 border-t border-dashed border-slate-200">
                                     <div>
-                                        <span class="text-sm sm:text-base font-extrabold text-slate-900 font-heading block">Net Order Amount:</span>
-                                        <span class="text-[10px] sm:text-[11px] font-bold text-amber-800 bg-amber-100/90 px-1.5 py-0.5 rounded inline-block mt-0.5">
+                                        <span
+                                            class="text-sm sm:text-base font-extrabold text-slate-900 font-heading block">Net
+                                            Order Amount:</span>
+                                        <span
+                                            class="text-[10px] sm:text-[11px] font-bold text-amber-800 bg-amber-100/90 px-1.5 py-0.5 rounded inline-block mt-0.5">
                                             Without Delivery Charges (டெலிவரி கட்டணம் தனி)
                                         </span>
                                     </div>
@@ -524,15 +553,20 @@
                                 </div>
 
                                 <!-- Delivery Charges Notice Card -->
-                                <div class="rounded-xl p-2.5 bg-amber-50/90 border border-amber-300/80 text-xs flex items-start gap-2.5">
+                                <div
+                                    class="rounded-xl p-2.5 bg-amber-50/90 border border-amber-300/80 text-xs flex items-start gap-2.5">
                                     <i class="fa-solid fa-truck-fast text-amber-600 text-sm mt-0.5 shrink-0"></i>
                                     <div class="leading-tight">
                                         <div class="font-extrabold text-amber-950 flex items-center justify-between gap-1">
                                             <span>Delivery Charges (டெலிவரி கட்டணம்):</span>
-                                            <span class="text-[9px] font-bold bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded shrink-0">Extra / To Pay at Hub</span>
+                                            <span
+                                                class="text-[9px] font-bold bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded shrink-0">Extra
+                                                / To Pay at Hub</span>
                                         </div>
                                         <p class="text-[11px] text-slate-600 mt-1 leading-snug">
-                                            Delivery charges may differ depending on the transport partner (டிரான்ஸ்போர்ட் நிறுவனத்தைப் பொறுத்து டெலிவரி கட்டணம் மாறுபடும்). பார்சல் உங்கள் ஊர் கிளைக்கு வந்ததும் இந்த கட்டணத்தைச் செலுத்தி பெற்றுக்கொள்ளலாம்.
+                                            Delivery charges may differ depending on the transport partner (டிரான்ஸ்போர்ட்
+                                            நிறுவனத்தைப் பொறுத்து டெலிவரி கட்டணம் மாறுபடும்). பார்சல் உங்கள் ஊர் கிளைக்கு
+                                            வந்ததும் இந்த கட்டணத்தைச் செலுத்தி பெற்றுக்கொள்ளலாம்.
                                         </p>
                                     </div>
                                 </div>
@@ -547,7 +581,8 @@
                                 <div class="flex items-center justify-between gap-2">
                                     <div class="flex items-center gap-1.5 font-bold">
                                         <i class="fa-solid fa-circle-exclamation text-rose-600" id="minOrderIcon"></i>
-                                        <span id="minOrderTitle">Minimum Order: ₹{{ number_format($minOrderAmt, 0) }}</span>
+                                        <span id="minOrderTitle">Minimum Order:
+                                            ₹{{ number_format($minOrderAmt, 0) }}</span>
                                     </div>
                                     <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-200 text-rose-800"
                                         id="minOrderBadge">
@@ -555,10 +590,12 @@
                                     </span>
                                 </div>
                                 <p class="text-[11px] mt-1 text-slate-600 leading-relaxed" id="minOrderText">
-                                    குறைந்தபட்ச ஆர்டர் தொகை <strong>₹{{ number_format($minOrderAmt, 0) }}</strong> ஆகும். ஆர்டர் செய்ய கார்ட்டில் மேலும் பட்டாசுகளைச் சேர்க்கவும்.
+                                    குறைந்தபட்ச ஆர்டர் தொகை <strong>₹{{ number_format($minOrderAmt, 0) }}</strong> ஆகும்.
+                                    ஆர்டர் செய்ய கார்ட்டில் மேலும் பட்டாசுகளைச் சேர்க்கவும்.
                                 </p>
                                 <div class="w-full bg-rose-200/80 rounded-full h-1.5 mt-2 overflow-hidden">
-                                    <div id="minOrderProgressBar" class="bg-rose-600 h-1.5 rounded-full transition-all duration-300"
+                                    <div id="minOrderProgressBar"
+                                        class="bg-rose-600 h-1.5 rounded-full transition-all duration-300"
                                         style="width: 0%;"></div>
                                 </div>
                             </div>
@@ -619,11 +656,14 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
                                         <div class="flex items-center justify-between min-h-[22px] mb-1.5">
-                                            <label class="block font-bold text-slate-700 text-xs flex items-center gap-1.5 whitespace-nowrap" for="phone1Input">
+                                            <label
+                                                class="block font-bold text-slate-700 text-xs flex items-center gap-1.5 whitespace-nowrap"
+                                                for="phone1Input">
                                                 <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i>
                                                 <span>WhatsApp Mobile No&nbsp;<span class="text-rose-600">*</span></span>
                                             </label>
-                                            <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.5 rounded shrink-0 whitespace-nowrap">
+                                            <span
+                                                class="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.5 rounded shrink-0 whitespace-nowrap">
                                                 Active WhatsApp
                                             </span>
                                         </div>
@@ -642,7 +682,8 @@
                                         </div>
                                         <p class="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
                                             <i class="fa-solid fa-circle-info text-emerald-600 text-[10px] shrink-0"></i>
-                                            <span class="leading-tight">Invoice &amp; parcel updates will be sent to this WhatsApp.</span>
+                                            <span class="leading-tight">Invoice &amp; parcel updates will be sent to this
+                                                WhatsApp.</span>
                                         </p>
                                         <p id="err-phone1"
                                             class="field-error-msg hidden text-red-600 text-[11px] font-semibold mt-1 flex items-center gap-1">
@@ -652,11 +693,15 @@
                                     </div>
                                     <div>
                                         <div class="flex items-center justify-between min-h-[22px] mb-1.5">
-                                            <label class="block font-bold text-slate-700 text-xs flex items-center gap-1.5 whitespace-nowrap" for="phone2Input">
+                                            <label
+                                                class="block font-bold text-slate-700 text-xs flex items-center gap-1.5 whitespace-nowrap"
+                                                for="phone2Input">
                                                 <i class="fa-solid fa-phone text-slate-400 text-xs"></i>
-                                                <span>Alternate Mobile&nbsp;<span class="text-slate-400 font-normal text-[11px]">(Optional)</span></span>
+                                                <span>Alternate Mobile&nbsp;<span
+                                                        class="text-slate-400 font-normal text-[11px]">(Optional)</span></span>
                                             </label>
-                                            <span class="text-[9px] font-bold text-slate-600 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded shrink-0 whitespace-nowrap">
+                                            <span
+                                                class="text-[9px] font-bold text-slate-600 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded shrink-0 whitespace-nowrap">
                                                 Voice Call
                                             </span>
                                         </div>
@@ -675,7 +720,8 @@
                                         </div>
                                         <p class="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
                                             <i class="fa-solid fa-phone-volume text-slate-400 text-[10px] shrink-0"></i>
-                                            <span class="leading-tight">To call if your WhatsApp number is unreachable.</span>
+                                            <span class="leading-tight">To call if your WhatsApp number is
+                                                unreachable.</span>
                                         </p>
                                         <p id="err-phone2"
                                             class="field-error-msg hidden text-red-600 text-[11px] font-semibold mt-1 flex items-center gap-1">
@@ -705,9 +751,11 @@
                                 </div>
 
                                 <!-- Delivery Scope Notice -->
-                                <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 text-emerald-800 text-[11px] font-semibold">
+                                <div
+                                    class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 text-emerald-800 text-[11px] font-semibold">
                                     <i class="fa-solid fa-truck-fast text-emerald-600 text-xs"></i>
-                                    <span>Direct parcel delivery available across <strong>Tamil Nadu only</strong> (தமிழ்நாடு எல்லைக்குள் மட்டுமே).</span>
+                                    <span>Direct parcel delivery available across <strong>Tamil Nadu only</strong>
+                                        (தமிழ்நாடு எல்லைக்குள் மட்டுமே).</span>
                                 </div>
 
                                 <!-- Pincode, City / Town & State (Auto-fill on Pincode) -->
@@ -717,7 +765,8 @@
                                             <label class="block font-bold text-slate-700 text-xs" for="pincodeInput">
                                                 Pincode&nbsp;<span class="text-rose-600">*</span>
                                             </label>
-                                            <span id="pincodeBadgeHint" class="text-[9px] font-bold text-rose-600 bg-rose-50 border border-rose-200/70 px-1.5 py-0.5 rounded shrink-0 flex items-center gap-1 whitespace-nowrap">
+                                            <span id="pincodeBadgeHint"
+                                                class="text-[9px] font-bold text-rose-600 bg-rose-50 border border-rose-200/70 px-1.5 py-0.5 rounded shrink-0 flex items-center gap-1 whitespace-nowrap">
                                                 <i class="fa-solid fa-bolt text-[8px] text-amber-500"></i> Auto-fill
                                             </span>
                                         </div>
@@ -725,12 +774,17 @@
                                             <i
                                                 class="fa-solid fa-map-pin absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                                             <input type="text" name="pincode" id="pincodeInput"
-                                                value="{{ old('pincode') }}" required placeholder="6-digit PIN (e.g. 626123)"
-                                                pattern="6[0-4][0-9]{4}" minlength="6" maxlength="6" inputmode="numeric" autocomplete="postal-code"
+                                                value="{{ old('pincode') }}" required
+                                                placeholder="6-digit PIN (e.g. 626123)" pattern="6[0-4][0-9]{4}"
+                                                minlength="6" maxlength="6" inputmode="numeric"
+                                                autocomplete="postal-code"
                                                 class="w-full pl-8 pr-8 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all font-medium placeholder:text-slate-400 h-[42px]">
-                                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs flex items-center pointer-events-none">
-                                                <i id="pincodeSpinner" class="fa-solid fa-circle-notch fa-spin text-rose-600 hidden"></i>
-                                                <i id="pincodeSuccessIcon" class="fa-solid fa-circle-check text-emerald-600 hidden"></i>
+                                            <span
+                                                class="absolute right-3 top-1/2 -translate-y-1/2 text-xs flex items-center pointer-events-none">
+                                                <i id="pincodeSpinner"
+                                                    class="fa-solid fa-circle-notch fa-spin text-rose-600 hidden"></i>
+                                                <i id="pincodeSuccessIcon"
+                                                    class="fa-solid fa-circle-check text-emerald-600 hidden"></i>
                                             </span>
                                         </div>
                                         <p id="err-pincode"
@@ -738,7 +792,8 @@
                                             <i class="fa-solid fa-circle-exclamation text-[10px]"></i>
                                             <span></span>
                                         </p>
-                                        <p id="pincodeSuccessMsg" class="hidden text-emerald-700 text-[11px] font-semibold mt-1 flex items-center gap-1">
+                                        <p id="pincodeSuccessMsg"
+                                            class="hidden text-emerald-700 text-[11px] font-semibold mt-1 flex items-center gap-1">
                                             <i class="fa-solid fa-circle-check text-[10px] text-emerald-600"></i>
                                             <span id="pincodeSuccessText" class="truncate"></span>
                                         </p>
@@ -772,8 +827,10 @@
                                             <label class="block font-bold text-slate-700 text-xs" for="stateInput">
                                                 State&nbsp;<span class="text-rose-600">*</span>
                                             </label>
-                                            <span class="text-[9px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200/70 px-1.5 py-0.5 rounded shrink-0 flex items-center gap-1 whitespace-nowrap">
-                                                <i class="fa-solid fa-location-dot text-[8px] text-emerald-600"></i> TN Only
+                                            <span
+                                                class="text-[9px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200/70 px-1.5 py-0.5 rounded shrink-0 flex items-center gap-1 whitespace-nowrap">
+                                                <i class="fa-solid fa-location-dot text-[8px] text-emerald-600"></i> TN
+                                                Only
                                             </span>
                                         </div>
                                         <div class="relative">
@@ -806,11 +863,14 @@
                                 <div id="minOrderWarningNote"
                                     class="text-xs font-bold text-amber-900 text-center mt-2.5 flex items-center justify-center gap-1.5 bg-amber-50 border border-amber-300/80 py-2 px-3 rounded-xl">
                                     <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
-                                    <span id="minOrderWarningText">குறைந்தபட்ச ஆர்டர் தொகை: ₹{{ number_format($minOrderAmt, 0) }}</span>
+                                    <span id="minOrderWarningText">குறைந்தபட்ச ஆர்டர் தொகை:
+                                        ₹{{ number_format($minOrderAmt, 0) }}</span>
                                 </div>
 
                                 <p class="text-[11px] text-slate-500 text-center mt-2 leading-tight">
-                                    🚚 <strong>Note:</strong> Total amount is <strong>without delivery charges</strong>. Delivery charges may differ depending on the transport partner and are payable upon parcel collection at your local hub.
+                                    🚚 <strong>Note:</strong> Total amount is <strong>without delivery charges</strong>.
+                                    Delivery charges may differ depending on the transport partner and are payable upon
+                                    parcel collection at your local hub.
                                 </p>
                                 <p class="text-[10px] text-slate-400 text-center mt-1">
                                     🔒 Safe booking. No immediate online payment required. Pay upon transport confirmation.
@@ -834,15 +894,18 @@
     {{-- ===================== WHATSAPP OTP VERIFICATION MODAL ===================== --}}
     <div id="otpModalBackdrop" onclick="closeOtpModal()"
         class="hidden fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md transition-opacity duration-300 flex items-center justify-center p-4">
-        
+
         <div id="otpModalCard"
             class="bg-white rounded-3xl border border-slate-100 shadow-2xl max-w-sm sm:max-w-md w-full overflow-hidden relative transform transition-all duration-300 scale-95 opacity-0"
             onclick="event.stopPropagation()">
 
             <!-- Decorative header background -->
-            <div class="bg-gradient-to-br from-emerald-600 via-teal-700 to-emerald-900 text-white p-6 relative overflow-hidden text-center">
-                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
-                <div class="absolute -left-6 -top-6 w-24 h-24 bg-amber-400/20 rounded-full blur-xl pointer-events-none"></div>
+            <div
+                class="bg-gradient-to-br from-emerald-600 via-teal-700 to-emerald-900 text-white p-6 relative overflow-hidden text-center">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none">
+                </div>
+                <div class="absolute -left-6 -top-6 w-24 h-24 bg-amber-400/20 rounded-full blur-xl pointer-events-none">
+                </div>
 
                 <!-- Close button -->
                 <button type="button" onclick="closeOtpModal()"
@@ -852,7 +915,8 @@
                 </button>
 
                 <!-- Icon Badge -->
-                <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center text-2xl text-emerald-300 shadow-inner">
+                <div
+                    class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center text-2xl text-emerald-300 shadow-inner">
                     <i class="fa-brands fa-whatsapp text-3xl text-emerald-300"></i>
                 </div>
 
@@ -867,14 +931,18 @@
             <!-- Modal Content -->
             <div class="p-6">
                 <!-- Phone Info Banner -->
-                <div class="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-3 mb-5 flex items-center justify-between gap-3">
+                <div
+                    class="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-3 mb-5 flex items-center justify-between gap-3">
                     <div class="flex items-center gap-2.5">
-                        <span class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                        <span
+                            class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
                             <i class="fa-solid fa-mobile-screen"></i>
                         </span>
                         <div>
-                            <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Sent to WhatsApp</div>
-                            <div id="otpDisplayPhone" class="text-xs font-black text-slate-800 font-mono tracking-wide">+91 ----------</div>
+                            <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Sent to WhatsApp
+                            </div>
+                            <div id="otpDisplayPhone" class="text-xs font-black text-slate-800 font-mono tracking-wide">
+                                +91 ----------</div>
                         </div>
                     </div>
                     <button type="button" onclick="editPhoneFromOtpModal()"
@@ -905,7 +973,8 @@
                 </div>
 
                 <!-- Error & Success Status Box -->
-                <div id="otpStatusMsg" class="hidden text-center text-xs font-bold py-2.5 px-3 rounded-xl mb-4 transition-all"></div>
+                <div id="otpStatusMsg"
+                    class="hidden text-center text-xs font-bold py-2.5 px-3 rounded-xl mb-4 transition-all"></div>
 
                 <!-- Verify Button -->
                 <button type="button" id="verifyOtpBtn" onclick="submitOtpVerification()"
@@ -927,7 +996,8 @@
 
                 <!-- Help Note -->
                 <p class="text-[11px] text-slate-400 text-center mt-4 leading-relaxed">
-                    <i class="fa-solid fa-shield-halved text-emerald-600 mr-1"></i> 100% Secure Diwali Crackers Booking. We only deliver inside Tamil Nadu.
+                    <i class="fa-solid fa-shield-halved text-emerald-600 mr-1"></i> 100% Secure Diwali Crackers Booking. We
+                    only deliver inside Tamil Nadu.
                 </p>
             </div>
         </div>
@@ -1093,7 +1163,9 @@
                         <span id="floatingTotalAmount" class="truncate">₹0.00</span>
                         <span class="text-[10px] font-normal text-slate-400 shrink-0">(<span
                                 class="cart-items-badge">0</span>)</span>
-                        <span class="text-[9px] font-bold text-amber-300 bg-amber-400/20 border border-amber-400/30 px-1.5 py-0.2 rounded hidden sm:inline shrink-0">Excl. Delivery</span>
+                        <span
+                            class="text-[9px] font-bold text-amber-300 bg-amber-400/20 border border-amber-400/30 px-1.5 py-0.2 rounded hidden sm:inline shrink-0">Excl.
+                            Delivery</span>
                     </div>
                 </div>
 
@@ -1185,52 +1257,73 @@
 
                 if (totalPayable >= MIN_ORDER_AMOUNT) {
                     if (minOrderAlertBox) {
-                        minOrderAlertBox.className = 'rounded-xl p-3 text-xs transition-all border bg-emerald-50 border-emerald-200 text-emerald-900';
+                        minOrderAlertBox.className =
+                            'rounded-xl p-3 text-xs transition-all border bg-emerald-50 border-emerald-200 text-emerald-900';
                     }
                     if (minOrderIcon) minOrderIcon.className = 'fa-solid fa-circle-check text-emerald-600';
-                    if (minOrderTitle) minOrderTitle.textContent = 'Minimum Order Met (₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN') + '+)';
+                    if (minOrderTitle) minOrderTitle.textContent = 'Minimum Order Met (₹' + Number(MIN_ORDER_AMOUNT)
+                        .toLocaleString('en-IN') + '+)';
                     if (minOrderBadge) {
-                        minOrderBadge.className = 'text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800';
+                        minOrderBadge.className =
+                            'text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800';
                         minOrderBadge.textContent = 'தகுதி பெறப்பட்டது ✅';
                     }
-                    if (minOrderText) minOrderText.textContent = 'சூப்பர்! உங்கள் ஆர்டர் தொகை குறைந்தபட்ச ஆர்டர் தகுதியை எட்டியுள்ளது (' + formatINR(totalPayable) + '). நீங்கள் ஆர்டர் சமர்ப்பிக்கலாம்!';
-                    if (minOrderProgressBar) minOrderProgressBar.className = 'bg-emerald-600 h-1.5 rounded-full transition-all duration-300';
+                    if (minOrderText) minOrderText.textContent =
+                        'சூப்பர்! உங்கள் ஆர்டர் தொகை குறைந்தபட்ச ஆர்டர் தகுதியை எட்டியுள்ளது (' + formatINR(totalPayable) +
+                        '). நீங்கள் ஆர்டர் சமர்ப்பிக்கலாம்!';
+                    if (minOrderProgressBar) minOrderProgressBar.className =
+                        'bg-emerald-600 h-1.5 rounded-full transition-all duration-300';
 
                     if (minOrderWarningNote) {
-                        minOrderWarningNote.className = 'text-xs font-bold text-emerald-800 text-center mt-2.5 flex items-center justify-center gap-1.5 bg-emerald-50 border border-emerald-200 py-2 px-3 rounded-xl';
-                        if (minOrderWarningText) minOrderWarningText.textContent = 'குறைந்தபட்ச ஆர்டர் தகுதி பெறப்பட்டது (' + formatINR(totalPayable) + ') ✅';
+                        minOrderWarningNote.className =
+                            'text-xs font-bold text-emerald-800 text-center mt-2.5 flex items-center justify-center gap-1.5 bg-emerald-50 border border-emerald-200 py-2 px-3 rounded-xl';
+                        if (minOrderWarningText) minOrderWarningText.textContent = 'குறைந்தபட்ச ஆர்டர் தகுதி பெறப்பட்டது (' +
+                            formatINR(totalPayable) + ') ✅';
                     }
 
                     if (floatingMinOrderBadge) {
-                        floatingMinOrderBadge.className = 'hidden md:inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shrink-0';
+                        floatingMinOrderBadge.className =
+                            'hidden md:inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shrink-0';
                         if (floatingMinOrderText) floatingMinOrderText.textContent = 'Min Met ✅';
-                        if (floatingMinOrderIcon) floatingMinOrderIcon.className = 'fa-solid fa-circle-check text-xs text-emerald-400';
+                        if (floatingMinOrderIcon) floatingMinOrderIcon.className =
+                            'fa-solid fa-circle-check text-xs text-emerald-400';
                     }
                 } else {
                     const diff = Math.max(0, MIN_ORDER_AMOUNT - totalPayable);
                     if (minOrderAlertBox) {
-                        minOrderAlertBox.className = 'rounded-xl p-3 text-xs transition-all border bg-amber-50 border-amber-300 text-amber-950';
+                        minOrderAlertBox.className =
+                            'rounded-xl p-3 text-xs transition-all border bg-amber-50 border-amber-300 text-amber-950';
                     }
                     if (minOrderIcon) minOrderIcon.className = 'fa-solid fa-triangle-exclamation text-amber-600';
-                    if (minOrderTitle) minOrderTitle.textContent = 'Minimum Order: ₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN');
+                    if (minOrderTitle) minOrderTitle.textContent = 'Minimum Order: ₹' + Number(MIN_ORDER_AMOUNT).toLocaleString(
+                        'en-IN');
                     if (minOrderBadge) {
                         minOrderBadge.className = 'text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-200 text-amber-900';
                         minOrderBadge.textContent = '₹' + Number(diff).toLocaleString('en-IN') + ' தேவை';
                     }
                     if (minOrderText) {
-                        minOrderText.innerHTML = 'குறைந்தபட்ச ஆர்டர் தொகை <strong>₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN') + '</strong>. உங்கள் ஆர்டரை உறுதி செய்ய இன்னும் <strong>' + formatINR(diff) + '</strong> மதிப்புள்ள பட்டாசுகளை Cart-ல் சேர்க்க வேண்டும்.';
+                        minOrderText.innerHTML = 'குறைந்தபட்ச ஆர்டர் தொகை <strong>₹' + Number(MIN_ORDER_AMOUNT).toLocaleString(
+                                'en-IN') + '</strong>. உங்கள் ஆர்டரை உறுதி செய்ய இன்னும் <strong>' + formatINR(diff) +
+                            '</strong> மதிப்புள்ள பட்டாசுகளை Cart-ல் சேர்க்க வேண்டும்.';
                     }
-                    if (minOrderProgressBar) minOrderProgressBar.className = 'bg-amber-500 h-1.5 rounded-full transition-all duration-300';
+                    if (minOrderProgressBar) minOrderProgressBar.className =
+                        'bg-amber-500 h-1.5 rounded-full transition-all duration-300';
 
                     if (minOrderWarningNote) {
-                        minOrderWarningNote.className = 'text-xs font-bold text-amber-900 text-center mt-2.5 flex items-center justify-center gap-1.5 bg-amber-50 border border-amber-300/80 py-2 px-3 rounded-xl';
-                        if (minOrderWarningText) minOrderWarningText.innerHTML = 'குறைந்தபட்ச ஆர்டர்: ₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN') + ' (இன்னும் <strong>' + formatINR(diff) + '</strong> தேவை)';
+                        minOrderWarningNote.className =
+                            'text-xs font-bold text-amber-900 text-center mt-2.5 flex items-center justify-center gap-1.5 bg-amber-50 border border-amber-300/80 py-2 px-3 rounded-xl';
+                        if (minOrderWarningText) minOrderWarningText.innerHTML = 'குறைந்தபட்ச ஆர்டர்: ₹' + Number(
+                                MIN_ORDER_AMOUNT).toLocaleString('en-IN') + ' (இன்னும் <strong>' + formatINR(diff) +
+                            '</strong> தேவை)';
                     }
 
                     if (floatingMinOrderBadge) {
-                        floatingMinOrderBadge.className = 'hidden md:inline-flex items-center gap-1 bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shrink-0';
-                        if (floatingMinOrderText) floatingMinOrderText.textContent = 'Min: ₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN');
-                        if (floatingMinOrderIcon) floatingMinOrderIcon.className = 'fa-solid fa-triangle-exclamation text-xs text-amber-300';
+                        floatingMinOrderBadge.className =
+                            'hidden md:inline-flex items-center gap-1 bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shrink-0';
+                        if (floatingMinOrderText) floatingMinOrderText.textContent = 'Min: ₹' + Number(MIN_ORDER_AMOUNT)
+                            .toLocaleString('en-IN');
+                        if (floatingMinOrderIcon) floatingMinOrderIcon.className =
+                            'fa-solid fa-triangle-exclamation text-xs text-amber-300';
                     }
                 }
             }
@@ -2178,7 +2271,8 @@
                                     cityInput.value = data.city || data.district || '';
                                     cityInput.classList.add('ring-2', 'ring-emerald-400', 'bg-emerald-50/50');
                                     setTimeout(() => {
-                                        cityInput.classList.remove('ring-2', 'ring-emerald-400', 'bg-emerald-50/50');
+                                        cityInput.classList.remove('ring-2', 'ring-emerald-400',
+                                        'bg-emerald-50/50');
                                     }, 1200);
                                 }
                                 clearFieldError('city');
@@ -2208,7 +2302,8 @@
                         } else {
                             if (pincodeSuccessIcon) pincodeSuccessIcon.classList.add('hidden');
                             if (pincodeSuccessMsg) pincodeSuccessMsg.classList.add('hidden');
-                            const errMsg = (data && data.message) ? data.message : 'Delivery is available inside Tamil Nadu only.';
+                            const errMsg = (data && data.message) ? data.message :
+                                'Delivery is available inside Tamil Nadu only.';
                             showFieldError('pincode', errMsg);
                         }
                     })
@@ -2325,7 +2420,10 @@
             window.editPhoneFromOtpModal = function() {
                 closeOtpModal();
                 if (phone1Input) {
-                    phone1Input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    phone1Input.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
                     setTimeout(() => {
                         phone1Input.focus();
                         phone1Input.select();
@@ -2420,10 +2518,14 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]')?.value ||
+                                '{{ csrf_token() }}',
                             'Accept': 'application/json'
                         },
-                        body: JSON.stringify({ phone1: phone, name: name })
+                        body: JSON.stringify({
+                            phone1: phone,
+                            name: name
+                        })
                     });
 
                     const data = await response.json();
@@ -2437,7 +2539,8 @@
                             displayPhone.textContent = data.masked_phone;
                         }
                         if (data.debug_otp) {
-                            console.log('%c[GURU CRACKERS OTP] Debug Code: ' + data.debug_otp, 'color: #10b981; font-weight: bold; font-size: 14px;');
+                            console.log('%c[GURU CRACKERS OTP] Debug Code: ' + data.debug_otp,
+                                'color: #10b981; font-weight: bold; font-size: 14px;');
                         }
                     } else {
                         showOtpStatus('error', data.message || 'Failed to send OTP. Please try again.');
@@ -2457,7 +2560,8 @@
                     }
                 } finally {
                     if (isResend && resendBtn) {
-                        resendBtn.innerHTML = '<i class="fa-solid fa-rotate-right text-[11px] mr-1"></i> Resend OTP on WhatsApp';
+                        resendBtn.innerHTML =
+                            '<i class="fa-solid fa-rotate-right text-[11px] mr-1"></i> Resend OTP on WhatsApp';
                     }
                 }
             };
@@ -2493,10 +2597,14 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]')?.value ||
+                                '{{ csrf_token() }}',
                             'Accept': 'application/json'
                         },
-                        body: JSON.stringify({ phone1: phone, otp: otp })
+                        body: JSON.stringify({
+                            phone1: phone,
+                            otp: otp
+                        })
                     });
 
                     const data = await response.json();
@@ -2516,7 +2624,8 @@
                                     if (submitBtn) {
                                         submitBtn.disabled = true;
                                         submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
-                                        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-base mr-2"></i> <span>Placing Order... Please wait</span>';
+                                        submitBtn.innerHTML =
+                                            '<i class="fa-solid fa-spinner fa-spin text-base mr-2"></i> <span>Placing Order... Please wait</span>';
                                     }
                                     orderForm.submit();
                                 }
@@ -2766,7 +2875,8 @@
                             hasError = true;
                             if (!firstErrorEl) firstErrorEl = pincodeInput;
                         } else if (!/^6[0-4][0-9]{4}$/.test(pincodeVal)) {
-                            showFieldError('pincode', 'Delivery is available inside Tamil Nadu only (Pincode: 60xxxx - 64xxxx)');
+                            showFieldError('pincode',
+                                'Delivery is available inside Tamil Nadu only (Pincode: 60xxxx - 64xxxx)');
                             hasError = true;
                             if (!firstErrorEl) firstErrorEl = pincodeInput;
                         } else {
@@ -2814,8 +2924,13 @@
                             e.preventDefault();
                             const diff = Math.max(0, MIN_ORDER_AMOUNT - currentPayableTotal);
                             DiwaliAlert.warning(
-                                'குறைந்தபட்ச ஆர்டர் ₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN') + '! ⚠️',
-                                'எங்கள் இணையதளத்தில் குறைந்தபட்ச ஆர்டர் தொகை ₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN') + ' ஆகும். உங்கள் தற்போதைய கார்ட் மதிப்பு ' + formatINR(currentPayableTotal) + ' மட்டுமே உள்ளது.\n\nதயவுசெய்து மேலும் ' + formatINR(diff) + ' மதிப்புள்ள பட்டாசுகளை Cart-ல் சேர்த்து சமர்ப்பிக்கவும்.',
+                                'குறைந்தபட்ச ஆர்டர் ₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN') +
+                                '! ⚠️',
+                                'எங்கள் இணையதளத்தில் குறைந்தபட்ச ஆர்டர் தொகை ₹' + Number(MIN_ORDER_AMOUNT)
+                                .toLocaleString('en-IN') + ' ஆகும். உங்கள் தற்போதைய கார்ட் மதிப்பு ' +
+                                formatINR(currentPayableTotal) + ' மட்டுமே உள்ளது.\n\nதயவுசெய்து மேலும் ' +
+                                formatINR(diff) +
+                                ' மதிப்புள்ள பட்டாசுகளை Cart-ல் சேர்த்து சமர்ப்பிக்கவும்.',
                                 'பட்டாசுகளைச் சேர்க்கவும்'
                             );
                             const firstCategory = document.querySelector('.category-section');
@@ -2907,7 +3022,7 @@
                     if (bannerSlides.length > 1) {
                         bannerTimer = setInterval(() => {
                             showBannerSlide(currentBannerSlide + 1);
-                        }, 3000);
+                        }, 5000);
                     }
                 }
 
