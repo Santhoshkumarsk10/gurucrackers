@@ -1028,28 +1028,20 @@
                 <div>
                     <h4 class="text-slate-200 font-semibold mb-2 flex items-center gap-1.5">
                         <i class="fa-solid fa-scale-balanced text-amber-400"></i>
-                        <span>Supreme Court Compliance Notice</span>
+                        <span>Legal Compliance Notice</span>
                     </h4>
-                    <p class="text-slate-400 leading-relaxed text-[11px]">
-                        As per 2018 supreme court order, online sale of firecrackers are not permitted! We value our
-                        customers and at the same time, respect jurisdiction. We request you to add your products to the
-                        cart and submit the required crackers through the enquiry button. We will contact you within 24
-                        hrs
-                        and confirm the order through WhatsApp or phone call. Please add and submit your enquiries and
-                        enjoy
-                        your Diwali with {{ $shop->name ?? 'Suguna Crackers' }}. Our License No.----.
-                        {{ $shop->name ?? 'Suguna Crackers' }} as a company following 100% legal & statutory
-                        compliances
-                        and all our shops, go-downs are maintained as per the explosive acts. We send the parcels
-                        through
-                        registered and legal transport service providers as like every other major companies in Sivakasi
-                        is
-                        doing so.
-                    </p>
+                    <div class="text-slate-400 leading-relaxed text-[11px] space-y-1.5">
+                        <p>
+                            This website is intended to provide information about our products and services. Any sale, purchase, delivery, or distribution of firecrackers shall be subject to applicable laws, regulations, licensing requirements, and directions issued by the competent authorities and courts.
+                        </p>
+                        <p>
+                            Customers are requested to comply with all applicable legal requirements relating to the purchase, possession, transportation, and use of firecrackers.
+                        </p>
+                    </div>
                     <button type="button" onclick="openLegalModal()"
-                        class="mt-2 text-[11px] text-amber-400 hover:text-amber-300 font-bold underline inline-flex items-center gap-1 cursor-pointer">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <span>View Official Legal Popup</span>
+                        class="mt-2 text-[11px] text-amber-400 hover:text-amber-300 font-bold underline inline-flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-truck-fast"></i>
+                        <span>View Order & Delivery Process (எப்படி ஆர்டர் செய்வது?)</span>
                     </button>
                 </div>
             </div>
@@ -2071,104 +2063,315 @@
             });
         </script>
 
-        {{-- ===================== SUPREME COURT LEGAL NOTICE MODAL POPUP ===================== --}}
+        {{-- ===================== HOW TO ORDER & DELIVERY FLOW MODAL POPUP ===================== --}}
         <div id="supremeCourtModal"
-            class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 transition-all duration-300"
+            class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4 md:p-6 overflow-y-auto transition-all duration-300"
             onclick="closeLegalModal()">
-            <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-amber-500/30 transform transition-all relative text-left"
+            <div class="bg-white rounded-2xl sm:rounded-3xl max-w-lg md:max-w-5xl lg:max-w-6xl w-full max-h-[92vh] sm:max-h-[88vh] flex flex-col my-auto overflow-hidden shadow-2xl border border-amber-500/30 transform transition-all relative text-left"
                 onclick="event.stopPropagation()">
-                <!-- Top Festive Header -->
-                <div class="bg-gradient-to-r from-amber-700 via-rose-800 to-red-900 text-white p-4 sm:p-5 relative">
+                <!-- Top Festive Gradient Header (shrink-0: always fully visible at top) -->
+                <div class="shrink-0 bg-gradient-to-r from-slate-950 via-rose-950 to-amber-950 text-white px-3.5 py-2.5 sm:px-6 sm:py-3.5 relative border-b border-white/10">
                     <button type="button" onclick="closeLegalModal()"
-                        class="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-white/15 hover:bg-white/30 text-white flex items-center justify-center transition-colors cursor-pointer"
+                        class="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 w-8 h-8 rounded-full bg-white/20 hover:bg-white/35 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer shadow-sm z-20"
                         title="Close">
-                        <i class="fa-solid fa-xmark text-sm"></i>
+                        <i class="fa-solid fa-xmark text-sm sm:text-base"></i>
                     </button>
 
-                    <div
-                        class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-400/20 border border-amber-300/30 text-amber-200 text-[10px] font-extrabold uppercase tracking-wider mb-2">
-                        <i class="fa-solid fa-scale-balanced text-amber-300"></i>
-                        <span>Legal & Statutory Compliance</span>
-                    </div>
-
-                    <h3 class="text-base sm:text-lg font-extrabold font-heading text-white leading-snug">
-                        Supreme Court Order & Statutory Compliance
-                    </h3>
-                    <p class="text-xs text-rose-200 font-medium mt-0.5">
-                        Direct Booking & Transport Enquiry Notice
-                    </p>
-                </div>
-
-                <!-- Content Body -->
-                <div class="p-4 sm:p-6 space-y-3.5 text-xs text-slate-600 leading-relaxed max-h-[68vh] overflow-y-auto">
-                    <div
-                        class="bg-amber-50/90 border border-amber-300/80 rounded-2xl p-3.5 text-amber-950 flex items-start gap-2.5 shadow-sm">
-                        <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg mt-0.5 shrink-0"></i>
-                        <div class="text-[11px] leading-relaxed">
-                            <strong class="font-bold text-amber-900">Legal Compliance Statement:</strong>
-                            <p class="mt-0.5 text-amber-800">
-                                As per 2018 supreme court order, online sale of firecrackers are not permitted! We value our
-                                customers and at the same time, respect jurisdiction.
-                            </p>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-4 pr-9 sm:pr-8">
+                        <div>
+                            <div
+                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-400/20 border border-amber-300/30 text-amber-300 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider mb-0.5">
+                                <i class="fa-solid fa-truck-fast text-amber-300"></i>
+                                <span>Order & Delivery Flow | 5 எளிய படிகள்</span>
+                            </div>
+                            <h3 class="text-xs sm:text-base md:text-lg font-black font-heading text-white leading-tight">
+                                {{ $shop->name ?? 'Guru Crackers' }} - Order & Delivery Process
+                            </h3>
                         </div>
-                    </div>
-
-                    <p class="text-slate-800 text-xs sm:text-sm font-semibold leading-relaxed">
-                        We request you to add your products to the cart and submit the required crackers through the enquiry
-                        button. We will contact you within 24 hrs and confirm the order through WhatsApp or phone call.
-                    </p>
-
-                    <p class="text-slate-600 text-xs leading-relaxed">
-                        Please add and submit your enquiries and enjoy your Diwali with <strong
-                            class="text-slate-900 font-bold">{{ $shop->name ?? 'Suguna Crackers' }}</strong>. Our License
-                        No.----. <strong class="text-slate-900 font-bold">{{ $shop->name ?? 'Suguna Crackers' }}</strong>
-                        as a company following 100% legal & statutory compliances and all our shops, go-downs are maintained
-                        as per the explosive acts. We send the parcels through registered and legal transport service
-                        providers as like every other major companies in Sivakasi is doing so.
-                    </p>
-
-                    <!-- Compliance Highlights -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
-                        <div
-                            class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl p-2 text-[10px] font-bold text-slate-700">
-                            <i class="fa-solid fa-certificate text-emerald-600 text-xs"></i>
-                            <span>100% Legal</span>
-                        </div>
-                        <div
-                            class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl p-2 text-[10px] font-bold text-slate-700">
-                            <i class="fa-solid fa-warehouse text-amber-600 text-xs"></i>
-                            <span>Licensed Godown</span>
-                        </div>
-                        <div
-                            class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl p-2 text-[10px] font-bold text-slate-700">
-                            <i class="fa-solid fa-truck-fast text-rose-600 text-xs"></i>
-                            <span>Legal Transport</span>
+                        <div class="hidden sm:flex items-center gap-2 text-rose-200 text-xs">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>Direct Sivakasi Wholesale Booking</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Modal Action Footer -->
-                <div
-                    class="bg-slate-50 border-t border-slate-100 px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <label
-                        class="flex items-center gap-2 text-[11px] text-slate-500 select-none cursor-pointer self-start sm:self-center">
+                <!-- Modal Body Container (flex-1 min-h-0: scrolls smoothly inside without cutting header/footer) -->
+                <div class="flex-1 min-h-0 overflow-y-auto p-2.5 sm:p-4 md:p-5 space-y-2 sm:space-y-3 text-xs text-slate-600 leading-relaxed custom-inner-scrollbar">
+                    
+                    <!-- Top Info Pill Banner (Desktop only to keep mobile ultra-compact) -->
+                    <div class="hidden md:flex bg-gradient-to-r from-rose-50 to-amber-50 border border-rose-200/70 rounded-xl sm:rounded-2xl px-3 py-2 items-center justify-between gap-2 shadow-xs">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="text-sm shrink-0">💥</span>
+                            <div class="text-[11px] text-slate-800 leading-tight">
+                                <strong class="text-slate-900 font-extrabold">நேரடி சிவகாசி பட்டாசு கொள்முதல் வழிகாட்டி:</strong>
+                                <span class="text-slate-600"> 100% பாதுகாப்பான பேக்கிங் &amp; டிரான்ஸ்போர்ட் டெலிவரி!</span>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-black bg-rose-600 text-white px-2 py-0.5 rounded-full uppercase shrink-0">
+                            Direct Factory
+                        </span>
+                    </div>
+
+                    <!-- ======================================================== -->
+                    <!-- DESKTOP VIEW: HORIZONTAL 5-STEP PROCESS FLOW (md:grid)   -->
+                    <!-- ======================================================== -->
+                    <div class="hidden md:grid md:grid-cols-5 gap-3 items-stretch">
+                        <!-- Step 1 -->
+                        <div class="bg-gradient-to-b from-amber-50/60 to-white border border-amber-200/90 rounded-2xl p-3.5 flex flex-col justify-between hover:shadow-md transition-all relative group">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center text-xs shadow-xs font-bold">
+                                        <i class="fa-solid fa-cart-shopping"></i>
+                                    </span>
+                                    <span class="text-[10px] font-mono font-black bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">Step 1</span>
+                                </div>
+                                <h4 class="font-extrabold text-slate-900 text-xs font-heading">
+                                    1. Cart & Order
+                                </h4>
+                                <p class="text-[10px] font-bold text-amber-700 mt-0.5">தேர்வு செய்தல்</p>
+                                <p class="text-[11px] text-slate-600 mt-1 leading-snug">
+                                    பட்டாசுகளை Cart-ல் சேர்த்து பெயர், முகவரி, WhatsApp எண்ணுடன் ஆர்டர் சமர்ப்பிக்கவும்.
+                                </p>
+                            </div>
+                            <div class="pt-2 text-right text-slate-300 group-hover:text-amber-500 transition-colors">
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="bg-gradient-to-b from-emerald-50/60 to-white border border-emerald-200/90 rounded-2xl p-3.5 flex flex-col justify-between hover:shadow-md transition-all relative group">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex items-center justify-center text-xs shadow-xs font-bold">
+                                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                                    </span>
+                                    <span class="text-[10px] font-mono font-black bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded">Step 2</span>
+                                </div>
+                                <h4 class="font-extrabold text-slate-900 text-xs font-heading">
+                                    2. Confirmation
+                                </h4>
+                                <p class="text-[10px] font-bold text-emerald-700 mt-0.5">WhatsApp / Call</p>
+                                <p class="text-[11px] text-slate-600 mt-1 leading-snug">
+                                    24 மணி நேரத்தில் எங்கள் குழு அழைத்து ஆர்டரை உறுதி செய்து இறுதி Invoice & Payment விவரம் வழங்குவர்.
+                                </p>
+                            </div>
+                            <div class="pt-2 text-right text-slate-300 group-hover:text-emerald-500 transition-colors">
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="bg-gradient-to-b from-blue-50/60 to-white border border-blue-200/90 rounded-2xl p-3.5 flex flex-col justify-between hover:shadow-md transition-all relative group">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center text-xs shadow-xs font-bold">
+                                        <i class="fa-solid fa-box-archive"></i>
+                                    </span>
+                                    <span class="text-[10px] font-mono font-black bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">Step 3</span>
+                                </div>
+                                <h4 class="font-extrabold text-slate-900 text-xs font-heading">
+                                    3. Safe Packing
+                                </h4>
+                                <p class="text-[10px] font-bold text-blue-700 mt-0.5">பாதுகாப்பான பேக்கிங்</p>
+                                <p class="text-[11px] text-slate-600 mt-1 leading-snug">
+                                    உரிமம் பெற்ற சிவகாசி கிடங்கில் பட்டாசுகள் சரிபார்க்கப்பட்டு வாட்டர்ப்ரூப் பெட்டிகளில் பேக் செய்யப்படும்.
+                                </p>
+                            </div>
+                            <div class="pt-2 text-right text-slate-300 group-hover:text-blue-500 transition-colors">
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="bg-gradient-to-b from-purple-50/60 to-white border border-purple-200/90 rounded-2xl p-3.5 flex flex-col justify-between hover:shadow-md transition-all relative group">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center text-xs shadow-xs font-bold">
+                                        <i class="fa-solid fa-truck-fast"></i>
+                                    </span>
+                                    <span class="text-[10px] font-mono font-black bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded">Step 4</span>
+                                </div>
+                                <h4 class="font-extrabold text-slate-900 text-xs font-heading">
+                                    4. Transport & LR
+                                </h4>
+                                <p class="text-[10px] font-bold text-purple-700 mt-0.5">டிரான்ஸ்போர்ட் புக்கிங்</p>
+                                <p class="text-[11px] text-slate-600 mt-1 leading-snug">
+                                    பதிவு செய்யப்பட்ட லாரி டிரான்ஸ்போர்ட் மூலம் அனுப்பப்பட்டு, Lorry Receipt (LR) WhatsApp-ல் பகிரப்படும்.
+                                </p>
+                            </div>
+                            <div class="pt-2 text-right text-slate-300 group-hover:text-purple-500 transition-colors">
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </div>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="bg-gradient-to-b from-rose-50/60 to-white border border-rose-200/90 rounded-2xl p-3.5 flex flex-col justify-between hover:shadow-md transition-all relative group">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 to-rose-600 text-white flex items-center justify-center text-xs shadow-xs font-bold">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                    </span>
+                                    <span class="text-[10px] font-mono font-black bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded">Step 5</span>
+                                </div>
+                                <h4 class="font-extrabold text-slate-900 text-xs font-heading">
+                                    5. Safe Delivery
+                                </h4>
+                                <p class="text-[10px] font-bold text-rose-700 mt-0.5">பார்சல் பெறுதல்</p>
+                                <p class="text-[11px] text-slate-600 mt-1 leading-snug">
+                                    பார்சல் உங்கள் ஊர் கிளைக்கு வந்ததும் தகவல் வரும். நேரில் அல்லது டோர் டெலிவரியில் பெற்று மகிழுங்கள்!
+                                </p>
+                            </div>
+                            <div class="pt-2 text-right text-emerald-500 font-bold text-xs">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ======================================================== -->
+                    <!-- MOBILE VIEW: ICON-DRIVEN MINIMAL 5 STEPS (md:hidden)      -->
+                    <!-- ======================================================== -->
+                    <div class="block md:hidden bg-slate-50/80 border border-slate-200/90 rounded-2xl p-2 space-y-1.5 shadow-inner">
+                        <!-- Step 1 -->
+                        <div class="flex items-center gap-2.5 p-1.5 rounded-xl bg-white border border-amber-200/70 shadow-2xs">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center text-xs shrink-0 shadow-xs">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h5 class="font-black text-slate-900 text-xs">1. ஆர்டர் தேர்வு (Cart)</h5>
+                                    <span class="text-[9px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded shrink-0">படி 1</span>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-tight">பட்டாசுகளை கார்ட்டில் சேர்த்து ஆர்டர் செய்யவும்</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="flex items-center gap-2.5 p-1.5 rounded-xl bg-white border border-emerald-200/70 shadow-2xs">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex items-center justify-center text-xs shrink-0 shadow-xs">
+                                <i class="fa-brands fa-whatsapp text-sm"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h5 class="font-black text-slate-900 text-xs">2. WhatsApp உறுதி (Bill)</h5>
+                                    <span class="text-[9px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded shrink-0">படி 2</span>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-tight">அழைத்து இறுதி பில் &amp; பேமெண்ட் உறுதி செய்வோம்</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="flex items-center gap-2.5 p-1.5 rounded-xl bg-white border border-blue-200/70 shadow-2xs">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center text-xs shrink-0 shadow-xs">
+                                <i class="fa-solid fa-box-open"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h5 class="font-black text-slate-900 text-xs">3. நேரடி பேக்கிங் (Packing)</h5>
+                                    <span class="text-[9px] font-bold text-blue-700 bg-blue-100 px-1.5 py-0.2 rounded shrink-0">படி 3</span>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-tight">சிவகாசி கிடங்கில் வாட்டர்ப்ரூப் பாதுகாப்பு பேக்கிங்</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="flex items-center gap-2.5 p-1.5 rounded-xl bg-white border border-purple-200/70 shadow-2xs">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 text-white flex items-center justify-center text-xs shrink-0 shadow-xs">
+                                <i class="fa-solid fa-truck-fast"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h5 class="font-black text-slate-900 text-xs">4. லாரி டிரான்ஸ்போர்ட் (LR)</h5>
+                                    <span class="text-[9px] font-bold text-purple-700 bg-purple-100 px-1.5 py-0.2 rounded shrink-0">படி 4</span>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-tight">லாரியில் அனுப்பி LR ரசீது WhatsApp-ல் வரும்</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="flex items-center gap-2.5 p-1.5 rounded-xl bg-white border border-rose-200/70 shadow-2xs">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-rose-600 text-white flex items-center justify-center text-xs shrink-0 shadow-xs">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h5 class="font-black text-slate-900 text-xs">5. பார்சல் பெறுதல் (Delivery)</h5>
+                                    <span class="text-[9px] font-bold text-rose-700 bg-rose-100 px-1.5 py-0.2 rounded shrink-0">படி 5</span>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-tight">உங்கள் ஊர் கிளையில் பார்சலை பெற்றுக்கொள்ளலாம்</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Bar: Legal Compliance Statement & Trust Badges -->
+                    <!-- Desktop Legal & Badges -->
+                    <div class="hidden md:grid md:grid-cols-12 gap-2 pt-1">
+                        <!-- Legal Notice -->
+                        <div class="md:col-span-8 bg-amber-50/90 border border-amber-300/80 rounded-xl p-2.5 text-amber-950 flex items-start sm:items-center gap-2">
+                            <i class="fa-solid fa-scale-balanced text-amber-600 text-sm shrink-0 mt-0.5 sm:mt-0"></i>
+                            <div class="text-[10px] leading-tight text-slate-700">
+                                <strong class="font-bold text-amber-950">Legal Compliance Notice:</strong>
+                                This website provides info on our products &amp; services. Any sale/delivery of firecrackers is subject to applicable laws and court directions.
+                            </div>
+                        </div>
+                        <!-- Badges -->
+                        <div class="md:col-span-4 grid grid-cols-3 gap-1.5">
+                            <div class="flex items-center justify-center gap-1 bg-slate-50 border border-slate-200/80 rounded-xl py-1.5 px-1 text-[9px] sm:text-[10px] font-bold text-slate-700 text-center">
+                                <i class="fa-solid fa-certificate text-emerald-600 text-xs"></i>
+                                <span>100% Legal</span>
+                            </div>
+                            <div class="flex items-center justify-center gap-1 bg-slate-50 border border-slate-200/80 rounded-xl py-1.5 px-1 text-[9px] sm:text-[10px] font-bold text-slate-700 text-center">
+                                <i class="fa-solid fa-warehouse text-amber-600 text-xs"></i>
+                                <span>Licensed</span>
+                            </div>
+                            <div class="flex items-center justify-center gap-1 bg-slate-50 border border-slate-200/80 rounded-xl py-1.5 px-1 text-[9px] sm:text-[10px] font-bold text-slate-700 text-center">
+                                <i class="fa-solid fa-truck-fast text-rose-600 text-xs"></i>
+                                <span>Transport</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Legal Compliance Micro Bar (Ultra-Compact) -->
+                    <div class="block md:hidden bg-amber-50/80 border border-amber-200/80 rounded-xl px-2.5 py-1.5 text-slate-700">
+                        <div class="flex items-center justify-between gap-1.5">
+                            <div class="flex items-center gap-1.5 min-w-0">
+                                <i class="fa-solid fa-scale-balanced text-amber-600 text-xs shrink-0"></i>
+                                <p class="text-[10px] leading-tight text-slate-700">
+                                    <strong class="text-amber-950 font-bold">சட்டப்பூர்வ அறிவிப்பு:</strong> விதிகளுக்குட்பட்டு சிவகாசியில் இருந்து பார்சல் அனுப்பப்படுகிறது.
+                                </p>
+                            </div>
+                            <span class="text-[9px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-1.5 py-0.5 rounded shrink-0">
+                                <i class="fa-solid fa-shield-check mr-0.5"></i>100% Legal
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Action Footer (shrink-0: always firmly anchored and visible) -->
+                <div class="shrink-0 bg-slate-50 border-t border-slate-200/80 px-3 sm:px-6 py-2 sm:py-3 flex flex-col sm:flex-row items-center justify-between gap-2">
+                    <label class="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] text-slate-500 select-none cursor-pointer self-start sm:self-center">
                         <input type="checkbox" id="dontShowAgainTodayCheck"
-                            class="rounded border-slate-300 text-rose-600 focus:ring-rose-500">
-                        <span>Don't show again today</span>
+                            class="rounded border-slate-300 text-rose-600 focus:ring-rose-500 w-3.5 h-3.5">
+                        <span>Don't show again today (இன்று காட்ட வேண்டாம்)</span>
                     </label>
 
-                    <button type="button" onclick="acceptLegalModal()"
-                        class="w-full sm:w-auto bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-700 hover:to-amber-700 text-white font-extrabold text-xs py-2.5 px-5 rounded-xl shadow-md transition-all cursor-pointer font-heading flex items-center justify-center gap-1.5">
-                        <span>I Understand & Proceed</span>
-                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </button>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <button type="button" onclick="closeLegalModal()"
+                            class="sm:hidden flex-1 py-2 px-3 rounded-xl border border-slate-300 bg-white active:bg-slate-100 text-slate-700 font-bold text-xs transition-all cursor-pointer text-center">
+                            Close / மூடுக
+                        </button>
+                        <button type="button" onclick="acceptLegalModal()"
+                            class="flex-1 sm:flex-none w-full sm:w-auto bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-700 hover:to-amber-700 text-white font-extrabold text-xs py-2 sm:py-2.5 px-4 sm:px-5 rounded-xl shadow-md transition-all cursor-pointer font-heading flex items-center justify-center gap-1.5 active:scale-95 text-center">
+                            <span>Start Shopping</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     @endif
 
-    <!-- Change Password Modal for Admin -->
-    @auth
+    <!-- Change Password Modal & Live Notifications for Admin (Admin Routes Only) -->
+    @if (auth()->check() && request()->routeIs('admin.*'))
         <div id="changePasswordModal"
             class="fixed inset-0 z-50 hidden bg-slate-950/70 backdrop-blur-sm p-4 overflow-y-auto flex items-center justify-center transition-all"
             aria-hidden="true" role="dialog" aria-modal="true">
@@ -2967,7 +3170,7 @@
             })
             ();
         </script>
-    @endauth
+    @endif
 
     <!-- ========================================================
          FESTIVE SIVAKASI CRACKER FUSE SCROLLBAR (வெடி திரி)

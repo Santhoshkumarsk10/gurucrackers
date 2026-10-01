@@ -140,10 +140,15 @@
                         </div>
 
                         @if ($ord->isDispatched())
-                            <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 text-xs text-teal-900 flex items-center justify-between gap-2">
+                            <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 text-xs text-teal-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                                 <div>
                                     <strong class="font-heading font-bold">{{ $ord->parcel_service_name ?: 'A1 Parcel Service' }}</strong>
-                                    <span class="text-[11px] text-teal-700 ml-1">(LR: {{ $ord->lr_number }})</span>
+                                    <span class="text-[11px] text-teal-700 ml-1 font-mono font-bold">(LR: {{ $ord->lr_number }})</span>
+                                    @if ($ord->delivery_charges !== null && (float)$ord->delivery_charges > 0)
+                                        <div class="text-[11px] text-amber-800 font-bold mt-0.5">
+                                            Delivery Charges: ₹{{ number_format($ord->delivery_charges, 2) }} (To Pay at Hub)
+                                        </div>
+                                    @endif
                                 </div>
                                 <span class="text-[10px] font-bold text-teal-800 bg-teal-200/60 px-2 py-0.5 rounded">
                                     {{ $ord->parcel_count ?: '1 Box' }}

@@ -16,7 +16,14 @@ class OrderController extends Controller
         $query = Order::withCount('items')->orderByDesc('created_at');
 
         if ($request->filled('status')) {
-            $query->where('payment_status', $request->status);
+            $statusFilter = $request->status;
+            if ($statusFilter === 'paid') {
+                $query->where('payment_status', 'paid');
+            } elseif ($statusFilter === 'unpaid') {
+                $query->where('payment_status', 'pending');
+            } else {
+                $query->where('status', $statusFilter);
+            }
         }
 
         if ($request->filled('search')) {
@@ -38,10 +45,11 @@ class OrderController extends Controller
 
         $orders = $query->paginate(10)->withQueryString();
 
-        $statusCounts = Order::selectRaw("COALESCE(payment_status, 'pending') as status_key, count(*) as total")
+        $statusCounts = Order::selectRaw("COALESCE(status, 'pending') as status_key, count(*) as total")
             ->groupBy('status_key')
             ->pluck('total', 'status_key')
             ->toArray();
+        $statusCounts['paid'] = Order::where('payment_status', 'paid')->count();
         $totalOrdersCount = Order::count();
 
         return view('admin.orders.index', compact('orders', 'statusCounts', 'totalOrdersCount'));
@@ -82,54 +90,65 @@ class OrderController extends Controller
     }
 
     /**
-     * Update order payment/confirmation status.
-     * Enforces STRICT single-direction progression:
-     * pending -> paid -> confirmed -> dispatched (locked)
-     * No skipping, no reverting.
+     * Update order payment or order status.
+     * Specification:
+     * - Initial: status = 'pending', payment_status = 'pending'
+     * - When payment marked as paid: payment_status = 'paid', status = 'confirmed' (if was pending)
+     * - When packed: status = 'packed'
+     * - When dispatched: status = 'dispatched' (via dispatchOrder)
+     * - payment_status strictly: 'pending' or 'paid'
      */
     public function updateStatus(Request $request, Order $order)
     {
-        $statusSequence = [
-            'pending' => 'paid',
-            'paid' => 'confirmed',
-        ];
+        $messages = [];
+        $wasPaid = $order->isPaid();
 
-        $currentStatus = $order->payment_status ?: 'pending';
+        // 1. Payment status update
+        if ($request->has('payment_status')) {
+            $reqPay = $request->input('payment_status');
+            if (in_array($reqPay, ['pending', 'paid'])) {
+                $order->payment_status = $reqPay;
 
-        // Dispatched is terminal - cannot be modified
-        if ($currentStatus === 'dispatched') {
-            return back()->with('error', "Order #{$order->order_number} is in final status (DISPATCHED) and is locked against further status changes.");
-        }
-
-        // If order is confirmed, moving to dispatched MUST be done through the Parcel Booking form
-        if ($currentStatus === 'confirmed') {
-            return back()->with('error', "Order is Confirmed (Packing Ready). To advance to Dispatched, please fill and submit the 'Parcel Service Booking' form below with LR receipt details.");
-        }
-
-        $expectedNext = $statusSequence[$currentStatus] ?? null;
-        $requestedStatus = $request->input('payment_status');
-
-        if (!$expectedNext || $requestedStatus !== $expectedNext) {
-            return back()->with('error', "Strict status rule violation: Order status can only advance from " . strtoupper($currentStatus) . " to the immediate next status (" . strtoupper($expectedNext ?? 'NONE') . "). You cannot revert to a previous status or skip steps.");
-        }
-
-        $order->update([
-            'payment_status' => $expectedNext,
-            'payment_notes' => $request->input('payment_notes') ?? $order->payment_notes,
-        ]);
-
-        $message = "Order #{$order->order_number} status advanced to " . strtoupper($expectedNext) . "!";
-
-        // If marked paid: automatically send official Invoice PDF to WhatsApp
-        if ($expectedNext === 'paid') {
-            $shop = Shop::current();
-            $waRes = WhatsAppOrderService::sendPaymentConfirmationWithPdf($order, $shop);
-            if ($waRes['success']) {
-                $message .= " Official Invoice PDF & confirmation delivered to Customer WhatsApp (" . $order->phone1 . ") via Bot!";
+                // When admin marks as paid, if status is pending, advance status to confirmed!
+                if ($reqPay === 'paid' && $order->status === 'pending') {
+                    $order->status = 'confirmed';
+                    $messages[] = "Payment marked as PAID & Order CONFIRMED!";
+                } else {
+                    $messages[] = "Payment status updated to " . strtoupper($reqPay);
+                }
             }
         }
 
-        return back()->with('status', $message);
+        // 2. Order lifecycle status update
+        if ($request->has('status')) {
+            $reqStatus = $request->input('status');
+            $allowedStatuses = ['pending', 'confirmed', 'packed', 'dispatched', 'cancelled'];
+            if (in_array($reqStatus, $allowedStatuses)) {
+                $order->status = $reqStatus;
+                if ($reqStatus === 'dispatched' && is_null($order->dispatched_at)) {
+                    $order->dispatched_at = now();
+                }
+                $messages[] = "Order status updated to " . strtoupper($reqStatus);
+            }
+        }
+
+        if ($request->filled('payment_notes')) {
+            $order->payment_notes = $request->input('payment_notes');
+        }
+
+        $order->save();
+
+        // If newly marked paid: automatically send official Invoice PDF to WhatsApp
+        if (!$wasPaid && $order->isPaid()) {
+            $shop = Shop::current();
+            $waRes = WhatsAppOrderService::sendPaymentConfirmationWithPdf($order, $shop);
+            if ($waRes['success']) {
+                $messages[] = "Official Invoice PDF & confirmation delivered to Customer WhatsApp (" . $order->phone1 . ") via Bot!";
+            }
+        }
+
+        $msg = !empty($messages) ? implode(' | ', $messages) : "Order #{$order->order_number} updated.";
+        return back()->with('status', $msg);
     }
 
     /**
@@ -137,9 +156,9 @@ class OrderController extends Controller
      */
     public function dispatchOrder(Request $request, Order $order)
     {
-        // Enforce progression: cannot dispatch unless confirmed or already dispatched
-        if (!$order->isConfirmed()) {
-            return back()->with('error', "Cannot dispatch order yet! Order must be in 'Confirmed (Packing Ready)' status first. Please verify payment and mark the order as Confirmed first.");
+        // Enforce progression: cannot dispatch unless confirmed, packed, or already dispatched
+        if (!$order->isConfirmed() && !$order->isPacked() && !$order->isDispatched()) {
+            return back()->with('error', "Cannot dispatch order yet! Order must be in 'Confirmed' or 'Packed' status first.");
         }
 
         if ($request->filled('transport_phone')) {
@@ -162,11 +181,13 @@ class OrderController extends Controller
             'dispatch_date' => 'nullable|date',
             'transport_phone' => ['nullable', 'string', 'regex:/^[6-9][0-9]{9}$/'],
             'destination_hub' => 'nullable|string|max:100',
+            'delivery_charges' => 'nullable|numeric|min:0|max:999999',
             'lr_receipt_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240', // 10MB
             'dispatch_notes' => 'nullable|string|max:1000',
             'send_whatsapp' => 'nullable|boolean',
         ], [
             'transport_phone.regex' => 'Transport contact phone must be exactly 10 digits starting with 6, 7, 8, or 9.',
+            'delivery_charges.numeric' => 'Delivery charges must be a valid number.',
         ]);
 
         $parcelService = $validated['parcel_service_name'];
@@ -190,9 +211,11 @@ class OrderController extends Controller
             'dispatch_date' => $validated['dispatch_date'] ?: now()->toDateString(),
             'transport_phone' => $validated['transport_phone'] ?? null,
             'destination_hub' => $validated['destination_hub'] ?: $order->city,
+            'delivery_charges' => $request->filled('delivery_charges') ? (float) $request->input('delivery_charges') : null,
             'lr_receipt_image' => $imagePath,
             'dispatch_notes' => $validated['dispatch_notes'] ?? null,
-            'payment_status' => 'dispatched',
+            'status' => 'dispatched',
+            'payment_status' => $order->payment_status ?: 'paid',
             'dispatched_at' => $order->dispatched_at ?: now(),
         ]);
 
@@ -362,7 +385,8 @@ class OrderController extends Controller
                     'phone' => $order->phone1,
                     'city' => $order->city,
                     'total_amount_formatted' => '₹' . number_format($order->total_amount, 2),
-                    'payment_status' => $order->payment_status,
+                    'status' => $order->status ?? 'pending',
+                    'payment_status' => $order->payment_status ?? 'pending',
                     'items_count' => $order->items_count,
                     'time' => $order->created_at->format('h:i A'),
                     'time_ago' => $order->created_at->diffForHumans(),
@@ -372,7 +396,7 @@ class OrderController extends Controller
             });
 
         $latestId = Order::max('id') ?? 0;
-        $pendingCount = Order::where('payment_status', 'pending')->count();
+        $pendingCount = Order::where('status', 'pending')->count();
         $unreadCount = Order::whereNull('admin_read_at')->count();
 
         return response()->json([

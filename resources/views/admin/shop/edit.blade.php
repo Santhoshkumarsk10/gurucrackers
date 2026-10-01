@@ -57,7 +57,7 @@
                     </span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <!-- Offer Headline -->
                     <div class="md:col-span-2 space-y-1.5">
                         <label for="offer" class="block text-xs font-bold text-slate-700">
@@ -86,6 +86,21 @@
                                 class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-sm">%</span>
                         </div>
                         <p class="text-[11px] text-slate-500">e.g. "Up to 90% Discount"</p>
+                    </div>
+
+                    <!-- Minimum Order Amount (₹) -->
+                    <div class="space-y-1.5">
+                        <label for="min_order_amount" class="block text-xs font-bold text-slate-700">
+                            Minimum Order Amount (₹) <span class="text-rose-600">*</span>
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-sm">₹</span>
+                            <input type="number" name="min_order_amount" id="min_order_amount"
+                                value="{{ old('min_order_amount', $shop->getMinOrderAmount()) }}" required min="0" step="50"
+                                placeholder="2500"
+                                class="w-full pl-8 pr-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 font-black text-slate-900 transition-all">
+                        </div>
+                        <p class="text-[11px] text-slate-500">Minimum cart amount required to checkout.</p>
                     </div>
                 </div>
 

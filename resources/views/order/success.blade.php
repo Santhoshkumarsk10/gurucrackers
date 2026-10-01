@@ -393,8 +393,24 @@
 
         <!-- Total -->
         <div class="border-t-2 border-slate-200 pt-3 flex justify-between items-baseline">
-            <span class="font-extrabold text-sm sm:text-base text-slate-900 font-heading">Total Payable Amount:</span>
+            <div>
+                <span class="font-extrabold text-sm sm:text-base text-slate-900 font-heading block">Total Order Amount:</span>
+                <span class="text-[10px] sm:text-[11px] font-bold text-amber-800 bg-amber-100/90 px-1.5 py-0.5 rounded inline-block mt-0.5">
+                    Without Delivery Charges (டெலிவரி கட்டணம் தனி)
+                </span>
+            </div>
             <span class="text-2xl font-black text-rose-700 font-heading">₹{{ number_format($order->total_amount, 2) }}</span>
+        </div>
+
+        <!-- Delivery Charges Disclaimer -->
+        <div class="mt-3 p-3 rounded-xl bg-amber-50/90 border border-amber-300/80 text-xs text-amber-950 flex items-start gap-2.5">
+            <i class="fa-solid fa-truck-fast text-amber-600 text-sm mt-0.5 shrink-0"></i>
+            <div class="leading-tight">
+                <strong class="font-bold text-amber-900">Delivery Charges Notice:</strong>
+                <p class="text-[11px] text-slate-600 mt-1 leading-snug">
+                    Delivery charges may differ depending on the transport partner (டிரான்ஸ்போர்ட் நிறுவனத்தைப் பொறுத்து டெலிவரி கட்டணம் மாறுபடும்). பார்சல் உங்கள் ஊர் கிளைக்கு வந்ததும் இந்த கட்டணத்தை செலுத்தி பெற்றுக்கொள்ளலாம்.
+                </p>
+            </div>
         </div>
     </div>
 

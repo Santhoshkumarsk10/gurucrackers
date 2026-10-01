@@ -13,7 +13,10 @@ use App\Services\WhatsAppOrderService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -152,7 +155,7 @@ class OrderApiController extends Controller
             'delivery_address' => ['required', 'string', 'min:5', 'max:250', 'regex:/^[^<>{}[\]~^$*;\"\'!?=+\\\\|%]+$/'],
             'city' => ['required', 'string', 'min:2', 'max:50', 'regex:/^[a-zA-Z\s.\-]+$/'],
             'state' => ['nullable', 'string', 'max:100'],
-            'pincode' => ['required', 'string', 'regex:/^[0-9]{6}$/'],
+            'pincode' => ['required', 'string', 'regex:/^6[0-4][0-9]{4}$/'],
             'products' => 'required',
         ], [
             'name.required' => 'Customer full name is required.',
@@ -165,9 +168,26 @@ class OrderApiController extends Controller
             'city.required' => 'City / Town name is required.',
             'city.regex' => 'City name can only contain letters, spaces, dots, and hyphens.',
             'pincode.required' => 'Pincode is required.',
-            'pincode.regex' => 'Pincode must be exactly 6 digits.',
+            'pincode.regex' => 'Delivery is available inside Tamil Nadu only. Please enter a valid Tamil Nadu pincode (60xxxx - 64xxxx).',
             'products.required' => 'Please select at least one product with quantity.',
         ]);
+
+        // Enforce WhatsApp OTP verification for customer phone
+        $otpToken = (string) $request->input('otp_token', '');
+        $tokenCacheKey = "order_verified_token_{$otpToken}";
+        $cachedToken = !empty($otpToken) ? Cache::get($tokenCacheKey) : null;
+        $isPhoneVerified = $cachedToken && isset($cachedToken['phone']) && ($cachedToken['phone'] === $validated['phone1']);
+
+        if (!$isPhoneVerified && !config('app.debug_bypass_otp', false)) {
+            return $this->corsJson([
+                'success' => false,
+                'message' => 'Please verify your WhatsApp mobile number via OTP before booking.',
+            ], 422);
+        }
+
+        if (!empty($otpToken)) {
+            Cache::forget($tokenCacheKey);
+        }
 
         // Normalize products whether submitted as [{product_id: 1, qty: 2}] or {"1": {"qty": 2}}
         $rawProducts = $request->input('products');
@@ -204,6 +224,26 @@ class OrderApiController extends Controller
             return $this->corsJson([
                 'success' => false,
                 'message' => 'Please select at least one product with quantity.',
+            ], 422);
+        }
+
+        // Enforce minimum order value
+        $shop = Shop::current();
+        $minOrderAmount = $shop->getMinOrderAmount();
+        $productIds = $normalizedSelected->keys()->all();
+        $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+        $preTotal = 0;
+        foreach ($normalizedSelected as $productId => $item) {
+            $product = $products->get($productId);
+            if ($product) {
+                $preTotal += $product->net_rate * (int) $item['qty'];
+            }
+        }
+
+        if ($preTotal < $minOrderAmount) {
+            return $this->corsJson([
+                'success' => false,
+                'message' => 'குறைந்தபட்ச ஆர்டர் தொகை ₹' . number_format($minOrderAmount, 2) . ' ஆகும் (Minimum order value is ₹' . number_format($minOrderAmount, 2) . '). உங்கள் தற்போதைய ஆர்டர் மதிப்பு ₹' . number_format($preTotal, 2) . '. மேலும் பட்டாசுகளை Cart-ல் சேர்த்து தொடரவும்.',
             ], 422);
         }
 
@@ -290,6 +330,8 @@ class OrderApiController extends Controller
             'message' => 'Order placed successfully!',
             'order_number' => $order->order_number,
             'total_amount' => (float) $order->total_amount,
+            'delivery_charges' => $order->delivery_charges !== null ? (float) $order->delivery_charges : null,
+            'delivery_note' => 'Without delivery charges. Delivery charges may differ depending on transport partner.',
             'upi_url' => $upiUrl,
             'payment_screenshot_whatsapp_url' => $paymentScreenshotWhatsAppUrl,
             'customer_invoice_whatsapp_url' => $customerInvoiceWhatsAppUrl,
@@ -348,9 +390,23 @@ class OrderApiController extends Controller
                 'name' => $order->name,
                 'phone1' => $order->phone1,
                 'city' => $order->city,
+                'state' => $order->state,
+                'pincode' => $order->pincode,
+                'delivery_address' => $order->delivery_address,
                 'total_amount' => (float) $order->total_amount,
+                'delivery_charges' => $order->delivery_charges !== null ? (float) $order->delivery_charges : null,
                 'status' => $order->status ?? 'pending',
                 'payment_status' => $order->payment_status ?? 'pending',
+                'parcel_service_name' => $order->parcel_service_name,
+                'lr_number' => $order->lr_number,
+                'parcel_count' => $order->parcel_count,
+                'dispatch_date' => $order->dispatch_date ? $order->dispatch_date->format('d M Y') : ($order->dispatched_at ? $order->dispatched_at->format('d M Y') : null),
+                'transport_phone' => $order->transport_phone,
+                'destination_hub' => $order->destination_hub,
+                'lr_receipt_image' => $order->lr_receipt_image ? asset('storage/' . $order->lr_receipt_image) : null,
+                'dispatched_at' => $order->dispatched_at ? $order->dispatched_at->format('d M Y, h:i A') : null,
+                'invoice_url' => route('order.public_invoice', ['orderNumber' => $order->order_number, 'token' => $order->getInvoiceSignature()]),
+                'download_pdf_url' => route('order.public_invoice.download', ['orderNumber' => $order->order_number, 'token' => $order->getInvoiceSignature()]),
                 'created_at' => $order->created_at->format('d M Y, h:i A'),
                 'items_count' => $order->items->count(),
                 'items' => $order->items->map(function ($item) {
@@ -401,6 +457,7 @@ class OrderApiController extends Controller
                 'status' => $order->status ?? 'pending',
                 'payment_status' => $order->payment_status ?? 'pending',
                 'total_amount' => (float) $order->total_amount,
+                'delivery_charges' => $order->delivery_charges !== null ? (float) $order->delivery_charges : null,
                 'created_at' => $order->created_at->format('d M Y, h:i A'),
                 'items' => $order->items->map(function ($item) {
                     return [
@@ -420,5 +477,202 @@ class OrderApiController extends Controller
             'invoice_url' => route('order.public_invoice', ['orderNumber' => $order->order_number]),
             'download_pdf_url' => route('order.public_invoice.download', ['orderNumber' => $order->order_number]),
         ]);
+    }
+
+    /**
+     * Generate & send a 4-digit verification OTP to customer's WhatsApp for Mobile App.
+     */
+    public function sendOtp(Request $request): JsonResponse
+    {
+        $phone = $request->input('phone1', '');
+        $digits = preg_replace('/[^0-9]/', '', $phone);
+        if (strlen($digits) === 12 && str_starts_with($digits, '91')) {
+            $digits = substr($digits, 2);
+        } elseif (strlen($digits) === 11 && str_starts_with($digits, '0')) {
+            $digits = substr($digits, 1);
+        } elseif (strlen($digits) > 10) {
+            $digits = substr($digits, -10);
+        }
+
+        if (strlen($digits) !== 10 || !preg_match('/^[6-9][0-9]{9}$/', $digits)) {
+            return $this->corsJson([
+                'success' => false,
+                'message' => 'Please enter a valid 10-digit WhatsApp mobile number.'
+            ], 422);
+        }
+
+        $cooldownKey = "order_otp_cooldown_{$digits}";
+        if (Cache::has($cooldownKey)) {
+            return $this->corsJson([
+                'success' => false,
+                'cooldown' => true,
+                'message' => 'An OTP was recently sent. Please wait before requesting another code.'
+            ], 429);
+        }
+
+        $rateLimitKey = 'order-otp:' . $digits;
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 6)) {
+            $seconds = RateLimiter::availableIn($rateLimitKey);
+            $minutes = ceil($seconds / 60);
+            return $this->corsJson([
+                'success' => false,
+                'message' => "Too many OTP requests. Please wait {$minutes} minute(s) before trying again."
+            ], 429);
+        }
+        RateLimiter::hit($rateLimitKey, 900);
+
+        $otp = (string) random_int(1000, 9999);
+        $cacheKey = "order_otp_{$digits}";
+        Cache::put($cacheKey, [
+            'otp' => $otp,
+            'phone' => $digits,
+            'attempts' => 0,
+            'created_at' => now()->timestamp,
+        ], now()->addMinutes(10));
+
+        Cache::put($cooldownKey, true, now()->addSeconds(30));
+
+        $name = trim($request->input('name', 'Customer'));
+        $name = preg_replace('/[^a-zA-Z\s.]/', '', $name);
+        $greeting = !empty($name) ? "Hello {$name}! 🙏" : "Hello! 🙏";
+
+        $message = "✨ *GURU CRACKERS - SIVAKASI* 🪔\n"
+                 . "Mobile App Booking Verification\n\n"
+                 . "{$greeting}\n"
+                 . "Your verification OTP to confirm your Diwali cracker booking is:\n\n"
+                 . "🔐 *{$otp}*\n\n"
+                 . "⏰ Valid for 10 minutes.\n"
+                 . "⚠️ Do NOT share this code with anyone.\n\n"
+                 . "Once verified, your order will be confirmed directly from Sivakasi factory! 🎆";
+
+        $sendResult = WhatsAppOrderService::sendDirectMessage($digits, $message, null, 'order_otp');
+        $maskedPhone = '+91 ' . substr($digits, 0, 5) . ' ' . substr($digits, -5);
+        Log::info("Mobile App WhatsApp OTP generated for {$digits}: {$otp} (Gateway status: " . ($sendResult['success'] ? 'Sent' : ($sendResult['error'] ?? 'Offline')) . ")");
+
+        return $this->corsJson([
+            'success' => true,
+            'message' => "Verification code sent to your WhatsApp number ({$maskedPhone}).",
+            'phone' => $digits,
+            'masked_phone' => $maskedPhone,
+            'cooldown' => 30,
+            'whatsapp_sent' => (bool) ($sendResult['success'] ?? false),
+            'debug_otp' => config('app.debug') ? $otp : null,
+        ]);
+    }
+
+    /**
+     * Verify customer's 4-digit OTP for Mobile App.
+     */
+    public function verifyOtp(Request $request): JsonResponse
+    {
+        $phone = $request->input('phone1', '');
+        $digits = preg_replace('/[^0-9]/', '', $phone);
+        if (strlen($digits) === 12 && str_starts_with($digits, '91')) {
+            $digits = substr($digits, 2);
+        } elseif (strlen($digits) === 11 && str_starts_with($digits, '0')) {
+            $digits = substr($digits, 1);
+        } elseif (strlen($digits) > 10) {
+            $digits = substr($digits, -10);
+        }
+
+        $otpInput = trim((string) $request->input('otp', ''));
+        if (strlen($otpInput) !== 4 || !ctype_digit($otpInput)) {
+            return $this->corsJson([
+                'success' => false,
+                'message' => 'Please enter the 4-digit OTP code.'
+            ], 422);
+        }
+
+        $cacheKey = "order_otp_{$digits}";
+        $cachedData = Cache::get($cacheKey);
+
+        if (!$cachedData) {
+            return $this->corsJson([
+                'success' => false,
+                'message' => 'OTP has expired or was not requested. Please click Resend OTP.'
+            ], 422);
+        }
+
+        if (($cachedData['attempts'] ?? 0) >= 5) {
+            Cache::forget($cacheKey);
+            return $this->corsJson([
+                'success' => false,
+                'message' => 'Too many failed OTP attempts. Please request a new OTP code.'
+            ], 422);
+        }
+
+        if ($cachedData['otp'] !== $otpInput) {
+            $cachedData['attempts'] = ($cachedData['attempts'] ?? 0) + 1;
+            $remaining = 5 - $cachedData['attempts'];
+            Cache::put($cacheKey, $cachedData, now()->addMinutes(10));
+
+            return $this->corsJson([
+                'success' => false,
+                'message' => "Incorrect OTP code. {$remaining} attempt(s) remaining."
+            ], 422);
+        }
+
+        Cache::forget($cacheKey);
+        $token = Str::random(40);
+        Cache::put("order_verified_token_{$token}", [
+            'phone' => $digits,
+            'created_at' => now()->timestamp,
+        ], now()->addMinutes(30));
+
+        return $this->corsJson([
+            'success' => true,
+            'message' => 'WhatsApp number verified successfully!',
+            'token' => $token,
+            'phone' => $digits,
+        ]);
+    }
+
+    /**
+     * Pincode Auto-Lookup strictly restricted to Tamil Nadu (60xxxx - 64xxxx).
+     */
+    public function lookupPincode(string $pincode): JsonResponse
+    {
+        $cleanPin = preg_replace('/[^0-9]/', '', $pincode);
+        if (strlen($cleanPin) !== 6) {
+            return $this->corsJson([
+                'success' => false,
+                'message' => 'Please enter a valid 6-digit Pincode.'
+            ], 422);
+        }
+
+        if (!preg_match('/^6[0-4][0-9]{4}$/', $cleanPin)) {
+            return $this->corsJson([
+                'success' => false,
+                'is_serviceable' => false,
+                'message' => 'Delivery is available inside Tamil Nadu only. Please enter a valid Tamil Nadu pincode (60xxxx - 64xxxx).'
+            ], 422);
+        }
+
+        $cacheKey = "pincode_lookup_v2_{$cleanPin}";
+        $data = Cache::remember($cacheKey, 86400 * 30, function () use ($cleanPin) {
+            try {
+                $response = Http::timeout(3)->get("https://api.postalpincode.in/pincode/{$cleanPin}");
+                if ($response->successful()) {
+                    $body = $response->json();
+                    if (!empty($body[0]['PostOffice'][0])) {
+                        $first = $body[0]['PostOffice'][0];
+                        return [
+                            'city' => $first['District'] ?? $first['Name'] ?? 'Tamil Nadu',
+                            'district' => $first['District'] ?? 'Tamil Nadu',
+                            'state' => 'Tamil Nadu',
+                            'pincode' => $cleanPin,
+                        ];
+                    }
+                }
+            } catch (\Throwable $e) {}
+            return [
+                'city' => 'Tamil Nadu',
+                'district' => 'Tamil Nadu',
+                'state' => 'Tamil Nadu',
+                'pincode' => $cleanPin,
+            ];
+        });
+
+        return $this->corsJson(array_merge(['success' => true, 'is_serviceable' => true], $data));
     }
 }
