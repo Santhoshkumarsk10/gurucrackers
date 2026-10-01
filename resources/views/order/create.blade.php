@@ -12,9 +12,9 @@
         @endphp
 
         <section
-            class="relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl shadow-rose-900/15 group select-none min-h-[295px] sm:min-h-[275px] md:min-h-[260px] bg-slate-950"
+            class="relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl shadow-rose-900/15 group select-none min-h-[305px] sm:min-h-[275px] md:min-h-[260px] bg-slate-950"
             id="heroCarouselSection">
-            <div class="relative w-full h-full min-h-[295px] sm:min-h-[275px] md:min-h-[260px]"
+            <div class="relative w-full h-full min-h-[305px] sm:min-h-[275px] md:min-h-[260px]"
                 id="bannerCarouselTrack">
 
                 <!-- SLIDE 0: Diwali 2026 Festival Countdown & Online Booking Closing Card (Default 1st Slide) -->
@@ -147,9 +147,9 @@
 
                         <!-- Bottom Motivation Banner -->
                         <div
-                            class="flex items-center justify-center gap-1.5 text-center text-[10px] sm:text-xs text-amber-200 font-medium px-2 leading-tight">
+                            class="flex items-center justify-center gap-1.5 text-center text-[10px] sm:text-xs text-amber-200 font-medium px-2 leading-snug">
                             <span class="text-amber-400 animate-pulse shrink-0">🔥</span>
-                            <span class="line-clamp-1 sm:line-clamp-none">விரைந்து ஆர்டர் செய்யுங்கள்! சிவகாசி பேக்கிங் நெரிசலை தவிர்க்க முந்துங்கள்!</span>
+                            <span>விரைந்து ஆர்டர் செய்யுங்கள்! சிவகாசி பேக்கிங் மற்றும் போக்குவரத்து நெரிசலை தவிர்க்க முந்துங்கள்!</span>
                         </div>
                     </div>
                 </div>
