@@ -407,6 +407,12 @@
                                 <td class="card-label">LR / Waybill #:</td>
                                 <td class="card-val" style="color: #4338ca;">{{ $order->lr_number ?? 'N/A' }}</td>
                             </tr>
+                            @if ($order->delivery_charges !== null && (float)$order->delivery_charges > 0)
+                                <tr>
+                                    <td class="card-label">Delivery Charge:</td>
+                                    <td class="card-val" style="color: #b45309;">₹{{ number_format($order->delivery_charges, 2) }} (To Pay at Hub)</td>
+                                </tr>
+                            @endif
                         @else
                             <tr>
                                 <td class="card-label">Payment Status:</td>
@@ -464,7 +470,7 @@
             </td>
             <td style="width: 260px;">
                 <div class="total-summary-card">
-                    <span class="grand-total-label">Grand Total:</span>
+                    <span class="grand-total-label">Grand Total (Excl. Delivery):</span>
                     <span class="grand-total-val">₹{{ number_format($order->total_amount, 2) }}</span>
                 </div>
             </td>
@@ -477,7 +483,7 @@
     <div class="notes-box">
         <strong>Notice & Legal Compliances:</strong>
         All fireworks are 100% genuine Green Crackers manufactured in Sivakasi following statutory safety & explosive acts.
-        Parcels are securely packed and dispatched through registered transport operators.
+        Parcels are securely packed and dispatched through registered transport operators. Delivery charges are extra and vary depending on the transport partner, payable at parcel collection.
         @if (!$order->isPaid() && !empty($shop->upi_id))
             <br><strong>UPI Payment:</strong> Pay ₹{{ number_format($order->total_amount, 2) }} to <strong>{{ $shop->upi_id }}</strong> and share transaction screenshot for instant dispatch verification.
         @endif

@@ -133,7 +133,10 @@
                             Total Products: <strong class="text-slate-900">{{ $order->items->count() }}</strong>
                             &middot; Total Units: <strong class="text-slate-900">{{ $order->total_quantity }}</strong>
                         </td>
-                        <td colspan="2" class="py-3 px-3 text-right text-slate-800 font-heading text-sm">Grand Total:</td>
+                        <td colspan="2" class="py-3 px-3 text-right text-slate-800 font-heading text-sm">
+                            <div>Grand Total:</div>
+                            <div class="text-[10px] text-amber-700 font-normal">Without Delivery Charges</div>
+                        </td>
                         <td class="py-3 px-3 text-right text-lg sm:text-xl font-black text-rose-700 font-heading">
                             ₹{{ number_format($order->total_amount, 2) }}
                         </td>
@@ -178,7 +181,7 @@
             <!-- Mobile Grand Total Summary Box -->
             <div class="bg-gradient-to-r from-rose-50 to-amber-50 rounded-2xl p-3.5 border border-rose-200/70 flex items-center justify-between shadow-xs">
                 <div>
-                    <span class="text-[11px] uppercase tracking-wider font-extrabold text-slate-500 block">Total Payable</span>
+                    <span class="text-[11px] uppercase tracking-wider font-extrabold text-slate-500 block">Total (Excl. Delivery)</span>
                     <span class="text-xs font-bold text-slate-700">{{ $order->items->count() }} Items &middot; {{ $order->total_quantity }} Units</span>
                 </div>
                 <div class="text-right">
@@ -210,7 +213,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
                     <div class="bg-white/5 rounded-xl p-3 border border-white/10">
                         <span class="text-[10px] text-slate-400 uppercase font-bold block">Parcel Count</span>
                         <span class="text-sm font-black text-amber-300 font-heading">{{ $order->parcel_count ?: '1 Box' }}</span>
@@ -222,6 +225,12 @@
                     <div class="bg-white/5 rounded-xl p-3 border border-white/10">
                         <span class="text-[10px] text-slate-400 uppercase font-bold block">Destination Hub</span>
                         <span class="text-xs font-bold text-white">{{ $order->destination_hub ?: $order->city }}</span>
+                    </div>
+                    <div class="bg-white/5 rounded-xl p-3 border border-white/10">
+                        <span class="text-[10px] text-slate-400 uppercase font-bold block">Delivery Charges</span>
+                        <span class="text-xs font-bold text-amber-300">
+                            {{ $order->delivery_charges !== null ? '₹' . number_format($order->delivery_charges, 2) : 'To Pay at Hub' }}
+                        </span>
                     </div>
                     <div class="bg-white/5 rounded-xl p-3 border border-white/10">
                         <span class="text-[10px] text-slate-400 uppercase font-bold block">Branch Helpline</span>

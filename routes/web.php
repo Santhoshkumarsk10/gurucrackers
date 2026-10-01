@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Route;
  */
 Route::get('/', [OrderController::class, 'create'])->name('order.create');
 Route::post('/order', [OrderController::class, 'store'])->middleware('throttle:15,1')->name('order.store');
+Route::post('/order/send-otp', [OrderController::class, 'sendOrderOtp'])->middleware('throttle:10,1')->name('order.send_otp');
+Route::post('/order/verify-otp', [OrderController::class, 'verifyOrderOtp'])->middleware('throttle:20,1')->name('order.verify_otp');
 Route::get('/order/success/{orderNumber}', [OrderController::class, 'success'])->name('order.success');
 Route::match(['get', 'post'], '/order/invoice/{orderNumber}', [OrderController::class, 'publicInvoice'])->middleware('throttle:30,1')->name('order.public_invoice');
 Route::get('/order/invoice/{orderNumber}/download', [OrderController::class, 'downloadInvoice'])->middleware('throttle:30,1')->name('order.public_invoice.download');
@@ -31,6 +33,9 @@ Route::match(['get', 'post'], '/track-order', [OrderController::class, 'trackOrd
 
 // QR code image for the order form URL — open this in browser to save/print it
 Route::get('/order-qr', [OrderController::class, 'qrCode'])->name('order.qr');
+
+// Free & 100% accurate India Post Pincode Lookup API
+Route::get('/api/pincode/{pincode}', [OrderController::class, 'lookupPincode'])->middleware('throttle:60,1')->name('pincode.lookup');
 
 // Internal WhatsApp microservice webhook for inbound customer messages
 Route::post('/api/whatsapp/webhook', [AdminWhatsAppController::class, 'webhook'])

@@ -260,6 +260,7 @@
         {{-- ===================== MAIN ORDER FORM ===================== --}}
         <form method="POST" action="{{ route('order.store') }}" id="orderForm" novalidate>
             @csrf
+            <input type="hidden" name="is_otp_verified" id="isOtpVerifiedInput" value="0">
 
             {{-- ===================== PRODUCT CATALOG LISTING ===================== --}}
             <div class="space-y-6" id="productCatalog">
@@ -499,10 +500,53 @@
                                 </div>
                                 <div
                                     class="flex justify-between items-baseline pt-2 border-t border-dashed border-slate-200">
-                                    <span class="text-sm sm:text-base font-extrabold text-slate-900 font-heading">Net
-                                        Payable Amount:</span>
+                                    <div>
+                                        <span class="text-sm sm:text-base font-extrabold text-slate-900 font-heading block">Net Order Amount:</span>
+                                        <span class="text-[10px] sm:text-[11px] font-bold text-amber-800 bg-amber-100/90 px-1.5 py-0.5 rounded inline-block mt-0.5">
+                                            Without Delivery Charges (டெலிவரி கட்டணம் தனி)
+                                        </span>
+                                    </div>
                                     <span class="text-xl sm:text-2xl font-black text-rose-700 font-heading"
                                         id="summaryPayableTotal">₹0.00</span>
+                                </div>
+
+                                <!-- Delivery Charges Notice Card -->
+                                <div class="rounded-xl p-2.5 bg-amber-50/90 border border-amber-300/80 text-xs flex items-start gap-2.5">
+                                    <i class="fa-solid fa-truck-fast text-amber-600 text-sm mt-0.5 shrink-0"></i>
+                                    <div class="leading-tight">
+                                        <div class="font-extrabold text-amber-950 flex items-center justify-between gap-1">
+                                            <span>Delivery Charges (டெலிவரி கட்டணம்):</span>
+                                            <span class="text-[9px] font-bold bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded shrink-0">Extra / To Pay at Hub</span>
+                                        </div>
+                                        <p class="text-[11px] text-slate-600 mt-1 leading-snug">
+                                            Delivery charges may differ depending on the transport partner (டிரான்ஸ்போர்ட் நிறுவனத்தைப் பொறுத்து டெலிவரி கட்டணம் மாறுபடும்). பார்சல் உங்கள் ஊர் கிளைக்கு வந்ததும் இந்த கட்டணத்தைச் செலுத்தி பெற்றுக்கொள்ளலாம்.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Minimum Order Value Alert & Live Progress -->
+                            @php
+                                $minOrderAmt = $shop->getMinOrderAmount();
+                            @endphp
+                            <div id="minOrderAlertBox"
+                                class="rounded-xl p-3 text-xs transition-all border bg-rose-50 border-rose-200 text-rose-900">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <i class="fa-solid fa-circle-exclamation text-rose-600" id="minOrderIcon"></i>
+                                        <span id="minOrderTitle">Minimum Order: ₹{{ number_format($minOrderAmt, 0) }}</span>
+                                    </div>
+                                    <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-200 text-rose-800"
+                                        id="minOrderBadge">
+                                        குறைந்தபட்ச ஆர்டர்
+                                    </span>
+                                </div>
+                                <p class="text-[11px] mt-1 text-slate-600 leading-relaxed" id="minOrderText">
+                                    குறைந்தபட்ச ஆர்டர் தொகை <strong>₹{{ number_format($minOrderAmt, 0) }}</strong> ஆகும். ஆர்டர் செய்ய கார்ட்டில் மேலும் பட்டாசுகளைச் சேர்க்கவும்.
+                                </p>
+                                <div class="w-full bg-rose-200/80 rounded-full h-1.5 mt-2 overflow-hidden">
+                                    <div id="minOrderProgressBar" class="bg-rose-600 h-1.5 rounded-full transition-all duration-300"
+                                        style="width: 0%;"></div>
                                 </div>
                             </div>
 
@@ -651,8 +695,45 @@
                                     </p>
                                 </div>
 
-                                <!-- City, State & Pincode -->
+                                <!-- Delivery Scope Notice -->
+                                <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 text-emerald-800 text-[11px] font-semibold">
+                                    <i class="fa-solid fa-truck-fast text-emerald-600 text-xs"></i>
+                                    <span>Direct parcel delivery available across <strong>Tamil Nadu only</strong> (தமிழ்நாடு எல்லைக்குள் மட்டுமே).</span>
+                                </div>
+
+                                <!-- Pincode, City / Town & State (Auto-fill on Pincode) -->
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-1">
+                                            <label class="block font-bold text-slate-700" for="pincodeInput">
+                                                Pincode <span class="text-rose-600">*</span>
+                                            </label>
+                                            <span id="pincodeBadgeHint" class="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200/60 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                                                <i class="fa-solid fa-bolt text-[9px] text-amber-500"></i> Auto-fill
+                                            </span>
+                                        </div>
+                                        <div class="relative">
+                                            <i
+                                                class="fa-solid fa-map-pin absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                                            <input type="text" name="pincode" id="pincodeInput"
+                                                value="{{ old('pincode') }}" required placeholder="TN 6-digit pincode (60xxxx - 64xxxx)"
+                                                pattern="6[0-4][0-9]{4}" minlength="6" maxlength="6" inputmode="numeric" autocomplete="postal-code"
+                                                class="w-full pl-8 pr-8 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all font-medium placeholder:text-slate-400">
+                                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs flex items-center pointer-events-none">
+                                                <i id="pincodeSpinner" class="fa-solid fa-circle-notch fa-spin text-rose-600 hidden"></i>
+                                                <i id="pincodeSuccessIcon" class="fa-solid fa-circle-check text-emerald-600 hidden"></i>
+                                            </span>
+                                        </div>
+                                        <p id="err-pincode"
+                                            class="field-error-msg hidden text-red-600 text-[11px] font-semibold mt-1 flex items-center gap-1">
+                                            <i class="fa-solid fa-circle-exclamation text-[10px]"></i>
+                                            <span></span>
+                                        </p>
+                                        <p id="pincodeSuccessMsg" class="hidden text-emerald-700 text-[11px] font-semibold mt-1 flex items-center gap-1">
+                                            <i class="fa-solid fa-circle-check text-[10px] text-emerald-600"></i>
+                                            <span id="pincodeSuccessText" class="truncate"></span>
+                                        </p>
+                                    </div>
                                     <div>
                                         <label class="block font-bold text-slate-700 mb-1" for="cityInput">
                                             City / Town <span class="text-rose-600">*</span>
@@ -660,10 +741,11 @@
                                         <div class="relative">
                                             <i
                                                 class="fa-solid fa-city absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                                            <input type="text" name="city" id="cityInput"
+                                            <input type="text" name="city" id="cityInput" list="citySuggestions"
                                                 value="{{ old('city') }}" required minlength="2" maxlength="50"
-                                                placeholder="e.g. Madurai / Chennai"
+                                                placeholder="e.g. Madurai / Chennai" autocomplete="address-level2"
                                                 class="w-full pl-8 pr-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all font-medium placeholder:text-slate-400">
+                                            <datalist id="citySuggestions"></datalist>
                                         </div>
                                         <p id="err-city"
                                             class="field-error-msg hidden text-red-600 text-[11px] font-semibold mt-1 flex items-center gap-1">
@@ -672,38 +754,23 @@
                                         </p>
                                     </div>
                                     <div>
-                                        <label class="block font-bold text-slate-700 mb-1" for="stateInput">
-                                            State <span class="text-rose-600">*</span>
-                                        </label>
+                                        <div class="flex items-center justify-between mb-1">
+                                            <label class="block font-bold text-slate-700" for="stateInput">
+                                                State <span class="text-rose-600">*</span>
+                                            </label>
+                                            <span class="text-[9px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                                                <i class="fa-solid fa-location-dot text-[8px] text-emerald-600"></i> TN Only
+                                            </span>
+                                        </div>
                                         <div class="relative">
                                             <i
                                                 class="fa-solid fa-map-location-dot absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                                            <select name="state" id="stateInput" required
-                                                class="w-full pl-8 pr-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all font-medium">
-                                                <option value="Tamil Nadu" {{ old('state', 'Tamil Nadu') === 'Tamil Nadu' ? 'selected' : '' }}>Tamil Nadu</option>
-                                                <option value="Pondicherry" {{ old('state') === 'Pondicherry' ? 'selected' : '' }}>Pondicherry</option>
-                                                <option value="Kerala" {{ old('state') === 'Kerala' ? 'selected' : '' }}>Kerala</option>
-                                                <option value="Karnataka" {{ old('state') === 'Karnataka' ? 'selected' : '' }}>Karnataka</option>
-                                                <option value="Andhra Pradesh" {{ old('state') === 'Andhra Pradesh' ? 'selected' : '' }}>Andhra Pradesh</option>
-                                                <option value="Telangana" {{ old('state') === 'Telangana' ? 'selected' : '' }}>Telangana</option>
-                                                <option value="Maharashtra" {{ old('state') === 'Maharashtra' ? 'selected' : '' }}>Maharashtra</option>
-                                                <option value="Other" {{ old('state') === 'Other' ? 'selected' : '' }}>Other State</option>
+                                            <select name="state" id="stateInput" required autocomplete="address-level1"
+                                                class="w-full pl-8 pr-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all font-bold text-slate-800">
+                                                <option value="Tamil Nadu" selected>Tamil Nadu</option>
                                             </select>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <label class="block font-bold text-slate-700 mb-1" for="pincodeInput">
-                                            Pincode <span class="text-rose-600">*</span>
-                                        </label>
-                                        <div class="relative">
-                                            <i
-                                                class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                                            <input type="text" name="pincode" id="pincodeInput"
-                                                value="{{ old('pincode') }}" required placeholder="6-digit pincode"
-                                                pattern="[0-9]{6}" minlength="6" maxlength="6" inputmode="numeric"
-                                                class="w-full pl-8 pr-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all font-medium placeholder:text-slate-400">
-                                        </div>
-                                        <p id="err-pincode"
+                                        <p id="err-state"
                                             class="field-error-msg hidden text-red-600 text-[11px] font-semibold mt-1 flex items-center gap-1">
                                             <i class="fa-solid fa-circle-exclamation text-[10px]"></i>
                                             <span></span>
@@ -721,7 +788,17 @@
                                         id="btnTotalText">₹0.00</span>
                                     <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                                 </button>
-                                <p class="text-[11px] text-slate-400 text-center mt-2">
+
+                                <div id="minOrderWarningNote"
+                                    class="text-xs font-bold text-amber-900 text-center mt-2.5 flex items-center justify-center gap-1.5 bg-amber-50 border border-amber-300/80 py-2 px-3 rounded-xl">
+                                    <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+                                    <span id="minOrderWarningText">குறைந்தபட்ச ஆர்டர் தொகை: ₹{{ number_format($minOrderAmt, 0) }}</span>
+                                </div>
+
+                                <p class="text-[11px] text-slate-500 text-center mt-2 leading-tight">
+                                    🚚 <strong>Note:</strong> Total amount is <strong>without delivery charges</strong>. Delivery charges may differ depending on the transport partner and are payable upon parcel collection at your local hub.
+                                </p>
+                                <p class="text-[10px] text-slate-400 text-center mt-1">
                                     🔒 Safe booking. No immediate online payment required. Pay upon transport confirmation.
                                 </p>
                                 <div class="mt-3 pt-3 border-t border-slate-100 flex flex-col items-center gap-1.5">
@@ -738,6 +815,108 @@
                 </div>
             </div>
         </form>
+    </div>
+
+    {{-- ===================== WHATSAPP OTP VERIFICATION MODAL ===================== --}}
+    <div id="otpModalBackdrop" onclick="closeOtpModal()"
+        class="hidden fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md transition-opacity duration-300 flex items-center justify-center p-4">
+        
+        <div id="otpModalCard"
+            class="bg-white rounded-3xl border border-slate-100 shadow-2xl max-w-sm sm:max-w-md w-full overflow-hidden relative transform transition-all duration-300 scale-95 opacity-0"
+            onclick="event.stopPropagation()">
+
+            <!-- Decorative header background -->
+            <div class="bg-gradient-to-br from-emerald-600 via-teal-700 to-emerald-900 text-white p-6 relative overflow-hidden text-center">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+                <div class="absolute -left-6 -top-6 w-24 h-24 bg-amber-400/20 rounded-full blur-xl pointer-events-none"></div>
+
+                <!-- Close button -->
+                <button type="button" onclick="closeOtpModal()"
+                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors text-sm cursor-pointer"
+                    title="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <!-- Icon Badge -->
+                <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center text-2xl text-emerald-300 shadow-inner">
+                    <i class="fa-brands fa-whatsapp text-3xl text-emerald-300"></i>
+                </div>
+
+                <h3 class="text-lg font-black font-heading text-white tracking-wide">
+                    WhatsApp Verification
+                </h3>
+                <p class="text-xs text-emerald-100/90 mt-1 font-medium">
+                    ஆர்டரை உறுதி செய்ய வாட்ஸ்அப் OTP உள்ளிடவும்
+                </p>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-6">
+                <!-- Phone Info Banner -->
+                <div class="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-3 mb-5 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                            <i class="fa-solid fa-mobile-screen"></i>
+                        </span>
+                        <div>
+                            <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Sent to WhatsApp</div>
+                            <div id="otpDisplayPhone" class="text-xs font-black text-slate-800 font-mono tracking-wide">+91 ----------</div>
+                        </div>
+                    </div>
+                    <button type="button" onclick="editPhoneFromOtpModal()"
+                        class="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 bg-white border border-emerald-200 hover:border-emerald-300 px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 shadow-2xs cursor-pointer">
+                        <i class="fa-solid fa-pen text-[10px]"></i> Edit
+                    </button>
+                </div>
+
+                <!-- OTP Input Boxes (4 Digits) -->
+                <div class="mb-4">
+                    <label class="block text-center text-xs font-bold text-slate-700 mb-3">
+                        Enter 4-Digit Verification Code
+                    </label>
+                    <div class="flex items-center justify-center gap-2.5 sm:gap-3" id="otpInputsContainer">
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                            class="otp-digit-input w-12 h-14 sm:w-14 sm:h-16 text-center text-xl sm:text-2xl font-black font-mono bg-slate-50 border-2 border-slate-200 rounded-2xl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition-all"
+                            data-index="0" autocomplete="one-time-code">
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                            class="otp-digit-input w-12 h-14 sm:w-14 sm:h-16 text-center text-xl sm:text-2xl font-black font-mono bg-slate-50 border-2 border-slate-200 rounded-2xl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition-all"
+                            data-index="1">
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                            class="otp-digit-input w-12 h-14 sm:w-14 sm:h-16 text-center text-xl sm:text-2xl font-black font-mono bg-slate-50 border-2 border-slate-200 rounded-2xl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition-all"
+                            data-index="2">
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                            class="otp-digit-input w-12 h-14 sm:w-14 sm:h-16 text-center text-xl sm:text-2xl font-black font-mono bg-slate-50 border-2 border-slate-200 rounded-2xl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition-all"
+                            data-index="3">
+                    </div>
+                </div>
+
+                <!-- Error & Success Status Box -->
+                <div id="otpStatusMsg" class="hidden text-center text-xs font-bold py-2.5 px-3 rounded-xl mb-4 transition-all"></div>
+
+                <!-- Verify Button -->
+                <button type="button" id="verifyOtpBtn" onclick="submitOtpVerification()"
+                    class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-sm font-heading shadow-lg shadow-emerald-600/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span id="verifyOtpBtnText">✅ Confirm & Place Order</span>
+                    <i id="verifyOtpSpinner" class="fa-solid fa-circle-notch fa-spin hidden text-sm"></i>
+                </button>
+
+                <!-- Resend Timer -->
+                <div class="text-center mt-4 text-xs font-semibold text-slate-500">
+                    <div id="otpTimerBox">
+                        Didn't receive code? Resend in <span id="otpCountdown" class="font-bold text-slate-800">30s</span>
+                    </div>
+                    <button type="button" id="resendOtpBtn" onclick="requestOrderOtp(true)"
+                        class="hidden text-emerald-700 hover:text-emerald-800 font-extrabold underline transition-colors cursor-pointer">
+                        <i class="fa-solid fa-rotate-right text-[11px] mr-1"></i> Resend OTP on WhatsApp
+                    </button>
+                </div>
+
+                <!-- Help Note -->
+                <p class="text-[11px] text-slate-400 text-center mt-4 leading-relaxed">
+                    <i class="fa-solid fa-shield-halved text-emerald-600 mr-1"></i> 100% Secure Diwali Crackers Booking. We only deliver inside Tamil Nadu.
+                </p>
+            </div>
+        </div>
     </div>
 
     {{-- ===================== IMAGE LIGHTBOX MODAL ===================== --}}
@@ -900,6 +1079,7 @@
                         <span id="floatingTotalAmount" class="truncate">₹0.00</span>
                         <span class="text-[10px] font-normal text-slate-400 shrink-0">(<span
                                 class="cart-items-badge">0</span>)</span>
+                        <span class="text-[9px] font-bold text-amber-300 bg-amber-400/20 border border-amber-400/30 px-1.5 py-0.2 rounded hidden sm:inline shrink-0">Excl. Delivery</span>
                     </div>
                 </div>
 
@@ -907,6 +1087,12 @@
                     class="hidden md:inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shrink-0">
                     <i class="fa-solid fa-gift text-xs"></i>
                     <span>Save: <span id="floatingSavingsAmount">₹0.00</span></span>
+                </div>
+
+                <div id="floatingMinOrderBadge"
+                    class="hidden md:inline-flex items-center gap-1 bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation text-xs" id="floatingMinOrderIcon"></i>
+                    <span id="floatingMinOrderText">Min: ₹{{ number_format($minOrderAmt, 0) }}</span>
                 </div>
             </div>
 
@@ -954,12 +1140,85 @@
             let currentViewMode = 'all';
             let currentSelectedCategory = 'all';
             let currentTotalItemsCount = 0;
+            let currentPayableTotal = 0;
+            const MIN_ORDER_AMOUNT = {{ (float) $shop->getMinOrderAmount() }};
+
+            const minOrderAlertBox = document.getElementById('minOrderAlertBox');
+            const minOrderIcon = document.getElementById('minOrderIcon');
+            const minOrderTitle = document.getElementById('minOrderTitle');
+            const minOrderBadge = document.getElementById('minOrderBadge');
+            const minOrderText = document.getElementById('minOrderText');
+            const minOrderProgressBar = document.getElementById('minOrderProgressBar');
+            const minOrderWarningNote = document.getElementById('minOrderWarningNote');
+            const minOrderWarningText = document.getElementById('minOrderWarningText');
+            const floatingMinOrderBadge = document.getElementById('floatingMinOrderBadge');
+            const floatingMinOrderText = document.getElementById('floatingMinOrderText');
+            const floatingMinOrderIcon = document.getElementById('floatingMinOrderIcon');
 
             function formatINR(val) {
                 return '₹' + Number(val).toLocaleString('en-IN', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 });
+            }
+
+            function updateMinOrderUI(totalPayable) {
+                currentPayableTotal = totalPayable;
+                const percent = Math.min(100, Math.round((totalPayable / MIN_ORDER_AMOUNT) * 100));
+                if (minOrderProgressBar) {
+                    minOrderProgressBar.style.width = percent + '%';
+                }
+
+                if (totalPayable >= MIN_ORDER_AMOUNT) {
+                    if (minOrderAlertBox) {
+                        minOrderAlertBox.className = 'rounded-xl p-3 text-xs transition-all border bg-emerald-50 border-emerald-200 text-emerald-900';
+                    }
+                    if (minOrderIcon) minOrderIcon.className = 'fa-solid fa-circle-check text-emerald-600';
+                    if (minOrderTitle) minOrderTitle.textContent = 'Minimum Order Met (₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN') + '+)';
+                    if (minOrderBadge) {
+                        minOrderBadge.className = 'text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800';
+                        minOrderBadge.textContent = 'தகுதி பெறப்பட்டது ✅';
+                    }
+                    if (minOrderText) minOrderText.textContent = 'சூப்பர்! உங்கள் ஆர்டர் தொகை குறைந்தபட்ச ஆர்டர் தகுதியை எட்டியுள்ளது (' + formatINR(totalPayable) + '). நீங்கள் ஆர்டர் சமர்ப்பிக்கலாம்!';
+                    if (minOrderProgressBar) minOrderProgressBar.className = 'bg-emerald-600 h-1.5 rounded-full transition-all duration-300';
+
+                    if (minOrderWarningNote) {
+                        minOrderWarningNote.className = 'text-xs font-bold text-emerald-800 text-center mt-2.5 flex items-center justify-center gap-1.5 bg-emerald-50 border border-emerald-200 py-2 px-3 rounded-xl';
+                        if (minOrderWarningText) minOrderWarningText.textContent = 'குறைந்தபட்ச ஆர்டர் தகுதி பெறப்பட்டது (' + formatINR(totalPayable) + ') ✅';
+                    }
+
+                    if (floatingMinOrderBadge) {
+                        floatingMinOrderBadge.className = 'hidden md:inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shrink-0';
+                        if (floatingMinOrderText) floatingMinOrderText.textContent = 'Min Met ✅';
+                        if (floatingMinOrderIcon) floatingMinOrderIcon.className = 'fa-solid fa-circle-check text-xs text-emerald-400';
+                    }
+                } else {
+                    const diff = Math.max(0, MIN_ORDER_AMOUNT - totalPayable);
+                    if (minOrderAlertBox) {
+                        minOrderAlertBox.className = 'rounded-xl p-3 text-xs transition-all border bg-amber-50 border-amber-300 text-amber-950';
+                    }
+                    if (minOrderIcon) minOrderIcon.className = 'fa-solid fa-triangle-exclamation text-amber-600';
+                    if (minOrderTitle) minOrderTitle.textContent = 'Minimum Order: ₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN');
+                    if (minOrderBadge) {
+                        minOrderBadge.className = 'text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-200 text-amber-900';
+                        minOrderBadge.textContent = '₹' + Number(diff).toLocaleString('en-IN') + ' தேவை';
+                    }
+                    if (minOrderText) {
+                        minOrderText.innerHTML = 'குறைந்தபட்ச ஆர்டர் தொகை <strong>₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN') + '</strong>. உங்கள் ஆர்டரை உறுதி செய்ய இன்னும் <strong>' + formatINR(diff) + '</strong> மதிப்புள்ள பட்டாசுகளை Cart-ல் சேர்க்க வேண்டும்.';
+                    }
+                    if (minOrderProgressBar) minOrderProgressBar.className = 'bg-amber-500 h-1.5 rounded-full transition-all duration-300';
+
+                    if (minOrderWarningNote) {
+                        minOrderWarningNote.className = 'text-xs font-bold text-amber-900 text-center mt-2.5 flex items-center justify-center gap-1.5 bg-amber-50 border border-amber-300/80 py-2 px-3 rounded-xl';
+                        if (minOrderWarningText) minOrderWarningText.innerHTML = 'குறைந்தபட்ச ஆர்டர்: ₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN') + ' (இன்னும் <strong>' + formatINR(diff) + '</strong> தேவை)';
+                    }
+
+                    if (floatingMinOrderBadge) {
+                        floatingMinOrderBadge.className = 'hidden md:inline-flex items-center gap-1 bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shrink-0';
+                        if (floatingMinOrderText) floatingMinOrderText.textContent = 'Min: ₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN');
+                        if (floatingMinOrderIcon) floatingMinOrderIcon.className = 'fa-solid fa-triangle-exclamation text-xs text-amber-300';
+                    }
+                }
             }
 
             // Recalculate totals, savings, category badges, and live summary
@@ -1027,6 +1286,9 @@
                 document.querySelectorAll('.hero-total-sync').forEach(el => el.textContent = payableFormatted);
                 if (summaryPayableTotalEl) summaryPayableTotalEl.textContent = payableFormatted;
                 if (btnTotalTextEl) btnTotalTextEl.textContent = payableFormatted;
+
+                // Live Update Minimum Order Requirement Alert & Progress
+                updateMinOrderUI(totalPayable);
 
                 if (summaryActualTotalEl) summaryActualTotalEl.textContent = formatINR(totalActual);
                 if (summarySavingsTotalEl) summarySavingsTotalEl.textContent = '- ' + formatINR(totalSavings);
@@ -1656,6 +1918,12 @@
             const deliveryAddressInput = document.getElementById('deliveryAddressInput');
             const cityInput = document.getElementById('cityInput');
             const pincodeInput = document.getElementById('pincodeInput');
+            const stateInput = document.getElementById('stateInput');
+            const pincodeSpinner = document.getElementById('pincodeSpinner');
+            const pincodeSuccessIcon = document.getElementById('pincodeSuccessIcon');
+            const pincodeSuccessMsg = document.getElementById('pincodeSuccessMsg');
+            const pincodeSuccessText = document.getElementById('pincodeSuccessText');
+            const citySuggestions = document.getElementById('citySuggestions');
 
             function showFieldError(fieldId, message) {
                 const errEl = document.getElementById('err-' + fieldId);
@@ -1780,6 +2048,12 @@
                     val = val.slice(0, 10);
                     this.value = val;
 
+                    // If primary WhatsApp phone is changed, invalidate previous OTP verification
+                    if (fieldId === 'phone1') {
+                        const verifiedEl = document.getElementById('isOtpVerifiedInput');
+                        if (verifiedEl) verifiedEl.value = '0';
+                    }
+
                     // Real-time status
                     if (val.length === 10) {
                         if (fieldId === 'phone2' && phone1Input && val === phone1Input.value.trim()) {
@@ -1845,17 +2119,115 @@
 
             if (cityInput) {
                 cityInput.addEventListener('input', function() {
-                    // Letters, spaces, dots, and hyphens only
-                    this.value = this.value.replace(/[^a-zA-Z\s.-]/g, '');
+                    // Letters, spaces, dots, hyphens, and brackets allowed
+                    this.value = this.value.replace(/[^a-zA-Z0-9\s.()/-]/g, '');
                     if (this.value.trim().length >= 2) clearFieldError('city');
                 });
+            }
+
+            let lastFetchedPincode = '';
+            let pincodeLookupTimer = null;
+
+            function autoLookupPincode(pin, isInitialLoad = false) {
+                if (!pin || pin.length !== 6) return;
+
+                // Restrict strictly to Tamil Nadu (Pincodes 600000 - 649999)
+                if (!/^6[0-4][0-9]{4}$/.test(pin)) {
+                    if (pincodeSpinner) pincodeSpinner.classList.add('hidden');
+                    if (pincodeSuccessIcon) pincodeSuccessIcon.classList.add('hidden');
+                    if (pincodeSuccessMsg) pincodeSuccessMsg.classList.add('hidden');
+                    showFieldError('pincode', 'Delivery is available inside Tamil Nadu only. (Pincode: 60xxxx - 64xxxx)');
+                    return;
+                }
+
+                if (!isInitialLoad && pin === lastFetchedPincode) return;
+
+                if (pincodeSpinner) pincodeSpinner.classList.remove('hidden');
+                if (pincodeSuccessIcon) pincodeSuccessIcon.classList.add('hidden');
+                if (pincodeSuccessMsg) pincodeSuccessMsg.classList.add('hidden');
+
+                const requestedPin = pin;
+                fetch(`/api/pincode/${pin}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (pincodeInput && pincodeInput.value !== requestedPin) return; // Stale request
+
+                        if (pincodeSpinner) pincodeSpinner.classList.add('hidden');
+
+                        if (data && data.success && data.is_serviceable !== false) {
+                            lastFetchedPincode = requestedPin;
+                            if (pincodeSuccessIcon) pincodeSuccessIcon.classList.remove('hidden');
+
+                            // 1. Auto-fill City / Town
+                            if (cityInput) {
+                                if (!isInitialLoad || !cityInput.value.trim()) {
+                                    cityInput.value = data.city || data.district || '';
+                                    cityInput.classList.add('ring-2', 'ring-emerald-400', 'bg-emerald-50/50');
+                                    setTimeout(() => {
+                                        cityInput.classList.remove('ring-2', 'ring-emerald-400', 'bg-emerald-50/50');
+                                    }, 1200);
+                                }
+                                clearFieldError('city');
+                            }
+
+                            // 2. Populate suggestions datalist
+                            if (citySuggestions && Array.isArray(data.places)) {
+                                citySuggestions.innerHTML = '';
+                                data.places.forEach(place => {
+                                    const opt = document.createElement('option');
+                                    opt.value = place;
+                                    citySuggestions.appendChild(opt);
+                                });
+                            }
+
+                            // 3. Match & Auto-select State (Tamil Nadu)
+                            if (stateInput) {
+                                stateInput.value = 'Tamil Nadu';
+                                clearFieldError('state');
+                            }
+
+                            // 4. Show auto-detected badge
+                            if (pincodeSuccessMsg && pincodeSuccessText) {
+                                pincodeSuccessText.textContent = `Auto-detected: ${data.city || data.district}, Tamil Nadu`;
+                                pincodeSuccessMsg.classList.remove('hidden');
+                            }
+                        } else {
+                            if (pincodeSuccessIcon) pincodeSuccessIcon.classList.add('hidden');
+                            if (pincodeSuccessMsg) pincodeSuccessMsg.classList.add('hidden');
+                            const errMsg = (data && data.message) ? data.message : 'Delivery is available inside Tamil Nadu only.';
+                            showFieldError('pincode', errMsg);
+                        }
+                    })
+                    .catch(err => {
+                        console.warn('Pincode auto-lookup error:', err);
+                        if (pincodeSpinner) pincodeSpinner.classList.add('hidden');
+                        if (pincodeSuccessIcon) pincodeSuccessIcon.classList.add('hidden');
+                        if (pincodeSuccessMsg) pincodeSuccessMsg.classList.add('hidden');
+                    });
             }
 
             if (pincodeInput) {
                 pincodeInput.addEventListener('input', function() {
                     // Digits only, max 6
                     this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
-                    if (this.value.length === 6) clearFieldError('pincode');
+                    if (this.value.length < 6) {
+                        lastFetchedPincode = '';
+                        if (pincodeSpinner) pincodeSpinner.classList.add('hidden');
+                        if (pincodeSuccessIcon) pincodeSuccessIcon.classList.add('hidden');
+                        if (pincodeSuccessMsg) pincodeSuccessMsg.classList.add('hidden');
+                    } else if (this.value.length === 6) {
+                        clearFieldError('pincode');
+                        clearTimeout(pincodeLookupTimer);
+                        pincodeLookupTimer = setTimeout(() => {
+                            autoLookupPincode(this.value);
+                        }, 120);
+                    }
+                });
+
+                pincodeInput.addEventListener('change', function() {
+                    if (this.value.length === 6) {
+                        autoLookupPincode(this.value);
+                    }
                 });
             }
 
@@ -1883,10 +2255,363 @@
 
             searchInput.addEventListener('input', debouncedPerformSearch);
 
+            // ==========================================
+            // WhatsApp OTP Verification Modal Controller
+            // ==========================================
+            let otpCountdownInterval = null;
+            let lastOtpSentPhone = '';
+            let lastOtpSentTimestamp = 0;
+
+            window.openOtpModal = function() {
+                const modalBackdrop = document.getElementById('otpModalBackdrop');
+                const modalCard = document.getElementById('otpModalCard');
+                const displayPhone = document.getElementById('otpDisplayPhone');
+                const digitInputs = document.querySelectorAll('.otp-digit-input');
+
+                if (!modalBackdrop || !modalCard) return;
+
+                const rawPhone = phone1Input ? phone1Input.value.trim() : '';
+                if (displayPhone) {
+                    displayPhone.textContent = rawPhone ? `+91 ${rawPhone}` : '+91 ----------';
+                }
+
+                modalBackdrop.classList.remove('hidden');
+                modalBackdrop.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+
+                setTimeout(() => {
+                    modalBackdrop.classList.add('opacity-100');
+                    modalCard.classList.remove('scale-95', 'opacity-0');
+                    modalCard.classList.add('scale-100', 'opacity-100');
+
+                    if (digitInputs.length > 0) {
+                        digitInputs[0].focus();
+                        digitInputs[0].select();
+                    }
+                }, 20);
+            };
+
+            window.closeOtpModal = function() {
+                const modalBackdrop = document.getElementById('otpModalBackdrop');
+                const modalCard = document.getElementById('otpModalCard');
+
+                if (!modalBackdrop || !modalCard) return;
+
+                modalCard.classList.remove('scale-100', 'opacity-100');
+                modalCard.classList.add('scale-95', 'opacity-0');
+                modalBackdrop.classList.remove('opacity-100');
+
+                setTimeout(() => {
+                    modalBackdrop.classList.add('hidden');
+                    modalBackdrop.classList.remove('flex');
+                    document.body.style.overflow = '';
+                }, 250);
+            };
+
+            window.editPhoneFromOtpModal = function() {
+                closeOtpModal();
+                if (phone1Input) {
+                    phone1Input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => {
+                        phone1Input.focus();
+                        phone1Input.select();
+                    }, 300);
+                }
+            };
+
+            function showOtpStatus(type, message) {
+                const statusBox = document.getElementById('otpStatusMsg');
+                if (!statusBox) return;
+
+                statusBox.className = 'text-center text-xs font-bold py-2.5 px-3 rounded-xl mb-4 transition-all';
+                if (type === 'error') {
+                    statusBox.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
+                    statusBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5"></i> ${message}`;
+                } else if (type === 'success') {
+                    statusBox.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
+                    statusBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1.5"></i> ${message}`;
+                } else {
+                    statusBox.classList.add('bg-slate-50', 'text-slate-700', 'border', 'border-slate-200');
+                    statusBox.innerHTML = message;
+                }
+                statusBox.classList.remove('hidden');
+            }
+
+            function clearOtpStatus() {
+                const statusBox = document.getElementById('otpStatusMsg');
+                if (statusBox) {
+                    statusBox.classList.add('hidden');
+                    statusBox.innerHTML = '';
+                }
+            }
+
+            function startOtpCountdown(seconds = 30) {
+                clearInterval(otpCountdownInterval);
+                const timerBox = document.getElementById('otpTimerBox');
+                const resendBtn = document.getElementById('resendOtpBtn');
+                const countdownEl = document.getElementById('otpCountdown');
+
+                if (timerBox) timerBox.classList.remove('hidden');
+                if (resendBtn) resendBtn.classList.add('hidden');
+
+                let remaining = seconds;
+                if (countdownEl) countdownEl.textContent = `${remaining}s`;
+
+                otpCountdownInterval = setInterval(() => {
+                    remaining--;
+                    if (countdownEl) countdownEl.textContent = `${remaining}s`;
+                    if (remaining <= 0) {
+                        clearInterval(otpCountdownInterval);
+                        if (timerBox) timerBox.classList.add('hidden');
+                        if (resendBtn) {
+                            resendBtn.classList.remove('hidden');
+                            resendBtn.disabled = false;
+                        }
+                    }
+                }, 1000);
+            }
+
+            window.requestOrderOtp = async function(isResend = false) {
+                const phone = phone1Input ? phone1Input.value.trim() : '';
+                const name = nameInput ? nameInput.value.trim() : '';
+                const resendBtn = document.getElementById('resendOtpBtn');
+                const digitInputs = document.querySelectorAll('.otp-digit-input');
+                const displayPhone = document.getElementById('otpDisplayPhone');
+
+                if (!phone || !/^[6-9][0-9]{9}$/.test(phone)) {
+                    showOtpStatus('error', 'Please enter a valid 10-digit WhatsApp number.');
+                    return;
+                }
+
+                // If not resending and we already sent an OTP within the last 30s for the exact same phone:
+                const now = Date.now();
+                if (!isResend && phone === lastOtpSentPhone && (now - lastOtpSentTimestamp < 30000)) {
+                    const remainingSec = Math.ceil((30000 - (now - lastOtpSentTimestamp)) / 1000);
+                    showOtpStatus('success', 'Verification code already sent to WhatsApp. Please enter the 4 digits.');
+                    startOtpCountdown(remainingSec);
+                    return;
+                }
+
+                if (isResend && resendBtn) {
+                    resendBtn.disabled = true;
+                    resendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Resending...';
+                }
+
+                clearOtpStatus();
+                digitInputs.forEach(input => input.value = '');
+                if (digitInputs.length > 0) digitInputs[0].focus();
+
+                try {
+                    const response = await fetch("{{ route('order.send_otp') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ phone1: phone, name: name })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        lastOtpSentPhone = phone;
+                        lastOtpSentTimestamp = Date.now();
+                        showOtpStatus('success', data.message || 'OTP sent to your WhatsApp number!');
+                        startOtpCountdown(data.cooldown || 30);
+                        if (data.masked_phone && displayPhone) {
+                            displayPhone.textContent = data.masked_phone;
+                        }
+                        if (data.debug_otp) {
+                            console.log('%c[GURU CRACKERS OTP] Debug Code: ' + data.debug_otp, 'color: #10b981; font-weight: bold; font-size: 14px;');
+                        }
+                    } else {
+                        showOtpStatus('error', data.message || 'Failed to send OTP. Please try again.');
+                        if (data.cooldown) {
+                            startOtpCountdown(30);
+                        } else if (resendBtn) {
+                            resendBtn.classList.remove('hidden');
+                            resendBtn.disabled = false;
+                        }
+                    }
+                } catch (err) {
+                    console.error('OTP request error:', err);
+                    showOtpStatus('error', 'Network error. Please check your internet connection and try again.');
+                    if (resendBtn) {
+                        resendBtn.classList.remove('hidden');
+                        resendBtn.disabled = false;
+                    }
+                } finally {
+                    if (isResend && resendBtn) {
+                        resendBtn.innerHTML = '<i class="fa-solid fa-rotate-right text-[11px] mr-1"></i> Resend OTP on WhatsApp';
+                    }
+                }
+            };
+
+            window.submitOtpVerification = async function() {
+                const phone = phone1Input ? phone1Input.value.trim() : '';
+                const digitInputs = document.querySelectorAll('.otp-digit-input');
+                const otp = Array.from(digitInputs).map(input => input.value.trim()).join('');
+                const verifyBtn = document.getElementById('verifyOtpBtn');
+                const verifyBtnText = document.getElementById('verifyOtpBtnText');
+                const verifySpinner = document.getElementById('verifyOtpSpinner');
+                const verifiedInput = document.getElementById('isOtpVerifiedInput');
+
+                if (otp.length !== 4) {
+                    showOtpStatus('error', 'Please enter all 4 digits of the OTP sent to your WhatsApp.');
+                    const firstEmpty = Array.from(digitInputs).find(input => !input.value.trim());
+                    if (firstEmpty) firstEmpty.focus();
+                    return;
+                }
+
+                if (verifyBtn) {
+                    verifyBtn.disabled = true;
+                    if (verifySpinner) verifySpinner.classList.remove('hidden');
+                    if (verifyBtnText) verifyBtnText.textContent = 'Verifying...';
+                }
+                clearOtpStatus();
+
+                try {
+                    const response = await fetch("{{ route('order.verify_otp') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ phone1: phone, otp: otp })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        showOtpStatus('success', 'Mobile verified successfully! Placing order...');
+                        if (verifiedInput) verifiedInput.value = '1';
+
+                        setTimeout(() => {
+                            closeOtpModal();
+                            const orderForm = document.getElementById('orderForm');
+                            if (orderForm) {
+                                if (typeof orderForm.requestSubmit === 'function') {
+                                    orderForm.requestSubmit();
+                                } else {
+                                    const submitBtn = document.getElementById('submitOrderBtn');
+                                    if (submitBtn) {
+                                        submitBtn.disabled = true;
+                                        submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                                        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-base mr-2"></i> <span>Placing Order... Please wait</span>';
+                                    }
+                                    orderForm.submit();
+                                }
+                            }
+                        }, 500);
+                    } else {
+                        showOtpStatus('error', data.message || 'Incorrect OTP code. Please try again.');
+                        digitInputs.forEach(i => {
+                            i.classList.add('border-rose-400', 'bg-rose-50/50');
+                            i.value = '';
+                        });
+                        setTimeout(() => {
+                            digitInputs.forEach(i => i.classList.remove('border-rose-400', 'bg-rose-50/50'));
+                        }, 1500);
+                        if (digitInputs.length > 0) digitInputs[0].focus();
+
+                        if (verifyBtn) {
+                            verifyBtn.disabled = false;
+                            if (verifySpinner) verifySpinner.classList.add('hidden');
+                            if (verifyBtnText) verifyBtnText.textContent = '✅ Confirm & Place Order';
+                        }
+                    }
+                } catch (err) {
+                    console.error('OTP verification error:', err);
+                    showOtpStatus('error', 'Network error while verifying OTP. Please try again.');
+                    if (verifyBtn) {
+                        verifyBtn.disabled = false;
+                        if (verifySpinner) verifySpinner.classList.add('hidden');
+                        if (verifyBtnText) verifyBtnText.textContent = '✅ Confirm & Place Order';
+                    }
+                }
+            };
+
+            // Attach event listeners to OTP 4-digit input boxes
+            const otpDigitInputs = document.querySelectorAll('.otp-digit-input');
+            otpDigitInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    const clean = e.target.value.replace(/[^0-9]/g, '');
+                    e.target.value = clean ? clean.slice(-1) : '';
+
+                    if (e.target.value && index < otpDigitInputs.length - 1) {
+                        otpDigitInputs[index + 1].focus();
+                        otpDigitInputs[index + 1].select();
+                    }
+
+                    // Auto-submit if all 4 digits are filled
+                    const fullOtp = Array.from(otpDigitInputs).map(i => i.value.trim()).join('');
+                    if (fullOtp.length === 4) {
+                        submitOtpVerification();
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace') {
+                        if (!input.value && index > 0) {
+                            otpDigitInputs[index - 1].focus();
+                            otpDigitInputs[index - 1].select();
+                        }
+                    } else if (e.key === 'ArrowLeft' && index > 0) {
+                        e.preventDefault();
+                        otpDigitInputs[index - 1].focus();
+                        otpDigitInputs[index - 1].select();
+                    } else if (e.key === 'ArrowRight' && index < otpDigitInputs.length - 1) {
+                        e.preventDefault();
+                        otpDigitInputs[index + 1].focus();
+                        otpDigitInputs[index + 1].select();
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        submitOtpVerification();
+                    }
+                });
+
+                input.addEventListener('focus', function() {
+                    this.select();
+                });
+
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pastedData = (e.clipboardData || window.clipboardData).getData('text') || '';
+                    const digits = pastedData.replace(/[^0-9]/g, '').slice(0, 4);
+                    if (digits) {
+                        digits.split('').forEach((d, i) => {
+                            if (otpDigitInputs[i]) otpDigitInputs[i].value = d;
+                        });
+                        const focusIdx = Math.min(digits.length, otpDigitInputs.length - 1);
+                        otpDigitInputs[focusIdx].focus();
+                        if (digits.length === 4) {
+                            submitOtpVerification();
+                        }
+                    }
+                });
+            });
+
+            // Close OTP modal on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const backdrop = document.getElementById('otpModalBackdrop');
+                    if (backdrop && !backdrop.classList.contains('hidden')) {
+                        closeOtpModal();
+                    }
+                }
+            });
+
             // Document Ready & Order Submission
             document.addEventListener('DOMContentLoaded', () => {
                 recalcCart();
                 updateActiveCategoryDisplay('all');
+
+                // Auto-lookup pincode if already filled (e.g. from old input / validation redirect)
+                if (pincodeInput && pincodeInput.value.trim().length === 6) {
+                    autoLookupPincode(pincodeInput.value.trim(), true);
+                }
 
                 const orderForm = document.getElementById('orderForm');
                 if (orderForm) {
@@ -2011,7 +2736,25 @@
                             clearFieldError('delivery_address');
                         }
 
-                        // 6. Validate City
+                        // 6. Validate Pincode
+                        const pincodeVal = pincodeInput ? pincodeInput.value.trim() : '';
+                        if (!pincodeVal) {
+                            showFieldError('pincode', 'Pincode is required');
+                            hasError = true;
+                            if (!firstErrorEl) firstErrorEl = pincodeInput;
+                        } else if (!/^[0-9]{6}$/.test(pincodeVal)) {
+                            showFieldError('pincode', 'Please enter a valid 6-digit postal pincode');
+                            hasError = true;
+                            if (!firstErrorEl) firstErrorEl = pincodeInput;
+                        } else if (!/^6[0-4][0-9]{4}$/.test(pincodeVal)) {
+                            showFieldError('pincode', 'Delivery is available inside Tamil Nadu only (Pincode: 60xxxx - 64xxxx)');
+                            hasError = true;
+                            if (!firstErrorEl) firstErrorEl = pincodeInput;
+                        } else {
+                            clearFieldError('pincode');
+                        }
+
+                        // 7. Validate City
                         const cityVal = cityInput ? cityInput.value.trim() : '';
                         if (!cityVal) {
                             showFieldError('city', 'City / Town name is required');
@@ -2029,20 +2772,6 @@
                             clearFieldError('city');
                         }
 
-                        // 7. Validate Pincode
-                        const pincodeVal = pincodeInput ? pincodeInput.value.trim() : '';
-                        if (!pincodeVal) {
-                            showFieldError('pincode', 'Pincode is required');
-                            hasError = true;
-                            if (!firstErrorEl) firstErrorEl = pincodeInput;
-                        } else if (!/^[0-9]{6}$/.test(pincodeVal)) {
-                            showFieldError('pincode', 'Please enter a valid 6-digit postal pincode');
-                            hasError = true;
-                            if (!firstErrorEl) firstErrorEl = pincodeInput;
-                        } else {
-                            clearFieldError('pincode');
-                        }
-
                         // If validation failed, scroll to first error and block submission
                         if (hasError) {
                             e.preventDefault();
@@ -2058,6 +2787,34 @@
                                 'Please fill in all the customer details marked in red before submitting your order.',
                                 'Review Details'
                             );
+                            return false;
+                        }
+
+                        // Validate Minimum Order Amount
+                        if (currentPayableTotal < MIN_ORDER_AMOUNT) {
+                            e.preventDefault();
+                            const diff = Math.max(0, MIN_ORDER_AMOUNT - currentPayableTotal);
+                            DiwaliAlert.warning(
+                                'குறைந்தபட்ச ஆர்டர் ₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN') + '! ⚠️',
+                                'எங்கள் இணையதளத்தில் குறைந்தபட்ச ஆர்டர் தொகை ₹' + Number(MIN_ORDER_AMOUNT).toLocaleString('en-IN') + ' ஆகும். உங்கள் தற்போதைய கார்ட் மதிப்பு ' + formatINR(currentPayableTotal) + ' மட்டுமே உள்ளது.\n\nதயவுசெய்து மேலும் ' + formatINR(diff) + ' மதிப்புள்ள பட்டாசுகளை Cart-ல் சேர்த்து சமர்ப்பிக்கவும்.',
+                                'பட்டாசுகளைச் சேர்க்கவும்'
+                            );
+                            const firstCategory = document.querySelector('.category-section');
+                            if (firstCategory) {
+                                firstCategory.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            }
+                            return false;
+                        }
+
+                        // 8. Validate WhatsApp Mobile Verification OTP
+                        const isVerifiedEl = document.getElementById('isOtpVerifiedInput');
+                        if (!isVerifiedEl || isVerifiedEl.value !== '1') {
+                            e.preventDefault();
+                            openOtpModal();
+                            requestOrderOtp(false);
                             return false;
                         }
 

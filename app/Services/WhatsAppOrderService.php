@@ -4,6 +4,9 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Models\Shop;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class WhatsAppOrderService
 {
@@ -92,7 +95,9 @@ class WhatsAppOrderService
         $lines[] = $delivery;
         $lines[] = "";
         $lines[] = "---------------------------------------------";
-        $lines[] = "💰 *Total Amount Payable:* *Rs." . number_format($order->total_amount, 2) . "*";
+        $lines[] = "💰 *Total Order Amount:* *Rs." . number_format($order->total_amount, 2) . "* *(Without Delivery Charges)*";
+        $lines[] = "🚚 *Delivery Charges:* *Extra (Depends on transport partner)*";
+        $lines[] = "   _(டெலிவரி கட்டணம் டிரான்ஸ்போர்ட் நிறுவனத்தைப் பொறுத்து மாறுபடும். பார்சல் அலுவலகத்தில் பெற்றுக்கொள்ளும்போது செலுத்த வேண்டும்)_";
         $lines[] = "---------------------------------------------";
 
         if (!empty($shop->upi_id)) {
@@ -104,9 +109,10 @@ class WhatsAppOrderService
                 $lines[] = "2️⃣ Payee Name: *" . $shop->upi_name . "*";
             }
             $lines[] = "3️⃣ Pay *Rs." . number_format($order->total_amount, 2) . "* via Google Pay / PhonePe / Paytm and share the payment screenshot in this chat.";
+            $lines[] = "📷 *Payment QR Code is attached below for instant scan & pay!*";
             $lines[] = "";
             $lines[] = "🚚 *Parcel Dispatch:*";
-            $lines[] = "Once your payment screenshot is received, your order will be packed and dispatched directly from Sivakasi, and your Transport LR receipt will be shared here!";
+            $lines[] = "Once your payment screenshot is received, your order will be packed and dispatched directly from Sivakasi, and your Transport LR receipt (including exact delivery charges) will be shared here!";
         }
 
         $lines[] = "";
@@ -366,7 +372,80 @@ class WhatsAppOrderService
         }
 
         $customerInvoice = self::formatCustomerInvoice($order, $shop);
-        return self::sendDirectMessage($order->phone1, $customerInvoice, $order->id, 'order_invoice');
+        $resMessage = self::sendDirectMessage($order->phone1, $customerInvoice, $order->id, 'order_invoice');
+
+        // Also send Payment QR Code photo to Customer
+        self::sendCustomerPaymentQr($order, $shop);
+
+        return $resMessage;
+    }
+
+    /**
+     * Get or generate the local filesystem path to the Payment QR image.
+     */
+    public static function getPaymentQrImagePath(Order $order, Shop $shop): ?string
+    {
+        // 1. If shop has an uploaded custom UPI QR image in storage
+        if (!empty($shop->upi_qr_image) && Storage::disk('public')->exists($shop->upi_qr_image)) {
+            $uploadedPath = Storage::disk('public')->path($shop->upi_qr_image);
+            if (file_exists($uploadedPath)) {
+                return $uploadedPath;
+            }
+        }
+
+        // 2. Dynamically generate high-res UPI QR code image with order amount & UPI payment link
+        $upiUrl = $shop->getUpiPaymentUrl((float) $order->total_amount, $order->order_number);
+        if (!empty($upiUrl)) {
+            try {
+                $qrDir = storage_path('app/public/temp_qr');
+                if (!file_exists($qrDir)) {
+                    @mkdir($qrDir, 0755, true);
+                }
+                $tempQrFile = $qrDir . '/QR-' . $order->order_number . '.png';
+                $pngData = QrCode::format('png')
+                    ->size(500)
+                    ->margin(2)
+                    ->generate($upiUrl);
+                file_put_contents($tempQrFile, $pngData);
+                if (file_exists($tempQrFile)) {
+                    return $tempQrFile;
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Failed generating Payment QR PNG: ' . $e->getMessage());
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Send Payment QR Code image to Customer WhatsApp.
+     */
+    public static function sendCustomerPaymentQr(Order $order, Shop $shop): array
+    {
+        try {
+            $qrPath = self::getPaymentQrImagePath($order, $shop);
+            if (!$qrPath || !file_exists($qrPath)) {
+                return [
+                    'success' => false,
+                    'error' => 'No payment QR image available.',
+                ];
+            }
+
+            $caption = "📲 *Scan & Pay Rs." . number_format($order->total_amount, 2) . "*\n"
+                . "▫️ UPI ID: `" . ($shop->upi_id ?: '') . "`\n"
+                . ($shop->upi_name ? "▫️ Payee: *" . $shop->upi_name . "*\n" : "")
+                . "▫️ Order: `#" . $order->order_number . "`\n\n"
+                . "👉 Scan with GPay / PhonePe / Paytm and share payment screenshot in this chat! 🙏";
+
+            return self::sendDirectImage($order->phone1, $qrPath, $caption, $order->id, 'order_invoice_qr');
+        } catch (\Throwable $e) {
+            Log::warning('Could not send Payment QR to WhatsApp: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
     }
 
     /**
@@ -427,9 +506,12 @@ class WhatsAppOrderService
             ];
         }
 
-        // 1. Send Customer Invoice
+        // 1. Send Customer Invoice Text
         $customerInvoice = self::formatCustomerInvoice($order, $shop);
         $resCustomer = self::sendDirectMessage($order->phone1, $customerInvoice, $order->id, 'order_invoice');
+
+        // 1b. Send Payment QR Code image right after the invoice message
+        self::sendCustomerPaymentQr($order, $shop);
 
         // 2. Send Admin Packing List Alert + Checklist PDF to shop
         $adminPhone = $shop->whatsapp_phone ?: $shop->phone;
@@ -485,6 +567,12 @@ class WhatsAppOrderService
         }
         $lines[] = "▫️ *Dispatch Date:* " . $dispatchDate;
         $lines[] = "▫️ *Destination Hub:* *" . $city . "*";
+        if ($order->delivery_charges !== null && (float)$order->delivery_charges > 0) {
+            $lines[] = "💰 *Delivery / Transport Charges:* *Rs." . number_format($order->delivery_charges, 2) . "*";
+            $lines[] = "   _(டிரான்ஸ்போர்ட் கட்டணம்: ரூ." . number_format($order->delivery_charges, 2) . " - பார்சல் பெறும் போது அலுவலகத்தில் செலுத்த வேண்டும்)_";
+        } else {
+            $lines[] = "💰 *Delivery / Transport Charges:* *As per Transport Partner Slip* (பார்சல் பெறும் போது செலுத்த வேண்டும்)";
+        }
         if (!empty($order->transport_phone)) {
             $lines[] = "📞 *Transport Branch Phone:* *" . $order->transport_phone . "*";
         }
@@ -496,7 +584,11 @@ class WhatsAppOrderService
         $lines[] = "📦 *HOW TO COLLECT YOUR PARCEL (பார்சல் பெறுவது எப்படி?):*";
         $lines[] = "1️⃣ உங்கள் பார்சல் இன்னும் 1-2 நாட்களில் உங்கள் ஊர் டிரான்ஸ்போர்ட் அலுவலகத்தை அடையும்.";
         $lines[] = "2️⃣ டிரான்ஸ்போர்ட் கிளையிலிருந்து உங்களுக்கு அழைப்பு வரும் (அல்லது மேலே உள்ள எண்ணை நீங்கள் தொடர்பு கொள்ளலாம்).";
-        $lines[] = "3️⃣ பார்சல் அலுவலகத்தில் இந்த *LR எண்: " . ($order->lr_number ?: '') . "* மற்றும் தங்களின் அடையாள அட்டையைக் (Aadhaar/ID Proof) காட்டி பார்சலை பெற்றுக்கொள்ளலாம்.";
+        if ($order->delivery_charges !== null && (float)$order->delivery_charges > 0) {
+            $lines[] = "3️⃣ பார்சல் அலுவலகத்தில் இந்த *LR எண்: " . ($order->lr_number ?: '') . "* மற்றும் அடையாள அட்டை (Aadhaar/ID Proof) காட்டி, டெலிவரி கட்டணம் *Rs." . number_format($order->delivery_charges, 2) . "* செலுத்தி உங்கள் பார்சலை பெற்றுக்கொள்ளலாம்.";
+        } else {
+            $lines[] = "3️⃣ பார்சல் அலுவலகத்தில் இந்த *LR எண்: " . ($order->lr_number ?: '') . "* மற்றும் தங்களின் அடையாள அட்டையைக் (Aadhaar/ID Proof) காட்டி பார்சலை பெற்றுக்கொள்ளலாம்.";
+        }
         $lines[] = "";
         $lines[] = "---------------------------------------------";
         if (!empty($order->lr_receipt_image)) {

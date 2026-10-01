@@ -74,6 +74,7 @@ class ShopController extends Controller
             'pincode' => 'nullable|string|min:6|max:6',
             'offer' => 'nullable|string|min:3|max:150',
             'offer_percentage' => 'nullable|integer|min:0|max:100',
+            'min_order_amount' => 'nullable|numeric|min:0',
             'banner_notice' => 'nullable|string|min:5|max:255',
             'upi_id' => 'nullable|string|min:5|max:60',
             'upi_name' => 'nullable|string|min:2|max:60',

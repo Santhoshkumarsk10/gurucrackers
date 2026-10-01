@@ -181,11 +181,13 @@ class OrderController extends Controller
             'dispatch_date' => 'nullable|date',
             'transport_phone' => ['nullable', 'string', 'regex:/^[6-9][0-9]{9}$/'],
             'destination_hub' => 'nullable|string|max:100',
+            'delivery_charges' => 'nullable|numeric|min:0|max:999999',
             'lr_receipt_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240', // 10MB
             'dispatch_notes' => 'nullable|string|max:1000',
             'send_whatsapp' => 'nullable|boolean',
         ], [
             'transport_phone.regex' => 'Transport contact phone must be exactly 10 digits starting with 6, 7, 8, or 9.',
+            'delivery_charges.numeric' => 'Delivery charges must be a valid number.',
         ]);
 
         $parcelService = $validated['parcel_service_name'];
@@ -209,6 +211,7 @@ class OrderController extends Controller
             'dispatch_date' => $validated['dispatch_date'] ?: now()->toDateString(),
             'transport_phone' => $validated['transport_phone'] ?? null,
             'destination_hub' => $validated['destination_hub'] ?: $order->city,
+            'delivery_charges' => $request->filled('delivery_charges') ? (float) $request->input('delivery_charges') : null,
             'lr_receipt_image' => $imagePath,
             'dispatch_notes' => $validated['dispatch_notes'] ?? null,
             'status' => 'dispatched',

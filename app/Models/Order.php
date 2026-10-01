@@ -28,6 +28,7 @@ class Order extends Model
         'dispatch_date',
         'transport_phone',
         'destination_hub',
+        'delivery_charges',
         'lr_receipt_image',
         'dispatch_notes',
         'dispatched_at',
@@ -36,6 +37,7 @@ class Order extends Model
 
     protected $casts = [
         'total_amount' => 'decimal:2',
+        'delivery_charges' => 'decimal:2',
         'dispatch_date' => 'date',
         'dispatched_at' => 'datetime',
         'admin_read_at' => 'datetime',

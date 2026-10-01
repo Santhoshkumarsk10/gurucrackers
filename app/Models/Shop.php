@@ -24,6 +24,7 @@ class Shop extends Model
         'pincode',
         'offer',
         'offer_percentage',
+        'min_order_amount',
         'banner_notice',
         'upi_id',
         'upi_name',
@@ -38,6 +39,7 @@ class Shop extends Model
 
     protected $casts = [
         'offer_percentage' => 'integer',
+        'min_order_amount' => 'float',
         'is_active' => 'boolean',
     ];
 
@@ -65,11 +67,17 @@ class Shop extends Model
             'pincode' => '626123',
             'offer' => '💥 DIWALI 2026 SPECIAL OFFER | தீபாவளி மெகா தள்ளுபடி',
             'offer_percentage' => 90,
+            'min_order_amount' => 2500.00,
             'banner_notice' => '✨ Sivakasi Direct Factory Prices | 100% Genuine Green Crackers | Mega Festival Discount',
             'upi_id' => '9789874381@apl',
             'upi_name' => 'Guru Crackers',
             'is_active' => true,
         ]));
+    }
+
+    public function getMinOrderAmount(): float
+    {
+        return (float) ($this->min_order_amount > 0 ? $this->min_order_amount : 2500.00);
     }
 
     public static function clearCache(): void

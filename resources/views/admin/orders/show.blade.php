@@ -457,7 +457,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
                     <div class="bg-white/5 rounded-xl p-3 border border-white/10">
                         <span class="text-[10px] text-slate-400 uppercase font-bold block">Parcel Count</span>
                         <span class="text-sm font-black text-amber-300 font-heading">{{ $order->parcel_count ?: '1 Box' }}</span>
@@ -469,6 +469,12 @@
                     <div class="bg-white/5 rounded-xl p-3 border border-white/10">
                         <span class="text-[10px] text-slate-400 uppercase font-bold block">Transport Helpline</span>
                         <span class="text-sm font-bold text-emerald-300">{{ $order->transport_phone ?: 'Contact Hub' }}</span>
+                    </div>
+                    <div class="bg-white/5 rounded-xl p-3 border border-white/10">
+                        <span class="text-[10px] text-slate-400 uppercase font-bold block">Delivery Charges</span>
+                        <span class="text-sm font-black text-amber-400 font-heading">
+                            {{ $order->delivery_charges !== null ? '₹' . number_format($order->delivery_charges, 2) : 'To Pay at Hub' }}
+                        </span>
                     </div>
                     <div class="bg-white/5 rounded-xl p-3 border border-white/10">
                         <span class="text-[10px] text-slate-400 uppercase font-bold block">Dispatched At</span>
@@ -661,6 +667,33 @@
                         placeholder="e.g. {{ $order->city }}"
                         class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-900"
                     >
+                </div>
+
+                <!-- Delivery / Transport Charges Amount -->
+                <div class="space-y-1 sm:col-span-2 bg-amber-50/70 border border-amber-200 p-3 rounded-xl">
+                    <label class="block text-xs font-extrabold text-amber-950 uppercase tracking-wider flex items-center justify-between">
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-indian-rupee-sign text-amber-700"></i>
+                            <span>Delivery / Transport Charges (டெலிவரி கட்டணம்)</span>
+                        </span>
+                        <span class="text-[10px] font-bold text-amber-800 bg-amber-200/80 px-2 py-0.5 rounded">To be paid by customer at Hub</span>
+                    </label>
+                    <div class="relative mt-1">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500 font-black text-xs pointer-events-none">₹</span>
+                        <input
+                            type="number"
+                            name="delivery_charges"
+                            step="0.01"
+                            min="0"
+                            max="99999"
+                            value="{{ old('delivery_charges', $order->delivery_charges) }}"
+                            placeholder="Enter delivery/transport charge amount (e.g. 250.00)"
+                            class="w-full pl-7 pr-3 py-2.5 text-xs bg-white border border-amber-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-black text-slate-900 shadow-xs"
+                        >
+                    </div>
+                    <p class="text-[11px] text-slate-600 mt-1">
+                        இந்தத் தொகை வாடிக்கையாளரின் WhatsApp tracking மெசேஜில் <strong>"Delivery / Transport Charges: Rs. XXX"</strong> என அனுப்பப்படும். பார்சல் அலுவலகத்தில் செலுத்தி பெற வேண்டிய தொகை.
+                    </p>
                 </div>
             </div>
 

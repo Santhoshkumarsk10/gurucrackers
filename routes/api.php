@@ -25,4 +25,8 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
 
     // 5. Single Order Details & Invoices
     Route::get('/orders/{orderNumber}', [OrderApiController::class, 'show'])->name('api.v1.orders.show');
+
+    // 6. Mobile App WhatsApp OTP Verification
+    Route::post('/orders/send-otp', [OrderApiController::class, 'sendOtp'])->middleware('throttle:10,1')->name('api.v1.orders.send_otp');
+    Route::post('/orders/verify-otp', [OrderApiController::class, 'verifyOtp'])->middleware('throttle:20,1')->name('api.v1.orders.verify_otp');
 });
