@@ -2446,6 +2446,8 @@
                         resendBtn.innerHTML = '<i class="fa-solid fa-rotate-right text-[11px] mr-1"></i> Resend OTP on WhatsApp';
                     }
                 }
+            };
+
             let isVerifyingOtp = false;
             window.submitOtpVerification = async function() {
                 if (isVerifyingOtp) return;
