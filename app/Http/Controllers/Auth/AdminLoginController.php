@@ -29,6 +29,15 @@ class AdminLoginController extends Controller
 
             \App\Services\AuditLogger::logAuth('login', 'Admin logged in: ' . Auth::user()->name . ' (' . Auth::user()->email . ')', Auth::user());
 
+            // If WhatsApp is disconnected, redirect to connect WhatsApp first
+            try {
+                $waStatus = \App\Services\WhatsAppOrderService::checkServerStatus();
+                if (empty($waStatus['connected'])) {
+                    return redirect()->route('admin.whatsapp.index')
+                        ->with('warning', '⚠️ வாட்ஸ்அப் தற்போது இணைக்கப்படவில்லை! வாடிக்கையாளர் OTP & பில்கள் செல்ல முதலில் WhatsApp-ஐ QR Scan செய்து இணைக்கவும்.');
+                }
+            } catch (\Throwable $e) {}
+
             return redirect()->intended(route('admin.dashboard'));
         }
 
