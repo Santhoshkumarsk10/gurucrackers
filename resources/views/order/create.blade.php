@@ -163,6 +163,109 @@
             </section>
         @endif
 
+        {{-- ===================== DIWALI 2026 FESTIVAL & BOOKING CLOSING COUNTDOWN CARD ===================== --}}
+        <section id="diwaliCountdownSection"
+            class="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-slate-950 via-rose-950 to-slate-900 border border-amber-500/30 p-4 sm:p-5 shadow-xl shadow-rose-950/20 text-white select-none transition-all">
+
+            <!-- Ambient festive background glows -->
+            <div class="absolute -top-12 -right-12 w-44 h-44 bg-amber-500/15 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -left-12 w-44 h-44 bg-rose-600/20 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="relative z-10 space-y-4">
+                <!-- Header Badge & Alert Notice -->
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-extrabold tracking-wide">
+                        <span class="animate-bounce">🪔</span>
+                        <span>DIWALI 2026 FESTIVAL COUNTDOWN</span>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-rose-300">
+                        <i class="fa-solid fa-bolt text-amber-400"></i>
+                        <span>Limited Period Direct Transport Booking</span>
+                    </div>
+                </div>
+
+                <!-- 3 Core Highlight Columns: Closing Date | Live Countdown Clock | Diwali Date -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 items-center">
+
+                    <!-- 1. Online Booking Closing Date Card -->
+                    <div class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl p-3 sm:p-3.5 flex items-center gap-3 transition-colors">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center text-white shrink-0 shadow-md shadow-rose-600/30">
+                            <i class="fa-solid fa-truck-fast text-lg"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <span class="block text-[10px] sm:text-[11px] uppercase font-bold text-rose-300 tracking-wider">
+                                Online Booking Closes
+                            </span>
+                            <div class="text-base sm:text-lg font-black text-amber-300 font-heading leading-tight">
+                                25 Oct 2026
+                            </div>
+                            <span class="block text-[10px] text-slate-300 truncate">
+                                பார்சல் புக்கிங் கடைசி நாள்
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 2. Interactive Digital Live Countdown Clock -->
+                    <div class="bg-black/40 border border-amber-400/30 rounded-2xl p-3 sm:p-3.5 text-center shadow-inner">
+                        <div class="text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-amber-200/90 mb-2 flex items-center justify-center gap-1.5">
+                            <i class="fa-regular fa-clock text-amber-400"></i>
+                            <span>Time Left to Order (மீதமுள்ள நேரம்)</span>
+                        </div>
+                        <div class="flex items-center justify-center gap-1 sm:gap-2">
+                            <!-- Days -->
+                            <div class="bg-slate-900/90 border border-amber-400/25 rounded-xl px-2 py-1.5 min-w-[50px] sm:min-w-[60px] text-center shadow-sm">
+                                <span id="cdDays" class="block text-xl sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
+                                <span class="block text-[9px] uppercase font-bold text-slate-400 mt-1">Days</span>
+                            </div>
+                            <span class="text-amber-400 font-black text-base sm:text-lg -mt-3">:</span>
+                            <!-- Hours -->
+                            <div class="bg-slate-900/90 border border-amber-400/25 rounded-xl px-2 py-1.5 min-w-[50px] sm:min-w-[60px] text-center shadow-sm">
+                                <span id="cdHours" class="block text-xl sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
+                                <span class="block text-[9px] uppercase font-bold text-slate-400 mt-1">Hours</span>
+                            </div>
+                            <span class="text-amber-400 font-black text-base sm:text-lg -mt-3">:</span>
+                            <!-- Mins -->
+                            <div class="bg-slate-900/90 border border-amber-400/25 rounded-xl px-2 py-1.5 min-w-[50px] sm:min-w-[60px] text-center shadow-sm">
+                                <span id="cdMins" class="block text-xl sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
+                                <span class="block text-[9px] uppercase font-bold text-slate-400 mt-1">Mins</span>
+                            </div>
+                            <span class="text-amber-400 font-black text-base sm:text-lg -mt-3">:</span>
+                            <!-- Secs -->
+                            <div class="bg-slate-900/90 border border-amber-400/25 rounded-xl px-2 py-1.5 min-w-[50px] sm:min-w-[60px] text-center shadow-sm">
+                                <span id="cdSecs" class="block text-xl sm:text-2xl font-black text-rose-400 font-heading leading-none">00</span>
+                                <span class="block text-[9px] uppercase font-bold text-slate-400 mt-1">Secs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Diwali Festival Date Card -->
+                    <div class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl p-3 sm:p-3.5 flex items-center gap-3 transition-colors">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-slate-950 shrink-0 shadow-md shadow-amber-500/30">
+                            <span class="text-xl">🪔</span>
+                        </div>
+                        <div class="min-w-0">
+                            <span class="block text-[10px] sm:text-[11px] uppercase font-bold text-amber-300 tracking-wider">
+                                Diwali Festival
+                            </span>
+                            <div class="text-base sm:text-lg font-black text-amber-200 font-heading leading-tight">
+                                08 Nov 2026
+                            </div>
+                            <span class="block text-[10px] text-slate-300 truncate">
+                                தீபாவளி பண்டிகை நன்னாள்
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Bottom Motivation Banner -->
+                <div class="flex items-center justify-center gap-2 pt-2 text-center text-xs text-amber-200 font-semibold">
+                    <span class="text-amber-400 animate-pulse">🔥</span>
+                    <span>விரைந்து ஆர்டர் செய்யுங்கள்! சிவகாசி பேக்கிங் மற்றும் கடைசி நேர போக்குவரத்து கூட்ட நெரிசலை தவிர்க்க முந்துங்கள்!</span>
+                </div>
+            </div>
+        </section>
+
         {{-- ===================== VALIDATION ERRORS ===================== --}}
         @if (isset($errors) && $errors->any())
             <div class="bg-rose-50 border-l-4 border-rose-600 text-rose-800 p-4 rounded-xl shadow-sm space-y-2">

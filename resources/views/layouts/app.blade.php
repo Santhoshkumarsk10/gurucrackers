@@ -777,10 +777,25 @@
         <!-- CUSTOMER STOREFRONT LAYOUT                                    -->
         <!-- ============================================================== -->
 
-        <!-- Top Announcement Bar -->
-        <div
-            class="bg-gradient-to-r from-amber-600 via-rose-600 to-amber-600 text-white text-xs font-semibold py-1.5 px-3 text-center tracking-wide flex items-center justify-center gap-2 shadow-inner">
-            <span>{{ $shop->banner_notice ?? '✨ Sivakasi Direct Factory Prices | 100% Genuine Green Crackers | Mega Festival Discount' }}</span>
+        <!-- Top Announcement Bar with Live Festive Urgency Ticker -->
+        <div id="topAnnouncementRibbon"
+            class="bg-gradient-to-r from-amber-600 via-rose-600 to-amber-600 text-white text-[11px] sm:text-xs font-semibold py-1.5 px-3 tracking-wide shadow-inner transition-all">
+            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center">
+                <span class="inline-flex items-center gap-1.5">
+                    <i class="fa-solid fa-box-open text-amber-200 text-xs"></i>
+                    <span>Online Booking Closes: <strong class="text-amber-200 font-bold">25 Oct 2026</strong></span>
+                    <span id="topBarCountdownPill" class="bg-black/30 text-amber-300 font-extrabold px-1.5 py-0.5 rounded text-[10px] tracking-wide ml-0.5">...</span>
+                </span>
+                <span class="text-white/40 hidden sm:inline">|</span>
+                <span class="inline-flex items-center gap-1.5">
+                    <span>🪔</span>
+                    <span>Diwali Festival: <strong class="text-amber-200 font-bold">08 Nov 2026</strong></span>
+                </span>
+                <span class="text-white/40 hidden md:inline">|</span>
+                <span class="hidden md:inline text-amber-100/90">
+                    ✨ Sivakasi Direct Factory Prices
+                </span>
+            </div>
         </div>
 
         <!-- Customer Navigation Header -->
@@ -2020,6 +2035,49 @@
             @if (session('warning'))
                 DiwaliAlert.warning('Warning 💥', @json(session('warning')));
             @endif
+
+            // Live Diwali & Online Booking 2026 Countdown Ticker
+            (function initDiwaliLiveCountdown() {
+                // Online Booking Closes on 25 Oct 2026 at 23:59:59 IST
+                const closingTarget = new Date('2026-10-25T23:59:59+05:30').getTime();
+
+                function renderCountdown() {
+                    const now = new Date().getTime();
+                    const diff = closingTarget - now;
+
+                    const dEl = document.getElementById('cdDays');
+                    const hEl = document.getElementById('cdHours');
+                    const mEl = document.getElementById('cdMins');
+                    const sEl = document.getElementById('cdSecs');
+                    const topPill = document.getElementById('topBarCountdownPill');
+
+                    if (diff <= 0) {
+                        if (dEl) dEl.innerText = '00';
+                        if (hEl) hEl.innerText = '00';
+                        if (mEl) mEl.innerText = '00';
+                        if (sEl) sEl.innerText = '00';
+                        if (topPill) topPill.innerText = 'Booking Closed';
+                        return;
+                    }
+
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                    if (dEl) dEl.innerText = String(days).padStart(2, '0');
+                    if (hEl) hEl.innerText = String(hours).padStart(2, '0');
+                    if (mEl) mEl.innerText = String(mins).padStart(2, '0');
+                    if (sEl) sEl.innerText = String(secs).padStart(2, '0');
+
+                    if (topPill) {
+                        topPill.innerText = `${days}d : ${hours}h left`;
+                    }
+                }
+
+                renderCountdown();
+                setInterval(renderCountdown, 1000);
+            })();
         });
 
     </script>
