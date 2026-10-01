@@ -605,19 +605,16 @@
                                 <!-- Phone 1 & Phone 2 -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
-                                        <label
-                                            class="block font-bold text-slate-700 mb-1 flex items-center justify-between"
-                                            for="phone1Input">
-                                            <span class="flex items-center gap-1.5">
+                                        <div class="flex items-center justify-between min-h-[22px] mb-1.5">
+                                            <label class="block font-bold text-slate-700 text-xs flex items-center gap-1.5 whitespace-nowrap" for="phone1Input">
                                                 <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i>
-                                                <span>WhatsApp Mobile No <span class="text-rose-600">*</span></span>
-                                            </span>
-                                            <span
-                                                class="text-[10px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-md">
+                                                <span>WhatsApp Mobile No&nbsp;<span class="text-rose-600">*</span></span>
+                                            </label>
+                                            <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.5 rounded shrink-0 whitespace-nowrap">
                                                 Active WhatsApp
                                             </span>
-                                        </label>
-                                        <div class="relative flex rounded-xl border border-slate-200 bg-slate-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-rose-500 focus-within:border-rose-500 transition-all overflow-hidden"
+                                        </div>
+                                        <div class="relative flex rounded-xl border border-slate-200 bg-slate-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-rose-500 focus-within:border-rose-500 transition-all overflow-hidden h-[42px]"
                                             id="phone1Wrapper">
                                             <span
                                                 class="inline-flex items-center px-2.5 text-slate-700 font-extrabold text-xs bg-slate-100 border-r border-slate-200 select-none shrink-0">
@@ -631,8 +628,8 @@
                                                 class="w-full px-2.5 py-2.5 text-xs bg-transparent border-none focus:outline-none font-medium placeholder:text-slate-400">
                                         </div>
                                         <p class="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
-                                            <i class="fa-solid fa-circle-info text-emerald-600 text-[10px]"></i>
-                                            <span>Invoice & parcel updates will be sent to this WhatsApp.</span>
+                                            <i class="fa-solid fa-circle-info text-emerald-600 text-[10px] shrink-0"></i>
+                                            <span class="leading-tight">Invoice &amp; parcel updates will be sent to this WhatsApp.</span>
                                         </p>
                                         <p id="err-phone1"
                                             class="field-error-msg hidden text-red-600 text-[11px] font-semibold mt-1 flex items-center gap-1">
@@ -641,17 +638,16 @@
                                         </p>
                                     </div>
                                     <div>
-                                        <label
-                                            class="block font-bold text-slate-700 mb-1 flex items-center justify-between"
-                                            for="phone2Input">
-                                            <span class="flex items-center gap-1.5">
-                                                <i class="fa-solid fa-phone text-slate-500 text-xs"></i>
-                                                <span>Alternate Mobile No <span
-                                                        class="text-slate-400 font-normal">(Optional)</span></span>
+                                        <div class="flex items-center justify-between min-h-[22px] mb-1.5">
+                                            <label class="block font-bold text-slate-700 text-xs flex items-center gap-1.5 whitespace-nowrap" for="phone2Input">
+                                                <i class="fa-solid fa-phone text-slate-400 text-xs"></i>
+                                                <span>Alternate Mobile&nbsp;<span class="text-slate-400 font-normal text-[11px]">(Optional)</span></span>
+                                            </label>
+                                            <span class="text-[9px] font-bold text-slate-600 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded shrink-0 whitespace-nowrap">
+                                                Voice Call
                                             </span>
-                                            <span class="text-[10px] text-slate-500 font-normal">For Voice Call</span>
-                                        </label>
-                                        <div class="relative flex rounded-xl border border-slate-200 bg-slate-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-rose-500 focus-within:border-rose-500 transition-all overflow-hidden"
+                                        </div>
+                                        <div class="relative flex rounded-xl border border-slate-200 bg-slate-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-rose-500 focus-within:border-rose-500 transition-all overflow-hidden h-[42px]"
                                             id="phone2Wrapper">
                                             <span
                                                 class="inline-flex items-center px-2.5 text-slate-500 font-bold text-xs bg-slate-100 border-r border-slate-200 select-none shrink-0">
@@ -665,8 +661,8 @@
                                                 class="w-full px-2.5 py-2.5 text-xs bg-transparent border-none focus:outline-none font-medium placeholder:text-slate-400">
                                         </div>
                                         <p class="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
-                                            <i class="fa-solid fa-phone-volume text-slate-400 text-[10px]"></i>
-                                            <span>To call if your WhatsApp number is unreachable.</span>
+                                            <i class="fa-solid fa-phone-volume text-slate-400 text-[10px] shrink-0"></i>
+                                            <span class="leading-tight">To call if your WhatsApp number is unreachable.</span>
                                         </p>
                                         <p id="err-phone2"
                                             class="field-error-msg hidden text-red-600 text-[11px] font-semibold mt-1 flex items-center gap-1">
@@ -704,21 +700,21 @@
                                 <!-- Pincode, City / Town & State (Auto-fill on Pincode) -->
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <div>
-                                        <div class="flex items-center justify-between mb-1">
-                                            <label class="block font-bold text-slate-700" for="pincodeInput">
-                                                Pincode <span class="text-rose-600">*</span>
+                                        <div class="flex items-center justify-between min-h-[22px] mb-1.5">
+                                            <label class="block font-bold text-slate-700 text-xs" for="pincodeInput">
+                                                Pincode&nbsp;<span class="text-rose-600">*</span>
                                             </label>
-                                            <span id="pincodeBadgeHint" class="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200/60 px-1.5 py-0.5 rounded-md flex items-center gap-1">
-                                                <i class="fa-solid fa-bolt text-[9px] text-amber-500"></i> Auto-fill
+                                            <span id="pincodeBadgeHint" class="text-[9px] font-bold text-rose-600 bg-rose-50 border border-rose-200/70 px-1.5 py-0.5 rounded shrink-0 flex items-center gap-1 whitespace-nowrap">
+                                                <i class="fa-solid fa-bolt text-[8px] text-amber-500"></i> Auto-fill
                                             </span>
                                         </div>
                                         <div class="relative">
                                             <i
                                                 class="fa-solid fa-map-pin absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                                             <input type="text" name="pincode" id="pincodeInput"
-                                                value="{{ old('pincode') }}" required placeholder="TN 6-digit pincode (60xxxx - 64xxxx)"
+                                                value="{{ old('pincode') }}" required placeholder="6-digit PIN (e.g. 626123)"
                                                 pattern="6[0-4][0-9]{4}" minlength="6" maxlength="6" inputmode="numeric" autocomplete="postal-code"
-                                                class="w-full pl-8 pr-8 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all font-medium placeholder:text-slate-400">
+                                                class="w-full pl-8 pr-8 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all font-medium placeholder:text-slate-400 h-[42px]">
                                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs flex items-center pointer-events-none">
                                                 <i id="pincodeSpinner" class="fa-solid fa-circle-notch fa-spin text-rose-600 hidden"></i>
                                                 <i id="pincodeSuccessIcon" class="fa-solid fa-circle-check text-emerald-600 hidden"></i>
@@ -735,16 +731,21 @@
                                         </p>
                                     </div>
                                     <div>
-                                        <label class="block font-bold text-slate-700 mb-1" for="cityInput">
-                                            City / Town <span class="text-rose-600">*</span>
-                                        </label>
+                                        <div class="flex items-center justify-between min-h-[22px] mb-1.5">
+                                            <label class="block font-bold text-slate-700 text-xs" for="cityInput">
+                                                City / Town&nbsp;<span class="text-rose-600">*</span>
+                                            </label>
+                                            <span class="text-[9px] font-medium text-slate-400 shrink-0 whitespace-nowrap">
+                                                Town / City
+                                            </span>
+                                        </div>
                                         <div class="relative">
                                             <i
                                                 class="fa-solid fa-city absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                                             <input type="text" name="city" id="cityInput" list="citySuggestions"
                                                 value="{{ old('city') }}" required minlength="2" maxlength="50"
-                                                placeholder="e.g. Madurai / Chennai" autocomplete="address-level2"
-                                                class="w-full pl-8 pr-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all font-medium placeholder:text-slate-400">
+                                                placeholder="e.g. Madurai" autocomplete="address-level2"
+                                                class="w-full pl-8 pr-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all font-medium placeholder:text-slate-400 h-[42px]">
                                             <datalist id="citySuggestions"></datalist>
                                         </div>
                                         <p id="err-city"
@@ -754,11 +755,11 @@
                                         </p>
                                     </div>
                                     <div>
-                                        <div class="flex items-center justify-between mb-1">
-                                            <label class="block font-bold text-slate-700" for="stateInput">
-                                                State <span class="text-rose-600">*</span>
+                                        <div class="flex items-center justify-between min-h-[22px] mb-1.5">
+                                            <label class="block font-bold text-slate-700 text-xs" for="stateInput">
+                                                State&nbsp;<span class="text-rose-600">*</span>
                                             </label>
-                                            <span class="text-[9px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                                            <span class="text-[9px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200/70 px-1.5 py-0.5 rounded shrink-0 flex items-center gap-1 whitespace-nowrap">
                                                 <i class="fa-solid fa-location-dot text-[8px] text-emerald-600"></i> TN Only
                                             </span>
                                         </div>
@@ -766,7 +767,7 @@
                                             <i
                                                 class="fa-solid fa-map-location-dot absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                                             <select name="state" id="stateInput" required autocomplete="address-level1"
-                                                class="w-full pl-8 pr-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all font-bold text-slate-800">
+                                                class="w-full pl-8 pr-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all font-bold text-slate-800 h-[42px]">
                                                 <option value="Tamil Nadu" selected>Tamil Nadu</option>
                                             </select>
                                         </div>
