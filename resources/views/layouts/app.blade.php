@@ -1038,11 +1038,19 @@
                             Customers are requested to comply with all applicable legal requirements relating to the purchase, possession, transportation, and use of firecrackers.
                         </p>
                     </div>
-                    <button type="button" onclick="openLegalModal()"
-                        class="mt-2 text-[11px] text-amber-400 hover:text-amber-300 font-bold underline inline-flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-truck-fast"></i>
-                        <span>View Order & Delivery Process (எப்படி ஆர்டர் செய்வது?)</span>
-                    </button>
+                    @if (request()->routeIs('order.create'))
+                        <button type="button" onclick="openLegalModal()"
+                            class="mt-2 text-[11px] text-amber-400 hover:text-amber-300 font-bold underline inline-flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-truck-fast"></i>
+                            <span>View Order & Delivery Process (எப்படி ஆர்டர் செய்வது?)</span>
+                        </button>
+                    @else
+                        <a href="{{ route('order.create') }}"
+                            class="mt-2 text-[11px] text-amber-400 hover:text-amber-300 font-bold underline inline-flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-truck-fast"></i>
+                            <span>View Order & Delivery Process (எப்படி ஆர்டர் செய்வது?)</span>
+                        </a>
+                    @endif
                 </div>
             </div>
 
@@ -2019,7 +2027,7 @@
     {{-- ========================================================
          SUPREME COURT LEGAL NOTICE MODAL (Customer Storefront Only)
          ======================================================== --}}
-    @if (!request()->routeIs('admin.*'))
+    @if (request()->routeIs('order.create'))
         <script>
             // ==========================================
             // Supreme Court Legal Compliance Modal Logic
