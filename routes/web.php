@@ -40,6 +40,10 @@ Route::get('/api/pincode/{pincode}', [OrderController::class, 'lookupPincode'])-
 // Internal WhatsApp microservice webhook for inbound customer messages
 Route::post('/api/whatsapp/webhook', [AdminWhatsAppController::class, 'webhook'])
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class]);
+Route::post('/api/whatsapp/sync-session', [AdminWhatsAppController::class, 'syncSession'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class]);
+Route::post('/api/whatsapp/clear-session', [AdminWhatsAppController::class, 'clearSession'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class]);
 
 /*
  * |--------------------------------------------------------------------------

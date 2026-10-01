@@ -435,6 +435,47 @@ class WhatsAppController extends Controller
     }
 
     /**
+     * Internal webhook called by Node.js microservice to sync session to MySQL.
+     */
+    public function syncSession(Request $request)
+    {
+        if (!in_array($request->ip(), ['127.0.0.1', '::1'])) {
+            return response()->json(['error' => 'Forbidden: Internal endpoint restricted to local loopback.'], 403);
+        }
+
+        $expectedSecret = (string) config('services.whatsapp.secret', 'gc-whatsapp-internal-2026');
+        $receivedSecret = (string) $request->header('X-Internal-Secret', '');
+        if (empty($receivedSecret) || !hash_equals($expectedSecret, $receivedSecret)) {
+            return response()->json(['error' => 'Unauthorized: Invalid internal secret.'], 401);
+        }
+
+        $phone = $request->input('phone');
+        $res = WhatsAppOrderService::backupSessionToDatabase($phone);
+
+        return response()->json($res);
+    }
+
+    /**
+     * Internal webhook called by Node.js microservice upon logout to clear MySQL session.
+     */
+    public function clearSession(Request $request)
+    {
+        if (!in_array($request->ip(), ['127.0.0.1', '::1'])) {
+            return response()->json(['error' => 'Forbidden: Internal endpoint restricted to local loopback.'], 403);
+        }
+
+        $expectedSecret = (string) config('services.whatsapp.secret', 'gc-whatsapp-internal-2026');
+        $receivedSecret = (string) $request->header('X-Internal-Secret', '');
+        if (empty($receivedSecret) || !hash_equals($expectedSecret, $receivedSecret)) {
+            return response()->json(['error' => 'Unauthorized: Invalid internal secret.'], 401);
+        }
+
+        WhatsAppOrderService::clearStoredSession();
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
      * Unlink device / Logout.
      */
     public function logout()

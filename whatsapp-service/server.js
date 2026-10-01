@@ -55,6 +55,45 @@ let isStarting = false;
 let allowedPhone = process.env.ALLOWED_WHATSAPP_PHONE || null;
 let rejectedReason = null;
 
+let syncTimeout = null;
+function triggerSessionSync(phone = null) {
+    if (syncTimeout) clearTimeout(syncTimeout);
+    syncTimeout = setTimeout(async () => {
+        try {
+            const laravelBase = LARAVEL_WEBHOOK_URL.replace(/\/webhook\/?$/, '');
+            const syncUrl = `${laravelBase}/sync-session`;
+            await fetch(syncUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Internal-Secret': INTERNAL_SECRET
+                },
+                body: JSON.stringify({ phone: phone || (sock?.user?.id ? sock.user.id.split(':')[0] : null) })
+            });
+            console.log('[SESSION SYNC] WhatsApp auth session backed up to MySQL.');
+        } catch (e) {
+            console.warn('[SESSION SYNC] Failed syncing session to MySQL:', e.message);
+        }
+    }, 2500);
+}
+
+async function triggerSessionClear() {
+    try {
+        const laravelBase = LARAVEL_WEBHOOK_URL.replace(/\/webhook\/?$/, '');
+        const clearUrl = `${laravelBase}/clear-session`;
+        await fetch(clearUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Internal-Secret': INTERNAL_SECRET
+            }
+        });
+        console.log('[SESSION CLEAR] Cleared WhatsApp session from MySQL.');
+    } catch (e) {
+        console.warn('[SESSION CLEAR] Failed clearing session from MySQL:', e.message);
+    }
+}
+
 async function startWhatsApp() {
     if (isStarting) return;
     isStarting = true;
@@ -87,7 +126,10 @@ async function startWhatsApp() {
             syncFullHistory: false
         });
 
-        sock.ev.on('creds.update', saveCreds);
+        sock.ev.on('creds.update', () => {
+            saveCreds();
+            triggerSessionSync();
+        });
 
         // Forward real-time incoming/outgoing customer messages to Laravel webhook
         sock.ev.on('messages.upsert', async ({ messages, type }) => {
@@ -332,6 +374,7 @@ async function startWhatsApp() {
                     isStarting = false;
                     setTimeout(startWhatsApp, 3000);
                 } else {
+                    await triggerSessionClear();
                     try {
                         fs.rmSync(authDir, { recursive: true, force: true });
                     } catch (e) {}
@@ -363,6 +406,7 @@ async function startWhatsApp() {
 
                 if (!isConnected) {
                     console.log('WhatsApp Service Connected successfully for Authorized Shop User:', rawUser);
+                    triggerSessionSync(rawUser);
                 }
                 rejectedReason = null;
                 isConnected = true;
@@ -624,6 +668,7 @@ app.post('/clear-alert', (req, res) => {
 
 app.post('/logout', async (req, res) => {
     try {
+        await triggerSessionClear();
         if (sock) {
             await sock.logout();
         }

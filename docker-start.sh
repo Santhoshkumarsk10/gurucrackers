@@ -17,6 +17,10 @@ mkdir -p /var/www/html/storage/app/db_backups /var/www/html/storage/framework/ca
 chown -R www-data:www-data /var/www/html/storage /var/www/html/public
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Restore WhatsApp session from MySQL database if available before starting Node service
+echo "Restoring WhatsApp session from database if available..."
+php artisan whatsapp:restore-session || true
+
 # Cache Laravel configuration, routes, and views
 php artisan config:cache || true
 php artisan route:cache || true

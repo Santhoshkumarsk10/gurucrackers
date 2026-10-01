@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Models\Shop;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -1067,11 +1068,137 @@ class WhatsAppOrderService
     }
 
     /**
+     * Backup WhatsApp multi-file auth credentials to MySQL database.
+     */
+    public static function backupSessionToDatabase(?string $connectedPhone = null): array
+    {
+        try {
+            $authDir = base_path('whatsapp-service/auth_info');
+            if (!is_dir($authDir) || !file_exists($authDir . '/creds.json')) {
+                return ['success' => false, 'message' => 'No active session or creds.json found to backup'];
+            }
+
+            $files = [];
+            foreach (scandir($authDir) as $f) {
+                if ($f !== '.' && $f !== '..' && is_file($authDir . '/' . $f)) {
+                    $files[$f] = file_get_contents($authDir . '/' . $f);
+                }
+            }
+
+            if (empty($files) || !isset($files['creds.json'])) {
+                return ['success' => false, 'message' => 'Invalid auth_info files state'];
+            }
+
+            $jsonString = json_encode($files);
+            $compressed = gzencode($jsonString, 6);
+            $payload = base64_encode($compressed);
+
+            DB::table('whatsapp_sessions')->updateOrInsert(
+                ['session_id' => 'default_session'],
+                [
+                    'session_payload' => $payload,
+                    'files_count' => count($files),
+                    'connected_phone' => $connectedPhone,
+                    'updated_at' => now(),
+                    'created_at' => now(),
+                ]
+            );
+
+            Log::info("WhatsApp session backed up to MySQL successfully (" . count($files) . " files, " . round(strlen($payload)/1024, 2) . " KB)");
+
+            return [
+                'success' => true,
+                'files_count' => count($files),
+                'size_kb' => round(strlen($payload) / 1024, 2),
+            ];
+        } catch (\Throwable $e) {
+            Log::error('Failed to backup WhatsApp session to MySQL: ' . $e->getMessage());
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Restore WhatsApp multi-file auth credentials from MySQL database to auth_info directory.
+     */
+    public static function restoreSessionFromDatabase(bool $force = false): array
+    {
+        try {
+            $authDir = base_path('whatsapp-service/auth_info');
+
+            // If creds.json already exists and force is false, skip restoration
+            if (!$force && file_exists($authDir . '/creds.json')) {
+                return ['success' => true, 'restored' => false, 'message' => 'Session creds already exist on disk'];
+            }
+
+            $record = DB::table('whatsapp_sessions')->where('session_id', 'default_session')->first();
+            if (!$record || empty($record->session_payload)) {
+                return ['success' => false, 'restored' => false, 'message' => 'No stored WhatsApp session found in database'];
+            }
+
+            $compressed = base64_decode($record->session_payload);
+            $jsonString = @gzdecode($compressed);
+            if (!$jsonString) {
+                return ['success' => false, 'restored' => false, 'message' => 'Failed to decompress session payload'];
+            }
+
+            $files = json_decode($jsonString, true);
+            if (!is_array($files) || !isset($files['creds.json'])) {
+                return ['success' => false, 'restored' => false, 'message' => 'Corrupt session payload in database'];
+            }
+
+            if (!is_dir($authDir)) {
+                mkdir($authDir, 0700, true);
+            }
+            @chmod($authDir, 0700);
+
+            $count = 0;
+            foreach ($files as $name => $content) {
+                // Security: basename only to prevent directory traversal
+                $safeName = basename($name);
+                if (empty($safeName)) continue;
+                file_put_contents($authDir . '/' . $safeName, $content);
+                @chmod($authDir . '/' . $safeName, 0664);
+                $count++;
+            }
+
+            Log::info("WhatsApp session restored from MySQL successfully ({$count} files)");
+
+            return [
+                'success' => true,
+                'restored' => true,
+                'files_count' => $count,
+                'connected_phone' => $record->connected_phone,
+            ];
+        } catch (\Throwable $e) {
+            Log::error('Failed to restore WhatsApp session from MySQL: ' . $e->getMessage());
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Clear stored WhatsApp session from MySQL database.
+     */
+    public static function clearStoredSession(): bool
+    {
+        try {
+            DB::table('whatsapp_sessions')->where('session_id', 'default_session')->delete();
+            Log::info("Stored WhatsApp session deleted from MySQL");
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('Failed to delete WhatsApp session from MySQL: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Logout WhatsApp session.
      */
     public static function logout(): array
     {
         try {
+            // Delete stored session from database so next deploy does not resurrect logged-out session
+            self::clearStoredSession();
+
             $secret = config('services.whatsapp.secret', 'gc-whatsapp-internal-2026');
             $response = \Illuminate\Support\Facades\Http::timeout(5)
                 ->withHeaders(['X-Internal-Secret' => $secret])
