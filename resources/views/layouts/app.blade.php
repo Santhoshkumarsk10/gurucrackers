@@ -778,7 +778,11 @@
         <!-- ============================================================== -->
 
         <!-- Top Announcement Bar with Live Festive Urgency Ticker -->
-        <div id="topAnnouncementRibbon"
+        <div
+            class="bg-gradient-to-r from-amber-600 via-rose-600 to-amber-600 text-white text-xs font-semibold py-1.5 px-3 text-center tracking-wide flex items-center justify-center gap-2 shadow-inner">
+            <span>{{ $shop->banner_notice ?? '✨ Sivakasi Direct Factory Prices | 100% Genuine Green Crackers | Mega Festival Discount' }}</span>
+        </div>
+        {{-- <div id="topAnnouncementRibbon"
             class="bg-gradient-to-r from-amber-600 via-rose-600 to-amber-600 text-white text-[11px] sm:text-xs font-semibold py-1.5 px-3 tracking-wide shadow-inner transition-all">
             <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center">
                 <span class="inline-flex items-center gap-1.5">
@@ -796,7 +800,7 @@
                     ✨ Sivakasi Direct Factory Prices
                 </span>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Customer Navigation Header -->
         <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-rose-100 shadow-sm">

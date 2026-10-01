@@ -8,121 +8,122 @@
         {{-- ===================== HERO FESTIVE BANNER & CAROUSEL ===================== --}}
         @php
             $activeBanners = isset($banners) && $banners->isNotEmpty() ? $banners : collect();
-            $totalHeroSlides = $activeBanners->count();
+            $totalHeroSlides = $activeBanners->count() + 1; // Slide 0 is the Festive Countdown Slide!
         @endphp
 
-        @if ($totalHeroSlides > 0)
-            <section
-                class="relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl shadow-rose-900/15 group select-none min-h-[160px] sm:min-h-[320px] md:min-h-[270px] lg:min-h-[250px] bg-slate-950"
-                id="heroCarouselSection">
-                <div class="relative w-full h-full min-h-[160px] sm:min-h-[320px] md:min-h-[270px] lg:min-h-[250px]"
-                    id="bannerCarouselTrack">
+        <section
+            class="relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl shadow-rose-900/15 group select-none min-h-[230px] sm:min-h-[270px] md:min-h-[250px] lg:min-h-[240px] bg-slate-950"
+            id="heroCarouselSection">
+            <div class="relative w-full h-full min-h-[230px] sm:min-h-[270px] md:min-h-[250px] lg:min-h-[240px]"
+                id="bannerCarouselTrack">
 
-                    {{-- SLIDE 0: Festive Store & Cart Overview Card (Hidden on both Desktop & Mobile as requested)
-                <div class="carousel-slide absolute inset-0 w-full h-full transition-all duration-700 ease-out opacity-100 scale-100 z-10 bg-gradient-to-br from-rose-800 via-red-700 to-amber-700 text-white p-5 md:p-8 flex flex-col justify-center overflow-hidden"
+                <!-- SLIDE 0: Diwali 2026 Festival Countdown & Online Booking Closing Card (Default 1st Slide) -->
+                <div class="carousel-slide absolute inset-0 w-full h-full transition-all duration-700 ease-out opacity-100 scale-100 z-10 bg-gradient-to-br from-slate-950 via-rose-950 to-slate-900 border border-amber-500/30 p-3 sm:p-5 flex flex-col justify-center overflow-hidden"
                     data-index="0">
-                    <div
-                        class="absolute -top-12 -right-12 w-48 h-48 bg-amber-400/20 rounded-full blur-2xl pointer-events-none">
-                    </div>
-                    <div
-                        class="absolute -bottom-10 -left-10 w-44 h-44 bg-rose-500/30 rounded-full blur-2xl pointer-events-none">
-                    </div>
 
-                    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div class="space-y-2.5 max-w-2xl">
-                            <div
-                                class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-amber-200 text-xs font-semibold tracking-wide shadow-sm">
-                                <span class="animate-bounce">💥</span>
-                                {{ $shop->offer ?? 'DIWALI 2026 FESTIVAL PRICE LIST | தீபாவளி பட்டாசு பட்டியல்' }}
+                    <!-- Ambient festive background glows -->
+                    <div class="absolute -top-12 -right-12 w-48 h-48 bg-amber-500/15 rounded-full blur-2xl pointer-events-none"></div>
+                    <div class="absolute -bottom-12 -left-12 w-48 h-48 bg-rose-600/20 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <div class="relative z-10 space-y-2 sm:space-y-3.5 max-w-4xl mx-auto w-full px-1">
+                        <!-- Header Badge & Alert Notice -->
+                        <div class="flex items-center justify-between gap-1.5 border-b border-white/10 pb-1.5 sm:pb-2">
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-[10px] sm:text-xs font-extrabold tracking-wide">
+                                <span class="animate-bounce">🪔</span>
+                                <span>DIWALI 2026 FESTIVAL COUNTDOWN</span>
                             </div>
-                            <h1
-                                class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight font-heading leading-tight">
-                                {{ $shop->name ?? 'Sivakasi Direct Genuine Crackers' }}
-                            </h1>
-                            <p class="text-rose-100 text-sm md:text-base leading-relaxed">
-                                Direct factory wholesale rates with up to <strong
-                                    class="text-amber-300 font-bold">{{ $shop->offer_percentage ?? 90 }}% Discount</strong>.
-                                Choose your favorite crackers by category with Tamil names & images, verify your live
-                                savings, and book in 1-click!
-                            </p>
-
-                            <!-- Quick Highlights & Social Media Links -->
-                            <div class="pt-2 flex flex-wrap items-center gap-2.5 sm:gap-3 text-xs font-medium text-rose-50">
-                                <span
-                                    class="flex items-center gap-1.5 bg-black/20 px-2.5 py-1 rounded-md border border-white/10">
-                                    <i class="fa-solid fa-certificate text-amber-300"></i> 100% Green Crackers
-                                </span>
-                                <span
-                                    class="flex items-center gap-1.5 bg-black/20 px-2.5 py-1 rounded-md border border-white/10">
-                                    <i class="fa-solid fa-truck-fast text-amber-300"></i> Direct Transport Dispatch
-                                </span>
-                                <span
-                                    class="flex items-center gap-1.5 bg-black/20 px-2.5 py-1 rounded-md border border-white/10">
-                                    <i class="fa-solid fa-tags text-amber-300"></i> {{ $categories->count() }} Categories
-                                </span>
-                                @if (!empty($shop->whatsapp_phone))
-                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $shop->whatsapp_phone) }}"
-                                        target="_blank" rel="noopener noreferrer"
-                                        class="flex items-center gap-1.5 bg-emerald-600/90 hover:bg-emerald-600 px-2.5 py-1 rounded-md border border-white/15 text-white font-bold transition-all shadow-sm"
-                                        title="Chat on WhatsApp">
-                                        <i class="fa-brands fa-whatsapp text-emerald-200 text-sm"></i> WhatsApp Us
-                                    </a>
-                                @endif
-                                @if (!empty($shop->facebook_url))
-                                    <a href="{{ $shop->facebook_url }}" target="_blank" rel="noopener noreferrer"
-                                        class="flex items-center gap-1 bg-[#1877F2]/80 hover:bg-[#1877F2] px-2 py-1 rounded-md border border-white/15 text-white font-bold transition-all shadow-sm"
-                                        title="Visit Facebook Page">
-                                        <i class="fa-brands fa-facebook-f text-xs"></i>
-                                        <span class="hidden sm:inline">Facebook</span>
-                                    </a>
-                                @endif
-                                @if (!empty($shop->instagram_url))
-                                    <a href="{{ $shop->instagram_url }}" target="_blank" rel="noopener noreferrer"
-                                        class="flex items-center gap-1 bg-gradient-to-r from-[#f09433] via-[#dc2743] to-[#bc1888] hover:opacity-95 px-2 py-1 rounded-md border border-white/15 text-white font-bold transition-all shadow-sm"
-                                        title="Follow on Instagram">
-                                        <i class="fa-brands fa-instagram text-xs"></i>
-                                        <span class="hidden sm:inline">Instagram</span>
-                                    </a>
-                                @endif
-                                @if (!empty($shop->youtube_url))
-                                    <a href="{{ $shop->youtube_url }}" target="_blank" rel="noopener noreferrer"
-                                        class="flex items-center gap-1 bg-[#FF0000]/85 hover:bg-[#FF0000] px-2 py-1 rounded-md border border-white/15 text-white font-bold transition-all shadow-sm"
-                                        title="Watch on YouTube">
-                                        <i class="fa-brands fa-youtube text-xs"></i>
-                                        <span class="hidden sm:inline">YouTube</span>
-                                    </a>
-                                @endif
-                                @if (!empty($shop->maps_url))
-                                    <a href="{{ $shop->maps_url }}" target="_blank" rel="noopener noreferrer"
-                                        class="flex items-center gap-1 bg-amber-600/80 hover:bg-amber-600 px-2 py-1 rounded-md border border-white/15 text-white font-bold transition-all shadow-sm"
-                                        title="View Factory Location on Google Maps">
-                                        <i class="fa-solid fa-map-location-dot text-xs text-amber-200"></i>
-                                        <span class="hidden sm:inline">Maps</span>
-                                    </a>
-                                @endif
+                            <div class="inline-flex items-center gap-1 text-[10px] sm:text-xs font-bold text-rose-300">
+                                <i class="fa-solid fa-bolt text-amber-400"></i>
+                                <span>Limited Period Direct Transport Booking</span>
                             </div>
                         </div>
 
-                        <!-- Quick Action Box -->
-                        <div
-                            class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 flex flex-col items-center justify-center text-center shrink-0 min-w-[220px]">
-                            <div class="text-xs text-rose-200 uppercase tracking-wider font-semibold">Live Cart Status</div>
-                            <div class="text-2xl font-extrabold text-amber-300 my-1 font-heading" id="heroTotalDisplay">
-                                ₹0.00</div>
-                            <div class="text-[11px] text-white/80" id="heroItemsCount">0 items selected</div>
-                            <button type="button" onclick="scrollToCheckout()"
-                                class="mt-3 w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-900 text-xs font-bold py-2 px-3 rounded-lg shadow-md transition-all flex items-center justify-center gap-1.5 font-heading cursor-pointer">
-                                <i class="fa-solid fa-basket-shopping"></i> Checkout Now
-                            </button>
+                        <!-- 3 Core Highlight Columns: Closing Date | Live Countdown Clock | Diwali Date -->
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3.5 items-stretch">
+
+                            <!-- 1. Online Booking Closing Date Card -->
+                            <div class="col-span-1 order-1 sm:order-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl sm:rounded-2xl p-2 sm:p-3 flex items-center gap-2 sm:gap-3 transition-colors">
+                                <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center text-white shrink-0 shadow-md shadow-rose-600/30 text-xs sm:text-base">
+                                    <i class="fa-solid fa-truck-fast"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <span class="block text-[8px] sm:text-[11px] uppercase font-bold text-rose-300 tracking-wider">
+                                        Online Booking Closes
+                                    </span>
+                                    <div class="text-xs sm:text-lg font-black text-amber-300 font-heading leading-tight">
+                                        25 Oct 2026
+                                    </div>
+                                    <span class="block text-[8px] sm:text-[10px] text-slate-300 truncate">
+                                        பார்சல் புக்கிங் கடைசி நாள்
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- 2. Interactive Digital Live Countdown Clock -->
+                            <div class="col-span-2 sm:col-span-1 order-3 sm:order-2 bg-black/50 border border-amber-400/30 rounded-xl sm:rounded-2xl p-2 sm:p-3 text-center shadow-inner flex flex-col justify-center">
+                                <div class="text-[9px] sm:text-[11px] uppercase tracking-wider font-bold text-amber-200/90 mb-1 sm:mb-1.5 flex items-center justify-center gap-1">
+                                    <i class="fa-regular fa-clock text-amber-400 text-xs"></i>
+                                    <span>Time Left to Order (மீதமுள்ள நேரம்)</span>
+                                </div>
+                                <div class="flex items-center justify-center gap-1 sm:gap-1.5">
+                                    <!-- Days -->
+                                    <div class="bg-slate-900/95 border border-amber-400/25 rounded-lg sm:rounded-xl px-1 sm:px-2 py-0.5 sm:py-1 min-w-[40px] sm:min-w-[52px] text-center shadow-sm">
+                                        <span id="cdDays" class="block text-base sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
+                                        <span class="block text-[7px] sm:text-[9px] uppercase font-bold text-slate-400 mt-0.5">Days</span>
+                                    </div>
+                                    <span class="text-amber-400 font-black text-xs sm:text-base -mt-1 sm:-mt-2">:</span>
+                                    <!-- Hours -->
+                                    <div class="bg-slate-900/95 border border-amber-400/25 rounded-lg sm:rounded-xl px-1 sm:px-2 py-0.5 sm:py-1 min-w-[40px] sm:min-w-[52px] text-center shadow-sm">
+                                        <span id="cdHours" class="block text-base sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
+                                        <span class="block text-[7px] sm:text-[9px] uppercase font-bold text-slate-400 mt-0.5">Hours</span>
+                                    </div>
+                                    <span class="text-amber-400 font-black text-xs sm:text-base -mt-1 sm:-mt-2">:</span>
+                                    <!-- Mins -->
+                                    <div class="bg-slate-900/95 border border-amber-400/25 rounded-lg sm:rounded-xl px-1 sm:px-2 py-0.5 sm:py-1 min-w-[40px] sm:min-w-[52px] text-center shadow-sm">
+                                        <span id="cdMins" class="block text-base sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
+                                        <span class="block text-[7px] sm:text-[9px] uppercase font-bold text-slate-400 mt-0.5">Mins</span>
+                                    </div>
+                                    <span class="text-amber-400 font-black text-xs sm:text-base -mt-1 sm:-mt-2">:</span>
+                                    <!-- Secs -->
+                                    <div class="bg-slate-900/95 border border-amber-400/25 rounded-lg sm:rounded-xl px-1 sm:px-2 py-0.5 sm:py-1 min-w-[40px] sm:min-w-[52px] text-center shadow-sm">
+                                        <span id="cdSecs" class="block text-base sm:text-2xl font-black text-rose-400 font-heading leading-none">00</span>
+                                        <span class="block text-[7px] sm:text-[9px] uppercase font-bold text-slate-400 mt-0.5">Secs</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. Diwali Festival Date Card -->
+                            <div class="col-span-1 order-2 sm:order-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl sm:rounded-2xl p-2 sm:p-3 flex items-center gap-2 sm:gap-3 transition-colors">
+                                <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-slate-950 shrink-0 shadow-md shadow-amber-500/30 text-xs sm:text-base">
+                                    <span>🪔</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <span class="block text-[8px] sm:text-[11px] uppercase font-bold text-amber-300 tracking-wider">
+                                        Diwali Festival
+                                    </span>
+                                    <div class="text-xs sm:text-lg font-black text-amber-200 font-heading leading-tight">
+                                        08 Nov 2026
+                                    </div>
+                                    <span class="block text-[8px] sm:text-[10px] text-slate-300 truncate">
+                                        தீபாவளி பண்டிகை நன்னாள்
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Bottom Motivation Banner -->
+                        <div class="flex items-center justify-center gap-1.5 pt-0.5 sm:pt-1 text-center text-[10px] sm:text-xs text-amber-200 font-medium">
+                            <span class="text-amber-400 animate-pulse">🔥</span>
+                            <span>விரைந்து ஆர்டர் செய்யுங்கள்! சிவகாசி பேக்கிங் மற்றும் போக்குவரத்து நெரிசலை தவிர்க்க முந்துங்கள்!</span>
                         </div>
                     </div>
                 </div>
-                --}}
 
-                    <!-- SLIDES: Promotional Banners -->
-                    @foreach ($activeBanners as $idx => $banner)
-                        <div class="carousel-slide absolute inset-0 w-full h-full transition-all duration-700 ease-out {{ $idx === 0 ? 'opacity-100 scale-100 z-10' : 'opacity-0 scale-105 pointer-events-none z-0' }} bg-slate-950 overflow-hidden"
-                            data-index="{{ $idx }}">
+                <!-- SLIDES 1..N: Promotional Banners -->
+                @foreach ($activeBanners as $idx => $banner)
+                    <div class="carousel-slide absolute inset-0 w-full h-full transition-all duration-700 ease-out opacity-0 scale-105 pointer-events-none z-0 bg-slate-950 overflow-hidden"
+                        data-index="{{ $idx + 1 }}">
                             <a href="{{ $banner->safe_link }}"
                                 class="block w-full h-full cursor-pointer" title="{{ $banner->title ?: 'Diwali Offer' }}">
                                 <picture class="block w-full h-full">
@@ -130,8 +131,8 @@
                                         <source media="(max-width: 640px)" srcset="{{ $banner->mobile_image_url }}">
                                     @endif
                                     <img src="{{ $banner->image_url }}"
-                                        alt="{{ $banner->title ?: 'Festival Cracker Banner' }}"
-                                        class="w-full h-full object-cover" loading="lazy">
+                                         alt="{{ $banner->title ?: 'Festival Cracker Banner' }}"
+                                         class="w-full h-full object-cover" loading="lazy">
                                 </picture>
                             </a>
 
@@ -150,9 +151,21 @@
 
                 <!-- Carousel Controls (Show only if total slides > 1) -->
                 @if ($totalHeroSlides > 1)
+                    <!-- Prev / Next Arrows (Desktop & Tablet) -->
+                    <button type="button" onclick="prevBannerSlide()"
+                        class="hidden sm:flex absolute left-2.5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/50 hover:bg-black/80 text-white items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm shadow-md"
+                        aria-label="Previous Slide">
+                        <i class="fa-solid fa-chevron-left text-sm"></i>
+                    </button>
+                    <button type="button" onclick="nextBannerSlide()"
+                        class="hidden sm:flex absolute right-2.5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/50 hover:bg-black/80 text-white items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm shadow-md"
+                        aria-label="Next Slide">
+                        <i class="fa-solid fa-chevron-right text-sm"></i>
+                    </button>
+
                     <!-- Dots Indicators -->
                     <div
-                        class="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                        class="absolute bottom-2.5 sm:bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">
                         @for ($i = 0; $i < $totalHeroSlides; $i++)
                             <button type="button" onclick="goToBannerSlide({{ $i }})"
                                 class="banner-dot rounded-full transition-all duration-300 cursor-pointer {{ $i === 0 ? 'bg-amber-400 w-5 h-2' : 'bg-white/60 hover:bg-white w-2 h-2' }}"
@@ -161,110 +174,7 @@
                     </div>
                 @endif
             </section>
-        @endif
 
-        {{-- ===================== DIWALI 2026 FESTIVAL & BOOKING CLOSING COUNTDOWN CARD ===================== --}}
-        <section id="diwaliCountdownSection"
-            class="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-slate-950 via-rose-950 to-slate-900 border border-amber-500/30 p-4 sm:p-5 shadow-xl shadow-rose-950/20 text-white select-none transition-all">
-
-            <!-- Ambient festive background glows -->
-            <div class="absolute -top-12 -right-12 w-44 h-44 bg-amber-500/15 rounded-full blur-2xl pointer-events-none"></div>
-            <div class="absolute -bottom-12 -left-12 w-44 h-44 bg-rose-600/20 rounded-full blur-2xl pointer-events-none"></div>
-
-            <div class="relative z-10 space-y-4">
-                <!-- Header Badge & Alert Notice -->
-                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-extrabold tracking-wide">
-                        <span class="animate-bounce">🪔</span>
-                        <span>DIWALI 2026 FESTIVAL COUNTDOWN</span>
-                    </div>
-                    <div class="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-rose-300">
-                        <i class="fa-solid fa-bolt text-amber-400"></i>
-                        <span>Limited Period Direct Transport Booking</span>
-                    </div>
-                </div>
-
-                <!-- 3 Core Highlight Columns: Closing Date | Live Countdown Clock | Diwali Date -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 items-center">
-
-                    <!-- 1. Online Booking Closing Date Card -->
-                    <div class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl p-3 sm:p-3.5 flex items-center gap-3 transition-colors">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center text-white shrink-0 shadow-md shadow-rose-600/30">
-                            <i class="fa-solid fa-truck-fast text-lg"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <span class="block text-[10px] sm:text-[11px] uppercase font-bold text-rose-300 tracking-wider">
-                                Online Booking Closes
-                            </span>
-                            <div class="text-base sm:text-lg font-black text-amber-300 font-heading leading-tight">
-                                25 Oct 2026
-                            </div>
-                            <span class="block text-[10px] text-slate-300 truncate">
-                                பார்சல் புக்கிங் கடைசி நாள்
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- 2. Interactive Digital Live Countdown Clock -->
-                    <div class="bg-black/40 border border-amber-400/30 rounded-2xl p-3 sm:p-3.5 text-center shadow-inner">
-                        <div class="text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-amber-200/90 mb-2 flex items-center justify-center gap-1.5">
-                            <i class="fa-regular fa-clock text-amber-400"></i>
-                            <span>Time Left to Order (மீதமுள்ள நேரம்)</span>
-                        </div>
-                        <div class="flex items-center justify-center gap-1 sm:gap-2">
-                            <!-- Days -->
-                            <div class="bg-slate-900/90 border border-amber-400/25 rounded-xl px-2 py-1.5 min-w-[50px] sm:min-w-[60px] text-center shadow-sm">
-                                <span id="cdDays" class="block text-xl sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
-                                <span class="block text-[9px] uppercase font-bold text-slate-400 mt-1">Days</span>
-                            </div>
-                            <span class="text-amber-400 font-black text-base sm:text-lg -mt-3">:</span>
-                            <!-- Hours -->
-                            <div class="bg-slate-900/90 border border-amber-400/25 rounded-xl px-2 py-1.5 min-w-[50px] sm:min-w-[60px] text-center shadow-sm">
-                                <span id="cdHours" class="block text-xl sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
-                                <span class="block text-[9px] uppercase font-bold text-slate-400 mt-1">Hours</span>
-                            </div>
-                            <span class="text-amber-400 font-black text-base sm:text-lg -mt-3">:</span>
-                            <!-- Mins -->
-                            <div class="bg-slate-900/90 border border-amber-400/25 rounded-xl px-2 py-1.5 min-w-[50px] sm:min-w-[60px] text-center shadow-sm">
-                                <span id="cdMins" class="block text-xl sm:text-2xl font-black text-amber-300 font-heading leading-none">00</span>
-                                <span class="block text-[9px] uppercase font-bold text-slate-400 mt-1">Mins</span>
-                            </div>
-                            <span class="text-amber-400 font-black text-base sm:text-lg -mt-3">:</span>
-                            <!-- Secs -->
-                            <div class="bg-slate-900/90 border border-amber-400/25 rounded-xl px-2 py-1.5 min-w-[50px] sm:min-w-[60px] text-center shadow-sm">
-                                <span id="cdSecs" class="block text-xl sm:text-2xl font-black text-rose-400 font-heading leading-none">00</span>
-                                <span class="block text-[9px] uppercase font-bold text-slate-400 mt-1">Secs</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 3. Diwali Festival Date Card -->
-                    <div class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl p-3 sm:p-3.5 flex items-center gap-3 transition-colors">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-slate-950 shrink-0 shadow-md shadow-amber-500/30">
-                            <span class="text-xl">🪔</span>
-                        </div>
-                        <div class="min-w-0">
-                            <span class="block text-[10px] sm:text-[11px] uppercase font-bold text-amber-300 tracking-wider">
-                                Diwali Festival
-                            </span>
-                            <div class="text-base sm:text-lg font-black text-amber-200 font-heading leading-tight">
-                                08 Nov 2026
-                            </div>
-                            <span class="block text-[10px] text-slate-300 truncate">
-                                தீபாவளி பண்டிகை நன்னாள்
-                            </span>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Bottom Motivation Banner -->
-                <div class="flex items-center justify-center gap-2 pt-2 text-center text-xs text-amber-200 font-semibold">
-                    <span class="text-amber-400 animate-pulse">🔥</span>
-                    <span>விரைந்து ஆர்டர் செய்யுங்கள்! சிவகாசி பேக்கிங் மற்றும் கடைசி நேர போக்குவரத்து கூட்ட நெரிசலை தவிர்க்க முந்துங்கள்!</span>
-                </div>
-            </div>
-        </section>
 
         {{-- ===================== VALIDATION ERRORS ===================== --}}
         @if (isset($errors) && $errors->any())
@@ -2997,12 +2907,19 @@
                     if (bannerSlides.length > 1) {
                         bannerTimer = setInterval(() => {
                             showBannerSlide(currentBannerSlide + 1);
-                        }, 2000);
+                        }, 3000);
                     }
                 }
 
                 const carouselSection = document.getElementById('heroCarouselSection');
                 if (carouselSection) {
+                    // Desktop hover: pause auto-slide on mouseenter, resume on mouseleave
+                    carouselSection.addEventListener('mouseenter', () => {
+                        if (bannerTimer) clearInterval(bannerTimer);
+                    });
+                    carouselSection.addEventListener('mouseleave', () => {
+                        resetBannerTimer();
+                    });
 
                     // Mobile touch swipe gestures
                     let touchStartX = 0;
