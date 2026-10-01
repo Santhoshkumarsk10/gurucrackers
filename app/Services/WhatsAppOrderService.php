@@ -1070,18 +1070,20 @@ class WhatsAppOrderService
     /**
      * Backup WhatsApp multi-file auth credentials to MySQL database.
      */
-    public static function backupSessionToDatabase(?string $connectedPhone = null): array
+    public static function backupSessionToDatabase(?string $connectedPhone = null, ?array $files = null): array
     {
         try {
-            $authDir = base_path('whatsapp-service/auth_info');
-            if (!is_dir($authDir) || !file_exists($authDir . '/creds.json')) {
-                return ['success' => false, 'message' => 'No active session or creds.json found to backup'];
-            }
+            if (empty($files)) {
+                $authDir = base_path('whatsapp-service/auth_info');
+                if (!is_dir($authDir) || !file_exists($authDir . '/creds.json')) {
+                    return ['success' => false, 'message' => 'No active session or creds.json found to backup'];
+                }
 
-            $files = [];
-            foreach (scandir($authDir) as $f) {
-                if ($f !== '.' && $f !== '..' && is_file($authDir . '/' . $f)) {
-                    $files[$f] = file_get_contents($authDir . '/' . $f);
+                $files = [];
+                foreach (scandir($authDir) as $f) {
+                    if ($f !== '.' && $f !== '..' && is_file($authDir . '/' . $f)) {
+                        $files[$f] = file_get_contents($authDir . '/' . $f);
+                    }
                 }
             }
 
@@ -1147,9 +1149,9 @@ class WhatsAppOrderService
             }
 
             if (!is_dir($authDir)) {
-                mkdir($authDir, 0700, true);
+                mkdir($authDir, 0777, true);
             }
-            @chmod($authDir, 0700);
+            @chmod($authDir, 0777);
 
             $count = 0;
             foreach ($files as $name => $content) {
@@ -1157,7 +1159,7 @@ class WhatsAppOrderService
                 $safeName = basename($name);
                 if (empty($safeName)) continue;
                 file_put_contents($authDir . '/' . $safeName, $content);
-                @chmod($authDir . '/' . $safeName, 0664);
+                @chmod($authDir . '/' . $safeName, 0666);
                 $count++;
             }
 

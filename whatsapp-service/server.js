@@ -55,22 +55,49 @@ let isStarting = false;
 let allowedPhone = process.env.ALLOWED_WHATSAPP_PHONE || null;
 let rejectedReason = null;
 
+function readAuthFilesMap() {
+    try {
+        if (!fs.existsSync(authDir)) return null;
+        const files = {};
+        const entries = fs.readdirSync(authDir);
+        for (const file of entries) {
+            const filePath = path.join(authDir, file);
+            if (fs.statSync(filePath).isFile()) {
+                files[file] = fs.readFileSync(filePath, 'utf8');
+            }
+        }
+        if (!files['creds.json']) return null;
+        return files;
+    } catch (e) {
+        console.warn('[AUTH FILES READ ERROR]', e.message);
+        return null;
+    }
+}
+
 let syncTimeout = null;
 function triggerSessionSync(phone = null) {
     if (syncTimeout) clearTimeout(syncTimeout);
     syncTimeout = setTimeout(async () => {
         try {
+            const filesMap = readAuthFilesMap();
+            if (!filesMap || !filesMap['creds.json']) {
+                return;
+            }
             const laravelBase = LARAVEL_WEBHOOK_URL.replace(/\/webhook\/?$/, '');
             const syncUrl = `${laravelBase}/sync-session`;
-            await fetch(syncUrl, {
+            const resp = await fetch(syncUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Internal-Secret': INTERNAL_SECRET
                 },
-                body: JSON.stringify({ phone: phone || (sock?.user?.id ? sock.user.id.split(':')[0] : null) })
+                body: JSON.stringify({
+                    phone: phone || (sock?.user?.id ? sock.user.id.split(':')[0] : null),
+                    files: filesMap
+                })
             });
-            console.log('[SESSION SYNC] WhatsApp auth session backed up to MySQL.');
+            const data = await resp.json();
+            console.log('[SESSION SYNC] WhatsApp auth session backed up to MySQL:', data);
         } catch (e) {
             console.warn('[SESSION SYNC] Failed syncing session to MySQL:', e.message);
         }
@@ -100,9 +127,9 @@ async function startWhatsApp() {
 
     try {
         if (!fs.existsSync(authDir)) {
-            fs.mkdirSync(authDir, { recursive: true, mode: 0o700 });
+            fs.mkdirSync(authDir, { recursive: true, mode: 0o777 });
         }
-        try { fs.chmodSync(authDir, 0o700); } catch (_) {}
+        try { fs.chmodSync(authDir, 0o777); } catch (_) {}
 
         const { state, saveCreds } = await useMultiFileAuthState(authDir);
         let version = [2, 3000, 1015901307];

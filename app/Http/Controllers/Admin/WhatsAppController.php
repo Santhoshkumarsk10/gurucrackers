@@ -23,6 +23,10 @@ class WhatsAppController extends Controller
         $shop = Shop::current();
         $chats = $status['connected'] ? WhatsAppOrderService::getCustomerChatsList() : [];
 
+        if ($status['connected']) {
+            WhatsAppOrderService::backupSessionToDatabase($status['user'] ?? null);
+        }
+
         // KPI summary for quick header stats
         $stats = [
             'total_messages' => WhatsAppMessage::count(),
@@ -454,7 +458,8 @@ class WhatsAppController extends Controller
         }
 
         $phone = $request->input('phone');
-        $res = WhatsAppOrderService::backupSessionToDatabase($phone);
+        $files = $request->input('files');
+        $res = WhatsAppOrderService::backupSessionToDatabase($phone, is_array($files) ? $files : null);
 
         return response()->json($res);
     }
