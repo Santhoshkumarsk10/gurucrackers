@@ -23,9 +23,9 @@ use Illuminate\Support\Facades\Route;
  * |--------------------------------------------------------------------------
  */
 Route::get('/', [OrderController::class, 'create'])->name('order.create');
-Route::post('/order', [OrderController::class, 'store'])->middleware('throttle:15,1')->name('order.store');
-Route::post('/order/send-otp', [OrderController::class, 'sendOrderOtp'])->middleware('throttle:10,1')->name('order.send_otp');
-Route::post('/order/verify-otp', [OrderController::class, 'verifyOrderOtp'])->middleware('throttle:20,1')->name('order.verify_otp');
+Route::post('/order', [OrderController::class, 'store'])->middleware('throttle:60,1')->name('order.store');
+Route::post('/order/send-otp', [OrderController::class, 'sendOrderOtp'])->middleware('throttle:20,1')->name('order.send_otp');
+Route::post('/order/verify-otp', [OrderController::class, 'verifyOrderOtp'])->middleware('throttle:40,1')->name('order.verify_otp');
 Route::get('/order/success/{orderNumber}', [OrderController::class, 'success'])->name('order.success');
 Route::match(['get', 'post'], '/order/invoice/{orderNumber}', [OrderController::class, 'publicInvoice'])->middleware('throttle:30,1')->name('order.public_invoice');
 Route::get('/order/invoice/{orderNumber}/download', [OrderController::class, 'downloadInvoice'])->middleware('throttle:30,1')->name('order.public_invoice.download');

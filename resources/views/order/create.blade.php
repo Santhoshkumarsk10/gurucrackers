@@ -2446,9 +2446,9 @@
                         resendBtn.innerHTML = '<i class="fa-solid fa-rotate-right text-[11px] mr-1"></i> Resend OTP on WhatsApp';
                     }
                 }
-            };
-
+            let isVerifyingOtp = false;
             window.submitOtpVerification = async function() {
+                if (isVerifyingOtp) return;
                 const phone = phone1Input ? phone1Input.value.trim() : '';
                 const digitInputs = document.querySelectorAll('.otp-digit-input');
                 const otp = Array.from(digitInputs).map(input => input.value.trim()).join('');
@@ -2464,6 +2464,7 @@
                     return;
                 }
 
+                isVerifyingOtp = true;
                 if (verifyBtn) {
                     verifyBtn.disabled = true;
                     if (verifySpinner) verifySpinner.classList.remove('hidden');
@@ -2521,6 +2522,7 @@
                             if (verifySpinner) verifySpinner.classList.add('hidden');
                             if (verifyBtnText) verifyBtnText.textContent = '✅ Confirm & Place Order';
                         }
+                        isVerifyingOtp = false;
                     }
                 } catch (err) {
                     console.error('OTP verification error:', err);
@@ -2530,6 +2532,7 @@
                         if (verifySpinner) verifySpinner.classList.add('hidden');
                         if (verifyBtnText) verifyBtnText.textContent = '✅ Confirm & Place Order';
                     }
+                    isVerifyingOtp = false;
                 }
             };
 

@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
@@ -624,5 +625,54 @@ class OrderApiController extends Controller
             'token' => $token,
             'phone' => $digits,
         ]);
+    }
+
+    /**
+     * Pincode Auto-Lookup strictly restricted to Tamil Nadu (60xxxx - 64xxxx).
+     */
+    public function lookupPincode(string $pincode): JsonResponse
+    {
+        $cleanPin = preg_replace('/[^0-9]/', '', $pincode);
+        if (strlen($cleanPin) !== 6) {
+            return $this->corsJson([
+                'success' => false,
+                'message' => 'Please enter a valid 6-digit Pincode.'
+            ], 422);
+        }
+
+        if (!preg_match('/^6[0-4][0-9]{4}$/', $cleanPin)) {
+            return $this->corsJson([
+                'success' => false,
+                'is_serviceable' => false,
+                'message' => 'Delivery is available inside Tamil Nadu only. Please enter a valid Tamil Nadu pincode (60xxxx - 64xxxx).'
+            ], 422);
+        }
+
+        $cacheKey = "pincode_lookup_v2_{$cleanPin}";
+        $data = Cache::remember($cacheKey, 86400 * 30, function () use ($cleanPin) {
+            try {
+                $response = Http::timeout(3)->get("https://api.postalpincode.in/pincode/{$cleanPin}");
+                if ($response->successful()) {
+                    $body = $response->json();
+                    if (!empty($body[0]['PostOffice'][0])) {
+                        $first = $body[0]['PostOffice'][0];
+                        return [
+                            'city' => $first['District'] ?? $first['Name'] ?? 'Tamil Nadu',
+                            'district' => $first['District'] ?? 'Tamil Nadu',
+                            'state' => 'Tamil Nadu',
+                            'pincode' => $cleanPin,
+                        ];
+                    }
+                }
+            } catch (\Throwable $e) {}
+            return [
+                'city' => 'Tamil Nadu',
+                'district' => 'Tamil Nadu',
+                'state' => 'Tamil Nadu',
+                'pincode' => $cleanPin,
+            ];
+        });
+
+        return $this->corsJson(array_merge(['success' => true, 'is_serviceable' => true], $data));
     }
 }
