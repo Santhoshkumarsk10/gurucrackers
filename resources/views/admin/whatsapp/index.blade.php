@@ -61,14 +61,16 @@
             </a>
 
             <!-- 3. Test Message Button -->
-            <button
-                type="button"
-                onclick="toggleTestMessageBox()"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all border border-slate-200"
-            >
-                <i class="fa-solid fa-paper-plane text-emerald-600 text-xs"></i>
-                <span>Test Send</span>
-            </button>
+            @if ($status['connected'])
+                <button
+                    type="button"
+                    onclick="toggleTestMessageBox()"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all border border-slate-200"
+                >
+                    <i class="fa-solid fa-paper-plane text-emerald-600 text-xs"></i>
+                    <span>Test Send</span>
+                </button>
+            @endif
 
             <!-- 4. Disconnect Button -->
             @if ($status['connected'])

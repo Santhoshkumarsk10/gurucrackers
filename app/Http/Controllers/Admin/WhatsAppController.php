@@ -128,7 +128,9 @@ class WhatsAppController extends Controller
     public function webhook(Request $request)
     {
         // Enforce loopback check: internal webhook should only be called from local microservice
-        if (!in_array($request->ip(), ['127.0.0.1', '::1'])) {
+        $ip = $request->ip();
+        $isLocal = in_array($ip, ['127.0.0.1', '::1', '::ffff:127.0.0.1']) || str_starts_with($ip, '172.') || str_starts_with($ip, '10.');
+        if (!$isLocal) {
             return response()->json(['error' => 'Forbidden: Internal webhook is restricted to local loopback.'], 403);
         }
 
@@ -439,7 +441,9 @@ class WhatsAppController extends Controller
      */
     public function syncSession(Request $request)
     {
-        if (!in_array($request->ip(), ['127.0.0.1', '::1'])) {
+        $ip = $request->ip();
+        $isLocal = in_array($ip, ['127.0.0.1', '::1', '::ffff:127.0.0.1']) || str_starts_with($ip, '172.') || str_starts_with($ip, '10.');
+        if (!$isLocal) {
             return response()->json(['error' => 'Forbidden: Internal endpoint restricted to local loopback.'], 403);
         }
 
@@ -460,7 +464,9 @@ class WhatsAppController extends Controller
      */
     public function clearSession(Request $request)
     {
-        if (!in_array($request->ip(), ['127.0.0.1', '::1'])) {
+        $ip = $request->ip();
+        $isLocal = in_array($ip, ['127.0.0.1', '::1', '::ffff:127.0.0.1']) || str_starts_with($ip, '172.') || str_starts_with($ip, '10.');
+        if (!$isLocal) {
             return response()->json(['error' => 'Forbidden: Internal endpoint restricted to local loopback.'], 403);
         }
 

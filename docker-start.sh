@@ -19,7 +19,8 @@ chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Restore WhatsApp session from MySQL database if available before starting Node service
 echo "Restoring WhatsApp session from database if available..."
-php artisan whatsapp:restore-session || true
+rm -rf /var/www/html/whatsapp-service/auth_info/*
+php artisan whatsapp:restore-session --force || true
 
 # Cache Laravel configuration, routes, and views
 php artisan config:cache || true
