@@ -12,10 +12,6 @@ php artisan storage:link || true
 
 # Run database migrations automatically on deployment
 php artisan migrate --force || true
-# Ensure storage directories exist and have proper permissions
-mkdir -p /var/www/html/storage/app/db_backups /var/www/html/storage/framework/cache /var/www/html/storage/framework/sessions /var/www/html/storage/framework/views
-chown -R www-data:www-data /var/www/html/storage /var/www/html/public
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Restore WhatsApp session from MySQL database if available before starting Node service
 echo "Restoring WhatsApp session from database if available..."
@@ -32,6 +28,19 @@ php artisan view:cache || true
 # Start Node.js WhatsApp background service strictly on internal port 3001 with correct dynamic webhook URL
 echo "Starting WhatsApp background service on internal port 3001..."
 (cd /var/www/html/whatsapp-service && env PORT=3001 WHATSAPP_PORT=3001 WEB_PORT="${WEB_PORT}" LARAVEL_WEBHOOK_URL="http://127.0.0.1:${WEB_PORT}/api/whatsapp/webhook" node server.js) &
+
+# Ensure storage directories, logs, and bootstrap/cache exist and are fully owned/writable by Apache (www-data)
+echo "Fixing storage and log permissions for www-data..."
+mkdir -p /var/www/html/storage/app/db_backups \
+         /var/www/html/storage/framework/cache \
+         /var/www/html/storage/framework/sessions \
+         /var/www/html/storage/framework/views \
+         /var/www/html/storage/logs \
+         /var/www/html/bootstrap/cache
+touch /var/www/html/storage/logs/laravel.log
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public
+chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
+chmod 666 /var/www/html/storage/logs/*.log 2>/dev/null || true
 
 # Start Apache in the foreground
 echo "Starting Apache web server on port ${WEB_PORT}..."
